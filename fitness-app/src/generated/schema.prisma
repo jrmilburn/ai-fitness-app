@@ -1,0 +1,289 @@
+// =========================================================
+//  Generator & Data Source
+// =========================================================
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// =========================================================
+//  Enums
+// =========================================================
+enum ProgramGoal {
+  STRENGTH
+  HYPERTROPHY
+  ENDURANCE
+  GENERAL_FITNESS
+}
+
+enum WorkoutMode {
+  STRENGTH
+  CARDIO
+  MIXED
+}
+
+enum ExerciseType {
+  STRENGTH
+  CARDIO_STEADY
+  CARDIO_INTERVAL
+}
+
+enum SetType {
+  NORMAL
+  WARMUP
+  BACKOFF
+  INTERVAL
+}
+
+// =========================================================
+//  User
+// =========================================================
+model User {
+  id      String  @id @default(cuid())
+  clerkId String  @unique
+  email   String  @unique
+  phone   String?
+
+  programs          Program[] // back-relation for Program.user
+  exerciseTemplates ExerciseTemplate[] // back-relation for ExerciseTemplate.user
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  programTemplates ProgramTemplate[]
+}
+
+// =========================================================
+//  MuscleGroup
+// =========================================================
+model MuscleGroup {
+  id          String  @id @default(cuid())
+  name        String  @unique // e.g. "Chest", "Quads"
+  shortName   String? // e.g. "PEC", "QUAD"
+  description String?
+
+  // Back-relations
+  exercises         Exercise[]
+  exerciseTemplates ExerciseTemplate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =========================================================
+//  Program
+// =========================================================
+model Program {
+  id     String  @id @default(cuid())
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  name   String
+  goal   ProgramGoal?
+  length Int
+  days   Int
+
+  // One-to-many Program -> Weeks
+  weeks Week[] @relation("ProgramWeeks")
+
+  // One-to-one: Program -> current Week
+  currentWeekId String? @unique
+  currentWeek   Week?   @relation("CurrentWeek", fields: [currentWeekId], references: [id])
+
+  completed Boolean @default(false)
+
+  aiPlanJson Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProgramTemplate {
+  id     String  @id @default(cuid())
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  name   String
+  goal   ProgramGoal?
+  length Int
+  days   Int
+
+  structureJson Json?
+
+  aiPlanJson Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =========================================================
+//  Week
+// =========================================================
+model Week {
+  id String @id @default(cuid())
+
+  program   Program @relation("ProgramWeeks", fields: [programId], references: [id])
+  programId String
+
+  weekNumber Int
+  workouts   Workout[]
+
+  // Back-relation for Program.currentWeek
+  currentForProgram Program? @relation("CurrentWeek")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([programId, weekNumber])
+}
+
+// =========================================================
+//  Workout
+// =========================================================
+model Workout {
+  id     String @id @default(cuid())
+  week   Week   @relation(fields: [weekId], references: [id])
+  weekId String
+
+  dayNumber Int
+  name      String
+
+  mode WorkoutMode @default(STRENGTH)
+
+  // For now this stays as a simple string[] label list.
+  // You can later map these to MuscleGroup IDs if you want.
+  focusMuscleGroups String[]
+  notes             String?
+
+  // One-to-many Workout -> Exercises
+  exercises Exercise[] @relation("WorkoutExercises")
+
+  // One-to-one: Workout -> current Exercise
+  currentExerciseId String?   @unique
+  currentExercise   Exercise? @relation("CurrentExercise", fields: [currentExerciseId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  completed Boolean @default(false)
+
+  @@unique([weekId, dayNumber])
+}
+
+// =========================================================
+//  ExerciseTemplate
+// =========================================================
+model ExerciseTemplate {
+  id String @id @default(cuid())
+
+  // Null = global template (provided by you / the app)
+  // Non-null = user’s custom template
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  name        String
+  description String?
+
+  // Link to muscle group (optional)
+  muscleGroup   MuscleGroup? @relation(fields: [muscleGroupId], references: [id])
+  muscleGroupId String?
+
+  // Defaults that get copied into the concrete Exercise / Sets
+  defaultSets      Int? // e.g. 3
+  defaultRepsLower Int? // e.g. 8
+  defaultRepsUpper Int? // e.g. 12
+  defaultRir       Int? // e.g. 1–2
+  defaultDetails   Json? // extra config (tempo, cues, etc.)
+
+  exercises Exercise[] // back-relation to Exercise.template
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =========================================================
+//  Exercise
+// =========================================================
+model Exercise {
+  id        String  @id @default(cuid())
+  workout   Workout @relation("WorkoutExercises", fields: [workoutId], references: [id])
+  workoutId String
+
+  order        Int
+  exerciseType ExerciseType @default(STRENGTH)
+
+  // NEW: link to ExerciseTemplate for library-based creation
+  exerciseTemplateId String?
+  template           ExerciseTemplate? @relation(fields: [exerciseTemplateId], references: [id])
+
+  // NEW: structured muscle group instead of free-text
+  muscleGroupId String?
+  muscleGroup   MuscleGroup? @relation(fields: [muscleGroupId], references: [id])
+
+  details String?
+
+  // One-to-many Exercise -> Sets
+  sets Set[] @relation("ExerciseSets")
+
+  // One-to-one: Exercise -> current Set
+  currentSetId String? @unique
+  currentSet   Set?    @relation("CurrentSet", fields: [currentSetId], references: [id])
+
+  // Back relation for Workout.currentExercise
+  currentForWorkout Workout? @relation("CurrentExercise")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  completed Boolean @default(false)
+
+  @@unique([workoutId, order])
+}
+
+// =========================================================
+//  Set
+// =========================================================
+model Set {
+  id         String   @id @default(cuid())
+  exercise   Exercise @relation("ExerciseSets", fields: [exerciseId], references: [id])
+  exerciseId String
+
+  setNumber Int
+  type      SetType @default(NORMAL)
+
+  // Strength fields
+  targetReps     Int?
+  targetWeightKg Float?
+  minWeightKg    Float?
+  maxWeightKg    Float?
+  rir            Int?
+  rpe            Float?
+
+  // Cardio fields
+  targetDurationSec  Int?
+  targetDistanceM    Int?
+  targetPaceSecPerKm Int?
+  intensityZone      String?
+
+  // Actual tracking
+  actualReps        Int?
+  actualWeightKg    Float?
+  actualDurationSec Int?
+  actualDistanceM   Int?
+  actualRpe         Float?
+
+  completed Boolean @default(false)
+
+  // Back-relation for Exercise.currentSet
+  currentForExercise Exercise? @relation("CurrentSet")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([exerciseId, setNumber])
+}
