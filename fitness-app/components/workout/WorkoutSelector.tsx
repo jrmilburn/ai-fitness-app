@@ -1,5 +1,13 @@
 // components/workout/WorkoutSelector.tsx
-import type { ProgramWithRelations } from "@/lib/types/program";
+import type { ProgramWithRelations } from "@/lib/program";
+
+import { Button } from "../ui/button";
+
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+
+import { useState } from "react";
+
+import { CalendarDaysIcon } from "lucide-react";
 
 type WorkoutSelectorProps = {
   program: ProgramWithRelations;
@@ -16,40 +24,34 @@ export function WorkoutSelector({
   onSelectWeek,
   onSelectWorkout,
 }: WorkoutSelectorProps) {
+
+  const [pickerOpen, setPickerOpen] = useState(false);
+
   return (
-    <div className="space-y-2">
-      {program.weeks.map((week, wIdx) => (
-        <div key={week.id} className="border rounded">
-          <button
-            type="button"
-            className="w-full text-left px-3 py-2 text-sm font-medium"
-            onClick={() => {
-              onSelectWeek(wIdx);
-              onSelectWorkout(0);
-            }}
-          >
-            Week {week.weekNumber}
-          </button>
-          {wIdx === weekIndex && (
-            <div className="border-t">
-              {week.workouts.map((workout, woIdx) => (
-                <button
-                  key={workout.id}
-                  type="button"
-                  onClick={() => onSelectWorkout(woIdx)}
-                  className={`block w-full text-left px-3 py-1 text-sm ${
-                    woIdx === workoutIndex
-                      ? "bg-muted font-medium"
-                      : "hover:bg-muted/50"
-                  }`}
-                >
-                  Day {workout.dayNumber}: {workout.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+    <>
+    <Button variant="ghost" className="" onClick={() => setPickerOpen(true)}><CalendarDaysIcon /></Button>
+          <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle></DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-1">
+            {program.weeks.map((week, weekInd) => (
+              <div key={week.id} className="flex gap-1">
+                {week.workouts.map((workout, workInd) => (
+                  <Button key={workout.id} onClick={() => {
+                    onSelectWeek(weekInd);
+                    onSelectWorkout(workInd);
+                    setPickerOpen(false);
+                  }} variant={weekIndex === weekInd && workoutIndex === workInd ? "secondary" : "outline"} className={workout.completed ? "bg-[red]/40" : ""}>{workout.dayNumber}</Button>
+                ))}
+              </div>
+            ))}
+          </div>
+
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
