@@ -87,15 +87,40 @@ export function templateToBuilderState(
 ): ProgramBuilderState {
   const days = template?.days ?? template?.structureJson?.days ?? 7;
 
+  // ⚡ NO TEMPLATE PROVIDED OR NO STRUCTURE JSON:
+  // -> return 2 default empty workouts with STABLE IDs
   if (!template?.structureJson) {
+    const w1Id = "workout-1";
+    const w2Id = "workout-2";
+
     return {
-      workouts: {},
-      exercises: {},
-      workoutOrder: [],
       days,
+      workouts: {
+        [w1Id]: {
+          id: w1Id,
+          name: "Workout 1",
+          mode: "STRENGTH",
+          dayNumber: 1,
+          focusMuscleGroups: [],
+          notes: null,
+          exerciseIds: [],
+        },
+        [w2Id]: {
+          id: w2Id,
+          name: "Workout 2",
+          mode: "STRENGTH",
+          dayNumber: 2,
+          focusMuscleGroups: [],
+          notes: null,
+          exerciseIds: [],
+        },
+      },
+      exercises: {},
+      workoutOrder: [w1Id, w2Id],
     };
   }
 
+  // ✅ TEMPLATE WITH STRUCTURE JSON PROVIDED:
   const struct = template.structureJson;
 
   const workouts: Record<string, BuilderWorkout> = {};
@@ -145,6 +170,8 @@ export function templateToBuilderState(
     days: struct.days ?? days,
   };
 }
+
+
 
 export function builderStateToStructureJson(
   state: ProgramBuilderState

@@ -45,17 +45,17 @@ enum SetType {
 //  User
 // =========================================================
 model User {
-  id      String  @id @default(cuid())
-  clerkId String  @unique
-  email   String  @unique
-  phone   String?
+  id      String @id @default(cuid())
+  clerkId String @unique
 
-  programs          Program[] // back-relation for Program.user
-  exerciseTemplates ExerciseTemplate[] // back-relation for ExerciseTemplate.user
+  currentProgramId String?
 
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  programTemplates ProgramTemplate[]
+  programs          Program[]
+  exerciseTemplates ExerciseTemplate[]
+  programTemplates  ProgramTemplate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // =========================================================
@@ -114,8 +114,6 @@ model ProgramTemplate {
   days   Int
 
   structureJson Json?
-
-  aiPlanJson Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

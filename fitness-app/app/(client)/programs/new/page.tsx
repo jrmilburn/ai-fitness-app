@@ -2,8 +2,9 @@ import { prisma } from "@/lib/prisma";
 
 import { ProgramBuilder } from "@/components/program/ProgramBuilder";
 
-import { SAMPLE_TEMPLATE } from "@/lib/initialBuilderData";
 import { getExerciseTemplates } from "@/server/exerciseTemplate/getExerciseTemplates";
+
+import { createProgram } from "@/server/program/createProgram";
 
 type NewProgramPageProps = {
   searchParams: {
@@ -11,9 +12,8 @@ type NewProgramPageProps = {
   }
 }
 
-export default async function NewProgram({ searchParams }: NewProgramPageProps) {
-
-  const templateId = searchParams?.templateId;
+export default async function NewProgram(props: NewProgramPageProps) {
+  const { templateId } = await props.searchParams;
 
   const template = templateId
     ? await prisma.programTemplate.findUnique({
@@ -23,19 +23,13 @@ export default async function NewProgram({ searchParams }: NewProgramPageProps) 
 
   const exerciseTemplates = await getExerciseTemplates();
 
-      const onSubmit = async (template) => {
-        "use server"
-        console.log(template.structureJson.workouts[0].exercises)
-      }
-
-    return (
-        <div>
-            <ProgramBuilder
-              initialTemplate={SAMPLE_TEMPLATE}
-              exerciseTemplates={exerciseTemplates}
-              onSubmit={onSubmit}
-            />
-        </div>
-    )
-
+  return (
+    <div>
+      <ProgramBuilder
+        initialTemplate={template}
+        exerciseTemplates={exerciseTemplates}
+        onSubmit={createProgram}
+      />
+    </div>
+  );
 }

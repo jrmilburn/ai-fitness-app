@@ -11,7 +11,7 @@ export type WorkoutWithExercisesAndSets = Prisma.WorkoutGetPayload<{
   };
 }>;
 
-export default function Workout({ workout }: { workout: WorkoutWithExercisesAndSets }) {
+export function WorkoutView({ workout }: { workout: WorkoutWithExercisesAndSets }) {
   return (
     <div className="space-y-6 w-full">
       {/* Workout header */}

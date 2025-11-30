@@ -1904,8 +1904,7 @@ export namespace Prisma {
   export type UserMinAggregateOutputType = {
     id: string | null
     clerkId: string | null
-    email: string | null
-    phone: string | null
+    currentProgramId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1913,8 +1912,7 @@ export namespace Prisma {
   export type UserMaxAggregateOutputType = {
     id: string | null
     clerkId: string | null
-    email: string | null
-    phone: string | null
+    currentProgramId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1922,8 +1920,7 @@ export namespace Prisma {
   export type UserCountAggregateOutputType = {
     id: number
     clerkId: number
-    email: number
-    phone: number
+    currentProgramId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1933,8 +1930,7 @@ export namespace Prisma {
   export type UserMinAggregateInputType = {
     id?: true
     clerkId?: true
-    email?: true
-    phone?: true
+    currentProgramId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1942,8 +1938,7 @@ export namespace Prisma {
   export type UserMaxAggregateInputType = {
     id?: true
     clerkId?: true
-    email?: true
-    phone?: true
+    currentProgramId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1951,8 +1946,7 @@ export namespace Prisma {
   export type UserCountAggregateInputType = {
     id?: true
     clerkId?: true
-    email?: true
-    phone?: true
+    currentProgramId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -2033,8 +2027,7 @@ export namespace Prisma {
   export type UserGroupByOutputType = {
     id: string
     clerkId: string
-    email: string
-    phone: string | null
+    currentProgramId: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -2059,8 +2052,7 @@ export namespace Prisma {
   export type UserSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clerkId?: boolean
-    email?: boolean
-    phone?: boolean
+    currentProgramId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     programs?: boolean | User$programsArgs<ExtArgs>
@@ -2072,8 +2064,7 @@ export namespace Prisma {
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clerkId?: boolean
-    email?: boolean
-    phone?: boolean
+    currentProgramId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2081,8 +2072,7 @@ export namespace Prisma {
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     clerkId?: boolean
-    email?: boolean
-    phone?: boolean
+    currentProgramId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -2090,13 +2080,12 @@ export namespace Prisma {
   export type UserSelectScalar = {
     id?: boolean
     clerkId?: boolean
-    email?: boolean
-    phone?: boolean
+    currentProgramId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkId" | "email" | "phone" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkId" | "currentProgramId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     programs?: boolean | User$programsArgs<ExtArgs>
     exerciseTemplates?: boolean | User$exerciseTemplatesArgs<ExtArgs>
@@ -2116,8 +2105,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       clerkId: string
-      email: string
-      phone: string | null
+      currentProgramId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -2548,8 +2536,7 @@ export namespace Prisma {
   interface UserFieldRefs {
     readonly id: FieldRef<"User", 'String'>
     readonly clerkId: FieldRef<"User", 'String'>
-    readonly email: FieldRef<"User", 'String'>
-    readonly phone: FieldRef<"User", 'String'>
+    readonly currentProgramId: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -5439,7 +5426,6 @@ export namespace Prisma {
     length: number
     days: number
     structureJson: number
-    aiPlanJson: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5486,7 +5472,6 @@ export namespace Prisma {
     length?: true
     days?: true
     structureJson?: true
-    aiPlanJson?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5586,7 +5571,6 @@ export namespace Prisma {
     length: number
     days: number
     structureJson: JsonValue | null
-    aiPlanJson: JsonValue | null
     createdAt: Date
     updatedAt: Date
     _count: ProgramTemplateCountAggregateOutputType | null
@@ -5618,7 +5602,6 @@ export namespace Prisma {
     length?: boolean
     days?: boolean
     structureJson?: boolean
-    aiPlanJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | ProgramTemplate$userArgs<ExtArgs>
@@ -5632,7 +5615,6 @@ export namespace Prisma {
     length?: boolean
     days?: boolean
     structureJson?: boolean
-    aiPlanJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | ProgramTemplate$userArgs<ExtArgs>
@@ -5646,7 +5628,6 @@ export namespace Prisma {
     length?: boolean
     days?: boolean
     structureJson?: boolean
-    aiPlanJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | ProgramTemplate$userArgs<ExtArgs>
@@ -5660,12 +5641,11 @@ export namespace Prisma {
     length?: boolean
     days?: boolean
     structureJson?: boolean
-    aiPlanJson?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ProgramTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "goal" | "length" | "days" | "structureJson" | "aiPlanJson" | "createdAt" | "updatedAt", ExtArgs["result"]["programTemplate"]>
+  export type ProgramTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "name" | "goal" | "length" | "days" | "structureJson" | "createdAt" | "updatedAt", ExtArgs["result"]["programTemplate"]>
   export type ProgramTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | ProgramTemplate$userArgs<ExtArgs>
   }
@@ -5689,7 +5669,6 @@ export namespace Prisma {
       length: number
       days: number
       structureJson: Prisma.JsonValue | null
-      aiPlanJson: Prisma.JsonValue | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["programTemplate"]>
@@ -6123,7 +6102,6 @@ export namespace Prisma {
     readonly length: FieldRef<"ProgramTemplate", 'Int'>
     readonly days: FieldRef<"ProgramTemplate", 'Int'>
     readonly structureJson: FieldRef<"ProgramTemplate", 'Json'>
-    readonly aiPlanJson: FieldRef<"ProgramTemplate", 'Json'>
     readonly createdAt: FieldRef<"ProgramTemplate", 'DateTime'>
     readonly updatedAt: FieldRef<"ProgramTemplate", 'DateTime'>
   }
@@ -12907,8 +12885,7 @@ export namespace Prisma {
   export const UserScalarFieldEnum: {
     id: 'id',
     clerkId: 'clerkId',
-    email: 'email',
-    phone: 'phone',
+    currentProgramId: 'currentProgramId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12953,7 +12930,6 @@ export namespace Prisma {
     length: 'length',
     days: 'days',
     structureJson: 'structureJson',
-    aiPlanJson: 'aiPlanJson',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -13240,8 +13216,7 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     id?: StringFilter<"User"> | string
     clerkId?: StringFilter<"User"> | string
-    email?: StringFilter<"User"> | string
-    phone?: StringNullableFilter<"User"> | string | null
+    currentProgramId?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     programs?: ProgramListRelationFilter
@@ -13252,8 +13227,7 @@ export namespace Prisma {
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     clerkId?: SortOrder
-    email?: SortOrder
-    phone?: SortOrderInput | SortOrder
+    currentProgramId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     programs?: ProgramOrderByRelationAggregateInput
@@ -13264,23 +13238,21 @@ export namespace Prisma {
   export type UserWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     clerkId?: string
-    email?: string
     AND?: UserWhereInput | UserWhereInput[]
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
-    phone?: StringNullableFilter<"User"> | string | null
+    currentProgramId?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     programs?: ProgramListRelationFilter
     exerciseTemplates?: ExerciseTemplateListRelationFilter
     programTemplates?: ProgramTemplateListRelationFilter
-  }, "id" | "clerkId" | "email">
+  }, "id" | "clerkId">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     clerkId?: SortOrder
-    email?: SortOrder
-    phone?: SortOrderInput | SortOrder
+    currentProgramId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -13294,8 +13266,7 @@ export namespace Prisma {
     NOT?: UserScalarWhereWithAggregatesInput | UserScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"User"> | string
     clerkId?: StringWithAggregatesFilter<"User"> | string
-    email?: StringWithAggregatesFilter<"User"> | string
-    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    currentProgramId?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -13467,7 +13438,6 @@ export namespace Prisma {
     length?: IntFilter<"ProgramTemplate"> | number
     days?: IntFilter<"ProgramTemplate"> | number
     structureJson?: JsonNullableFilter<"ProgramTemplate">
-    aiPlanJson?: JsonNullableFilter<"ProgramTemplate">
     createdAt?: DateTimeFilter<"ProgramTemplate"> | Date | string
     updatedAt?: DateTimeFilter<"ProgramTemplate"> | Date | string
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -13481,7 +13451,6 @@ export namespace Prisma {
     length?: SortOrder
     days?: SortOrder
     structureJson?: SortOrderInput | SortOrder
-    aiPlanJson?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -13498,7 +13467,6 @@ export namespace Prisma {
     length?: IntFilter<"ProgramTemplate"> | number
     days?: IntFilter<"ProgramTemplate"> | number
     structureJson?: JsonNullableFilter<"ProgramTemplate">
-    aiPlanJson?: JsonNullableFilter<"ProgramTemplate">
     createdAt?: DateTimeFilter<"ProgramTemplate"> | Date | string
     updatedAt?: DateTimeFilter<"ProgramTemplate"> | Date | string
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -13512,7 +13480,6 @@ export namespace Prisma {
     length?: SortOrder
     days?: SortOrder
     structureJson?: SortOrderInput | SortOrder
-    aiPlanJson?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ProgramTemplateCountOrderByAggregateInput
@@ -13533,7 +13500,6 @@ export namespace Prisma {
     length?: IntWithAggregatesFilter<"ProgramTemplate"> | number
     days?: IntWithAggregatesFilter<"ProgramTemplate"> | number
     structureJson?: JsonNullableWithAggregatesFilter<"ProgramTemplate">
-    aiPlanJson?: JsonNullableWithAggregatesFilter<"ProgramTemplate">
     createdAt?: DateTimeWithAggregatesFilter<"ProgramTemplate"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ProgramTemplate"> | Date | string
   }
@@ -14046,8 +14012,7 @@ export namespace Prisma {
   export type UserCreateInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     programs?: ProgramCreateNestedManyWithoutUserInput
@@ -14058,8 +14023,7 @@ export namespace Prisma {
   export type UserUncheckedCreateInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     programs?: ProgramUncheckedCreateNestedManyWithoutUserInput
@@ -14070,8 +14034,7 @@ export namespace Prisma {
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     programs?: ProgramUpdateManyWithoutUserNestedInput
@@ -14082,8 +14045,7 @@ export namespace Prisma {
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     programs?: ProgramUncheckedUpdateManyWithoutUserNestedInput
@@ -14094,8 +14056,7 @@ export namespace Prisma {
   export type UserCreateManyInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14103,8 +14064,7 @@ export namespace Prisma {
   export type UserUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14112,8 +14072,7 @@ export namespace Prisma {
   export type UserUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14296,7 +14255,6 @@ export namespace Prisma {
     length: number
     days: number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
     user?: UserCreateNestedOneWithoutProgramTemplatesInput
@@ -14310,7 +14268,6 @@ export namespace Prisma {
     length: number
     days: number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14322,7 +14279,6 @@ export namespace Prisma {
     length?: IntFieldUpdateOperationsInput | number
     days?: IntFieldUpdateOperationsInput | number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneWithoutProgramTemplatesNestedInput
@@ -14336,7 +14292,6 @@ export namespace Prisma {
     length?: IntFieldUpdateOperationsInput | number
     days?: IntFieldUpdateOperationsInput | number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14349,7 +14304,6 @@ export namespace Prisma {
     length: number
     days: number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14361,7 +14315,6 @@ export namespace Prisma {
     length?: IntFieldUpdateOperationsInput | number
     days?: IntFieldUpdateOperationsInput | number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14374,7 +14327,6 @@ export namespace Prisma {
     length?: IntFieldUpdateOperationsInput | number
     days?: IntFieldUpdateOperationsInput | number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -15008,8 +14960,7 @@ export namespace Prisma {
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     clerkId?: SortOrder
-    email?: SortOrder
-    phone?: SortOrder
+    currentProgramId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15017,8 +14968,7 @@ export namespace Prisma {
   export type UserMaxOrderByAggregateInput = {
     id?: SortOrder
     clerkId?: SortOrder
-    email?: SortOrder
-    phone?: SortOrder
+    currentProgramId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15026,8 +14976,7 @@ export namespace Prisma {
   export type UserMinOrderByAggregateInput = {
     id?: SortOrder
     clerkId?: SortOrder
-    email?: SortOrder
-    phone?: SortOrder
+    currentProgramId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -15303,7 +15252,6 @@ export namespace Prisma {
     length?: SortOrder
     days?: SortOrder
     structureJson?: SortOrder
-    aiPlanJson?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -16990,7 +16938,6 @@ export namespace Prisma {
     length: number
     days: number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17002,7 +16949,6 @@ export namespace Prisma {
     length: number
     days: number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17111,7 +17057,6 @@ export namespace Prisma {
     length?: IntFilter<"ProgramTemplate"> | number
     days?: IntFilter<"ProgramTemplate"> | number
     structureJson?: JsonNullableFilter<"ProgramTemplate">
-    aiPlanJson?: JsonNullableFilter<"ProgramTemplate">
     createdAt?: DateTimeFilter<"ProgramTemplate"> | Date | string
     updatedAt?: DateTimeFilter<"ProgramTemplate"> | Date | string
   }
@@ -17248,8 +17193,7 @@ export namespace Prisma {
   export type UserCreateWithoutProgramsInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     exerciseTemplates?: ExerciseTemplateCreateNestedManyWithoutUserInput
@@ -17259,8 +17203,7 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutProgramsInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     exerciseTemplates?: ExerciseTemplateUncheckedCreateNestedManyWithoutUserInput
@@ -17337,8 +17280,7 @@ export namespace Prisma {
   export type UserUpdateWithoutProgramsInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     exerciseTemplates?: ExerciseTemplateUpdateManyWithoutUserNestedInput
@@ -17348,8 +17290,7 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutProgramsInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     exerciseTemplates?: ExerciseTemplateUncheckedUpdateManyWithoutUserNestedInput
@@ -17415,8 +17356,7 @@ export namespace Prisma {
   export type UserCreateWithoutProgramTemplatesInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     programs?: ProgramCreateNestedManyWithoutUserInput
@@ -17426,8 +17366,7 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutProgramTemplatesInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     programs?: ProgramUncheckedCreateNestedManyWithoutUserInput
@@ -17453,8 +17392,7 @@ export namespace Prisma {
   export type UserUpdateWithoutProgramTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     programs?: ProgramUpdateManyWithoutUserNestedInput
@@ -17464,8 +17402,7 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutProgramTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     programs?: ProgramUncheckedUpdateManyWithoutUserNestedInput
@@ -17874,8 +17811,7 @@ export namespace Prisma {
   export type UserCreateWithoutExerciseTemplatesInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     programs?: ProgramCreateNestedManyWithoutUserInput
@@ -17885,8 +17821,7 @@ export namespace Prisma {
   export type UserUncheckedCreateWithoutExerciseTemplatesInput = {
     id?: string
     clerkId: string
-    email: string
-    phone?: string | null
+    currentProgramId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     programs?: ProgramUncheckedCreateNestedManyWithoutUserInput
@@ -17977,8 +17912,7 @@ export namespace Prisma {
   export type UserUpdateWithoutExerciseTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     programs?: ProgramUpdateManyWithoutUserNestedInput
@@ -17988,8 +17922,7 @@ export namespace Prisma {
   export type UserUncheckedUpdateWithoutExerciseTemplatesInput = {
     id?: StringFieldUpdateOperationsInput | string
     clerkId?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    currentProgramId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     programs?: ProgramUncheckedUpdateManyWithoutUserNestedInput
@@ -18725,7 +18658,6 @@ export namespace Prisma {
     length: number
     days: number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -18822,7 +18754,6 @@ export namespace Prisma {
     length?: IntFieldUpdateOperationsInput | number
     days?: IntFieldUpdateOperationsInput | number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18834,7 +18765,6 @@ export namespace Prisma {
     length?: IntFieldUpdateOperationsInput | number
     days?: IntFieldUpdateOperationsInput | number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18846,7 +18776,6 @@ export namespace Prisma {
     length?: IntFieldUpdateOperationsInput | number
     days?: IntFieldUpdateOperationsInput | number
     structureJson?: NullableJsonNullValueInput | InputJsonValue
-    aiPlanJson?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

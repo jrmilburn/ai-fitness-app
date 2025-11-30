@@ -20,6 +20,8 @@ import {
 
 import { WorkoutColumn } from "./WorkoutColumn";
 
+import { Button } from "../ui/button";
+
 type ProgramBuilderProps = {
   initialTemplate?: ProgramTemplateWithStructure;
   exerciseTemplates: ExerciseTemplate[];
@@ -207,7 +209,7 @@ export function ProgramBuilder({
   return (
     <div className="space-y-4">
       {/* header / controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-8">
         <div>
           <h2 className="text-xl font-semibold">Program Builder</h2>
           <p className="text-sm text-muted-foreground">
@@ -216,20 +218,14 @@ export function ProgramBuilder({
           </p>
         </div>
         <div className="flex gap-2">
-          <button
+          <Button
             type="button"
-            className="px-3 py-1 rounded border text-sm"
-            onClick={handleAddWorkout}
-          >
-            Add workout
-          </button>
-          <button
-            type="button"
-            className="px-4 py-1 rounded bg-black text-white text-sm"
+            className=""
             onClick={handleSubmit}
+            variant="default"
           >
             Create program
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -263,6 +259,14 @@ export function ProgramBuilder({
                   />
                 );
               })}
+                <Button
+                   type="button"
+                   className="px-3 py-1 rounded border text-sm self-start mt-2 w-[200px]"
+                   onClick={handleAddWorkout}
+                   variant="secondary"
+                 >
+                   Add workout
+                 </Button>
               {provided.placeholder}
             </div>
           )}

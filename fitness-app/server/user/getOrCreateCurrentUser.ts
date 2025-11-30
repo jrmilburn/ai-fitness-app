@@ -9,24 +9,13 @@ export async function getOrCreateCurrentUser() {
   const clerkUser = await currentUser();
   if (!clerkUser) throw new Error("Clerk user not found");
 
-  const email =
-    clerkUser.emailAddresses[0]?.emailAddress ??
-    "";
-  const phone =
-    clerkUser.phoneNumbers[0]?.phoneNumber ??
-    null;
-
   // Upsert pattern ensures the User row always exists
   const user = await prisma.user.upsert({
     where: { clerkId },
     update: {
-      email,
-      phone,
     },
     create: {
       clerkId,  // <-- Clerk user ID
-      email,
-      phone,
     },
   });
 

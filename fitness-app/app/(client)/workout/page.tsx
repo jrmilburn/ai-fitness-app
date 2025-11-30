@@ -1,15 +1,31 @@
 
-"use client"
+import WorkoutWrapper from "@/components/workout/WorkoutWrapper";
 
-import Workout from "@/components/workout/workout";
+import { getProgram } from "@/server/program/getProgram";
+import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
 
-export default function WorkoutPage() {
+import { redirect } from "next/navigation";
+
+export default async function WorkoutPage() {
+
+    const user = await getOrCreateCurrentUser();
+
+    let program;
+
+    if(user.currentProgramId) {
+        program = await getProgram(user?.currentProgramId);
+    } else {
+        return redirect("/programs")
+    }
+
+
+
 
     return (
         <div className="max-w-2xl w-full mx-auto">
-            {/*<Workout 
-                workout={}
-            />*/}
+            <WorkoutWrapper 
+                program={program}
+            />
         </div>
     )
 
