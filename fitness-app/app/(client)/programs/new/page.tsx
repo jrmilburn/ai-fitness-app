@@ -24,12 +24,10 @@ export default async function NewProgram(props: NewProgramPageProps) {
   const exerciseTemplates = await getExerciseTemplates();
 
   return (
-    <div>
       <ProgramBuilder
         initialTemplate={template}
         exerciseTemplates={exerciseTemplates}
         onSubmit={createProgram}
       />
-    </div>
   );
 }

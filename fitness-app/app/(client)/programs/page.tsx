@@ -10,7 +10,7 @@ export default async function Programs() {
     const programs: Program[] = await getPrograms();
 
     return (
-        <div className="max-w-2xl w-full mx-auto">
+        <div className="max-w-2xl w-full mx-auto py-8">
         <ProgramList 
             programs={programs}
         />

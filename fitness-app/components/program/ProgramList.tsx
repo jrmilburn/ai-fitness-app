@@ -11,7 +11,7 @@ export default function ProgramList({ programs } : { programs : Program[]}) {
         <div className="max-w-2xl w-full flex flex-col gap-2">
             <div className="flex justify-between items-center">
                 <h3 className="text-lg font-bold">Programs</h3>
-                <Button>New +</Button>
+                <Link href="/programs/plan"><Button>New +</Button></Link>
             </div>
             {programs.length === 0 && (
                 <h3>You have no programs. Create one to get started.</h3>

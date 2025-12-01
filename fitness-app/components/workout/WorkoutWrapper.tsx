@@ -18,33 +18,6 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
   const currentWeek = weeks[weekIndex];
   const currentWorkout = currentWeek?.workouts[workoutIndex];
 
-  if (!currentWeek || !currentWorkout) {
-    return <div>No workouts found in this program.</div>;
-  }
-
-  // ✅ existing: move to the next workout in sequence
-  const goToNextWorkout = () => {
-    const week = program.weeks[weekIndex];
-
-    let nextWeekIndex = weekIndex;
-    let nextWorkoutIndex = workoutIndex;
-
-    if (workoutIndex < week.workouts.length - 1) {
-      // next workout in same week
-      nextWorkoutIndex = workoutIndex + 1;
-    } else if (weekIndex < program.weeks.length - 1) {
-      // first workout of next week
-      nextWeekIndex = weekIndex + 1;
-      nextWorkoutIndex = 0;
-    } else {
-      // already at last workout of last week – do nothing (or wrap, your choice)
-      return;
-    }
-
-    setWeekIndex(nextWeekIndex);
-    setWorkoutIndex(nextWorkoutIndex);
-  };
-
   // 🆕 new: jump to the first *unfinished* workout in the whole program
   const goToFirstUnfinishedWorkout = React.useCallback(() => {
     for (let w = 0; w < program.weeks.length; w++) {
@@ -75,6 +48,40 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
       }
     }
   }, [program.weeks, setWeekIndex, setWorkoutIndex]);
+
+
+  React.useEffect(() => {
+    goToFirstUnfinishedWorkout();
+  }, [goToFirstUnfinishedWorkout]);
+
+  if (!currentWeek || !currentWorkout) {
+    return <div>No workouts found in this program.</div>;
+  }
+
+  // ✅ existing: move to the next workout in sequence
+  const goToNextWorkout = () => {
+    const week = program.weeks[weekIndex];
+
+    let nextWeekIndex = weekIndex;
+    let nextWorkoutIndex = workoutIndex;
+
+    if (workoutIndex < week.workouts.length - 1) {
+      // next workout in same week
+      nextWorkoutIndex = workoutIndex + 1;
+    } else if (weekIndex < program.weeks.length - 1) {
+      // first workout of next week
+      nextWeekIndex = weekIndex + 1;
+      nextWorkoutIndex = 0;
+    } else {
+      // already at last workout of last week – do nothing (or wrap, your choice)
+      return;
+    }
+
+    setWeekIndex(nextWeekIndex);
+    setWorkoutIndex(nextWorkoutIndex);
+  };
+
+
 
   return (
     <div className="grid gap-4 md:grid-cols-[260px,1fr]">

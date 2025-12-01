@@ -47,7 +47,7 @@ export function WorkoutView({ week, workout, onNextWorkout, goToFirstUnfinished 
     <>
       <div className="my-4 w-full">
         {/* Workout header */}
-        <div className="space-y-1">
+        <div className="space-y-1 mb-2 bg-white p-4 border-black/5 shadow-sm">
           <h1 className="text-2xl font-semibold">{workout.name}</h1>
 
           <p className="text-sm text-muted-foreground">
@@ -68,7 +68,7 @@ export function WorkoutView({ week, workout, onNextWorkout, goToFirstUnfinished 
         )}
 
         {/* Exercises */}
-        <div className="space-y-8">
+        <div className="space-y-2">
           {workout.exercises.map((exercise) => (
             <Exercise key={exercise.id} exercise={exercise} />
           ))}

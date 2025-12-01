@@ -51,7 +51,7 @@ export function WorkoutColumn({
       <Draggable draggableId={workout.id} index={index}>
         {(provided) => (
           <div
-            className="m-2 border border-black/5 rounded w-[260px] flex flex-col bg-white"
+            className="m-2 border border-black/5 rounded min-w-[260px] flex flex-col bg-white"
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}

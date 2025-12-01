@@ -21,11 +21,12 @@ import {
 import { WorkoutColumn } from "./WorkoutColumn";
 
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 type ProgramBuilderProps = {
   initialTemplate?: ProgramTemplateWithStructure;
   exerciseTemplates: ExerciseTemplate[];
-  onSubmit: (payload: ProgramTemplateWithStructure) => void;
+  onSubmit: (payload: ProgramTemplateWithStructure) => Promise<void> | void;
 };
 
 export function ProgramBuilder({
@@ -36,6 +37,10 @@ export function ProgramBuilder({
   const [state, setState] = React.useState<ProgramBuilderState>(() =>
     templateToBuilderState(initialTemplate ?? null)
   );
+  const [submitting, setSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
+
+  const router = useRouter();
 
   // ---- DnD handlers ----
 
@@ -183,33 +188,49 @@ export function ProgramBuilder({
 
   // ---- submit -> return a ProgramTemplate-like payload ----
 
-  const handleSubmit = () => {
-    const structureJson = builderStateToStructureJson(state);
+  const handleSubmit = async () => {
+    setSubmitting(true);
+    setError(null);
 
-    const payload: ProgramTemplateWithStructure = {
-      ...(initialTemplate ?? {
-        // these will normally be set on the server
-        id: "",
-        userId: null,
-        user: null,
-        name: "",
-        goal: null,
-        length: state.days,
-        days: state.days,
-        aiPlanJson: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-      structureJson,
-    };
+    try {
+      const structureJson = builderStateToStructureJson(state);
 
-    onSubmit(payload);
+      const payload: ProgramTemplateWithStructure = {
+        ...(initialTemplate ?? {
+          // these will normally be set on the server
+          id: "",
+          userId: null,
+          user: null,
+          name: "",
+          goal: null,
+          length: state.days,
+          days: state.days,
+          aiPlanJson: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }),
+        structureJson,
+      };
+
+      // support async or sync onSubmit
+      const maybePromise = onSubmit(payload);
+      if (maybePromise && typeof (maybePromise as any).then === "function") {
+        await maybePromise;
+      }
+
+      // ✅ once created, head to workout page
+      router.push("/workout");
+    } catch (err: any) {
+      setError(err.message ?? "Failed to create program.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 flex flex-col h-full">
       {/* header / controls */}
-      <div className="flex items-center justify-between px-8">
+      <div className="flex items-center justify-between p-8">
         <div>
           <h2 className="text-xl font-semibold">Program Builder</h2>
           <p className="text-sm text-muted-foreground">
@@ -220,13 +241,35 @@ export function ProgramBuilder({
         <div className="flex gap-2">
           <Button
             type="button"
-            className=""
             onClick={handleSubmit}
             variant="default"
+            disabled={submitting}
           >
-            Create program
+            {submitting ? "Creating…" : "Create program"}
           </Button>
         </div>
+      </div>
+
+      {/* friendly loading + error state */}
+      <div className="px-8 space-y-3">
+        {submitting && (
+          <div className="rounded-2xl border bg-slate-50 px-4 py-3 text-sm animate-pulse">
+            <p className="font-medium mb-1">Saving your program… 💾</p>
+            <p className="text-xs text-muted-foreground">
+              We’re creating your program so you can start tracking your
+              workouts. This should only take a moment.
+            </p>
+          </div>
+        )}
+
+        {error && (
+          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm">
+            <p className="font-medium text-red-700 mb-1">
+              Something went wrong.
+            </p>
+            <p className="text-xs text-red-600">{error}</p>
+          </div>
+        )}
       </div>
 
       {/* DnD area */}
@@ -238,7 +281,7 @@ export function ProgramBuilder({
         >
           {(provided) => (
             <div
-              className="flex gap-4 overflow-x-auto pb-4"
+              className="flex gap-4 overflow-x-auto pb-4 flex-1 justify-self-start items-start px-8"
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
@@ -259,14 +302,15 @@ export function ProgramBuilder({
                   />
                 );
               })}
-                <Button
-                   type="button"
-                   className="px-3 py-1 rounded border text-sm self-start mt-2 w-[200px]"
-                   onClick={handleAddWorkout}
-                   variant="secondary"
-                 >
-                   Add workout
-                 </Button>
+              <Button
+                type="button"
+                className="px-3 py-1 rounded border text-sm self-start mt-2 w-[200px]"
+                onClick={handleAddWorkout}
+                variant="secondary"
+                disabled={submitting}
+              >
+                Add workout
+              </Button>
               {provided.placeholder}
             </div>
           )}
