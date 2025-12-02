@@ -75,20 +75,22 @@ export default function ExerciseSelector({
 
   return (
     <Dialog open={newExerciseSelector} onOpenChange={setNewExerciseSelector}>
-      <DialogContent className="max-w-lg h-[520px]">
+      <DialogContent className="h-[520px] max-w-lg border border-[#2E2E32] bg-[#1C1C1E] text-zinc-50">
         <DialogHeader>
           <div className="flex items-center gap-2">
             {inDetail && (
               <button
                 type="button"
                 onClick={() => setDetailTemplate(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-muted transition"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#18181B] text-zinc-300 transition-colors hover:bg-[#2A173F] hover:text-white"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
             )}
-            <DialogTitle>
-              {inDetail ? detailTemplate?.name ?? "Exercise details" : "Select new exercise"}
+            <DialogTitle className="text-sm font-medium text-zinc-100">
+              {inDetail
+                ? detailTemplate?.name ?? "Exercise details"
+                : "Select new exercise"}
             </DialogTitle>
           </div>
         </DialogHeader>
@@ -107,12 +109,13 @@ export default function ExerciseSelector({
                   placeholder="Filter exercises..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  className="h-9 text-xs"
                 />
               </div>
 
-              <div className="max-h-[360px] overflow-y-auto space-y-2">
+              <div className="max-h-[360px] space-y-2 overflow-y-auto">
                 {filteredTemplates.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-zinc-500">
                     No exercise templates found.
                   </p>
                 ) : (
@@ -133,13 +136,13 @@ export default function ExerciseSelector({
             {/* DETAIL VIEW PANEL */}
             <div className="min-w-full pl-1">
               {detailTemplate ? (
-                <div className="space-y-4 max-h-[360px] overflow-y-auto">
+                <div className="max-h-[360px] space-y-4 overflow-y-auto">
                   <div className="space-y-1">
-                    <h3 className="text-base font-semibold">
+                    <h3 className="text-base font-semibold text-zinc-50">
                       {detailTemplate.name}
                     </h3>
                     {detailTemplate.description && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-zinc-400">
                         {detailTemplate.description}
                       </p>
                     )}
@@ -148,7 +151,7 @@ export default function ExerciseSelector({
                   <div className="pt-2">
                     <Button
                       type="button"
-                      className="w-full"
+                      className="w-full rounded-md bg-[#A64DFF] text-xs font-medium text-white shadow-sm hover:bg-[#B56BFF]"
                       onClick={handleSelectFromDetail}
                     >
                       Add exercise to workout
@@ -156,7 +159,7 @@ export default function ExerciseSelector({
                   </div>
                 </div>
               ) : (
-                <div className="h-[360px] flex items-center justify-center text-sm text-muted-foreground">
+                <div className="flex h-[360px] items-center justify-center text-sm text-zinc-500">
                   Select an exercise to view details.
                 </div>
               )}

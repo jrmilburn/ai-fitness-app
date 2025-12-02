@@ -1,12 +1,14 @@
-// components/workout/WorkoutSelector.tsx
+"use client";
+
 import type { ProgramWithRelations } from "@/lib/program";
-
 import { Button } from "../ui/button";
-
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 import { useState } from "react";
-
 import { CalendarDaysIcon } from "lucide-react";
 
 type WorkoutSelectorProps = {
@@ -24,32 +26,84 @@ export function WorkoutSelector({
   onSelectWeek,
   onSelectWorkout,
 }: WorkoutSelectorProps) {
-
   const [pickerOpen, setPickerOpen] = useState(false);
+
+  const currentWeek = program.weeks[weekIndex];
+  const currentWorkout = currentWeek?.workouts[workoutIndex];
 
   return (
     <>
-    <Button variant="ghost" className="" onClick={() => setPickerOpen(true)}><CalendarDaysIcon /></Button>
-          <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-w-lg">
+      <div className="flex h-full flex-col rounded-lg border border-[#2E2E32] bg-[#18181B] p-3">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="space-y-1">
+            <p className="text-[0.7rem] uppercase tracking-wide text-zinc-500">
+              Current workout
+            </p>
+            {currentWorkout && (
+              <p className="text-sm font-medium text-zinc-100">
+                Week {currentWeek.weekNumber} • Day {currentWorkout.dayNumber}
+              </p>
+            )}
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 rounded-full border-[#2E2E32]! bg-[#121214]! text-zinc-300! hover:border-[#A64DFF]! hover:bg-[#2A173F]! hover:text-white!"
+            onClick={() => setPickerOpen(true)}
+          >
+            <CalendarDaysIcon className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {currentWorkout && (
+          <p className="text-xs text-zinc-500">
+            {currentWorkout.name}
+          </p>
+        )}
+      </div>
+
+      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+        <DialogContent className="max-w-lg border border-[#2E2E32] bg-[#1C1C1E] text-zinc-50">
           <DialogHeader>
-            <DialogTitle></DialogTitle>
+            <DialogTitle className="text-sm font-medium text-zinc-100">
+              Jump to workout
+            </DialogTitle>
           </DialogHeader>
 
-          <div className="flex flex-col gap-1">
+          <div className="mt-2 flex flex-col gap-2 text-xs">
             {program.weeks.map((week, weekInd) => (
-              <div key={week.id} className="flex gap-1">
-                {week.workouts.map((workout, workInd) => (
-                  <Button key={workout.id} onClick={() => {
-                    onSelectWeek(weekInd);
-                    onSelectWorkout(workInd);
-                    setPickerOpen(false);
-                  }} variant={weekIndex === weekInd && workoutIndex === workInd ? "secondary" : "outline"} className={workout.completed ? "bg-[red]/40" : ""}>{workout.dayNumber}</Button>
-                ))}
+              <div key={week.id} className="flex items-center gap-2">
+                <span className="w-16 text-[0.7rem] uppercase tracking-wide text-zinc-500">
+                  Week {week.weekNumber}
+                </span>
+                <div className="flex flex-wrap gap-1">
+                  {week.workouts.map((workout, workInd) => {
+                    const isActive =
+                      weekIndex === weekInd && workoutIndex === workInd;
+
+                    return (
+                      <Button
+                        key={workout.id}
+                        onClick={() => {
+                          onSelectWeek(weekInd);
+                          onSelectWorkout(workInd);
+                          setPickerOpen(false);
+                        }}
+                        variant={isActive ? "secondary" : "outline"}
+                        className={`h-8 min-w-[2.25rem] rounded-full px-2 text-xs ${
+                          workout.completed
+                            ? "border-emerald-500/60! bg-emerald-500/10! text-emerald-200!"
+                            : "bg-[#A64DFF]"
+                        }`}
+                      >
+                        {workout.dayNumber}
+                      </Button>
+                    );
+                  })}
+                </div>
               </div>
             ))}
           </div>
-
         </DialogContent>
       </Dialog>
     </>

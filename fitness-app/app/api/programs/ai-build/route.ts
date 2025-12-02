@@ -30,7 +30,7 @@ const programStructureSchema = {
               type: "array",
               items: { type: "string" },
             },
-            notes: { type: ["string", "null"] },
+            notes: { type: "string" },
             exercises: {
               type: "array",
               items: {

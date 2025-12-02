@@ -7,13 +7,16 @@ export default async function ClientLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen bg-slate-50">
+    <div className="flex h-screen bg-[#050509] text-zinc-50">
       {/* Left: sidebar */}
       <ClientSidebar />
 
       {/* Right: main content */}
-      <main className="flex-1 overflow-y-auto overflow-x-auto py-2">
-        {children}
+      <main className="flex-1 overflow-y-auto overflow-x-hidden p-4">
+        {/* Center the main app surface */}
+        <div className="mx-auto h-full w-full max-w-6xl">
+          {children}
+        </div>
       </main>
     </div>
   );

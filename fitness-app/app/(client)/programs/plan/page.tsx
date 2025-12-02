@@ -1,28 +1,29 @@
-
-import { FlaskConical, Pencil } from "lucide-react"; // pick icons you like
+import { FlaskConical, Pencil } from "lucide-react";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default async function PlanPage() {
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white h-full">
+    <div className="mx-auto flex h-full max-w-2xl flex-col px-6 py-6">
       <ListSection title="Plan a program">
         <ListItem
           title="Build with AI"
           description="Use an AI prompt to automatically create a tailored program."
           href="/programs/plan/ai"
-          icon={<FlaskConical className="h-6 w-6 text-purple-600" />}
+          icon={<FlaskConical className="h-5 w-5" />}
         />
 
         <ListItem
           title="Start from scratch"
           description="Create a completely custom program with no preset structure."
           href="/programs/new"
-          icon={<Pencil className="h-6 w-6 text-green-600" />}
+          icon={<Pencil className="h-5 w-5" />}
         />
       </ListSection>
     </div>
   );
 }
-
 
 export function ListSection({
   title,
@@ -32,19 +33,21 @@ export function ListSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       {title && (
-        <h2 className="text-2xl font-bold mb-4">{title}</h2>
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold text-zinc-100">
+            {title}
+          </h2>
+          <p className="text-xs text-zinc-400">
+            Choose how you want to design your next training block.
+          </p>
+        </div>
       )}
       {children}
     </div>
   );
 }
-
-
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils"; // optional
 
 export function ListItem({
   title,
@@ -61,29 +64,28 @@ export function ListItem({
     <Link href={href}>
       <div
         className={cn(
-          "w-full rounded-xl border border-gray-200 bg-white px-4 py-4",
-          "hover:bg-gray-100 transition cursor-pointer",
-          "flex items-center gap-4"
+          "flex w-full items-center gap-4 rounded-lg border border-[#2E2E32] bg-[#18181B] px-4 py-4 transition-all",
+          "hover:border-[#A64DFF]/70 hover:bg-[#2A173F]/40 cursor-pointer"
         )}
       >
         {/* Icon */}
         {icon && (
-          <div className="text-gray-600 flex-shrink-0">{icon}</div>
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#2A173F]/40 text-[#A64DFF]">
+            {icon}
+          </div>
         )}
 
         {/* Text content */}
         <div className="flex-1">
-          <p className="font-semibold text-gray-900">{title}</p>
+          <p className="text-sm font-medium text-zinc-100">{title}</p>
           {description && (
-            <p className="text-sm text-gray-500 mt-0.5">{description}</p>
+            <p className="mt-1 text-xs text-zinc-400">{description}</p>
           )}
         </div>
 
         {/* Right Chevron */}
-        <ChevronRight className="h-5 w-5 text-gray-400" />
+        <ChevronRight className="h-4 w-4 text-zinc-500 transition-all group-hover:translate-x-[2px]" />
       </div>
     </Link>
   );
 }
-
-

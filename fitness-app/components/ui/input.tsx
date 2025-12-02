@@ -7,6 +7,7 @@ export interface InputProps
   label?: string;
   error?: string;
   hint?: string;
+  className: string;
 }
 
 export function Input({

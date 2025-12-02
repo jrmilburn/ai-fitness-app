@@ -1,4 +1,3 @@
-// components/workout/WorkoutWrapper.tsx
 "use client";
 
 import * as React from "react";
@@ -18,15 +17,12 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
   const currentWeek = weeks[weekIndex];
   const currentWorkout = currentWeek?.workouts[workoutIndex];
 
-  // 🆕 new: jump to the first *unfinished* workout in the whole program
   const goToFirstUnfinishedWorkout = React.useCallback(() => {
     for (let w = 0; w < program.weeks.length; w++) {
       const week = program.weeks[w];
 
       for (let wi = 0; wi < week.workouts.length; wi++) {
         const workout = week.workouts[wi];
-
-        // relies on your Prisma `Workout.completed` flag
         if (!workout.completed) {
           setWeekIndex(w);
           setWorkoutIndex(wi);
@@ -35,8 +31,6 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
       }
     }
 
-    // Optional: if EVERYTHING is complete, you can choose where to land.
-    // Example: go to the very last workout.
     const lastWeekIndex = program.weeks.length - 1;
     if (lastWeekIndex >= 0) {
       const lastWeek = program.weeks[lastWeekIndex];
@@ -47,18 +41,20 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
         setWorkoutIndex(lastWorkoutIndex);
       }
     }
-  }, [program.weeks, setWeekIndex, setWorkoutIndex]);
-
+  }, [program.weeks]);
 
   React.useEffect(() => {
     goToFirstUnfinishedWorkout();
   }, [goToFirstUnfinishedWorkout]);
 
   if (!currentWeek || !currentWorkout) {
-    return <div>No workouts found in this program.</div>;
+    return (
+      <div className="rounded-lg border border-[#2E2E32] bg-[#121214] p-4 text-sm text-zinc-400">
+        No workouts found in this program.
+      </div>
+    );
   }
 
-  // ✅ existing: move to the next workout in sequence
   const goToNextWorkout = () => {
     const week = program.weeks[weekIndex];
 
@@ -66,14 +62,11 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
     let nextWorkoutIndex = workoutIndex;
 
     if (workoutIndex < week.workouts.length - 1) {
-      // next workout in same week
       nextWorkoutIndex = workoutIndex + 1;
     } else if (weekIndex < program.weeks.length - 1) {
-      // first workout of next week
       nextWeekIndex = weekIndex + 1;
       nextWorkoutIndex = 0;
     } else {
-      // already at last workout of last week – do nothing (or wrap, your choice)
       return;
     }
 
@@ -81,24 +74,24 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
     setWorkoutIndex(nextWorkoutIndex);
   };
 
-
-
   return (
-    <div className="grid gap-4 md:grid-cols-[260px,1fr]">
-      <WorkoutSelector
-        program={program}
-        weekIndex={weekIndex}
-        workoutIndex={workoutIndex}
-        onSelectWeek={setWeekIndex}
-        onSelectWorkout={setWorkoutIndex}
-      />
+    <div className="rounded-xl border border-[#2E2E32] bg-[#121214] p-4 shadow-sm md:p-6">
+      <div className="grid gap-6 md:grid-cols-[260px,1fr]">
+        <WorkoutSelector
+          program={program}
+          weekIndex={weekIndex}
+          workoutIndex={workoutIndex}
+          onSelectWeek={setWeekIndex}
+          onSelectWorkout={setWorkoutIndex}
+        />
 
-      <WorkoutView
-        week={currentWeek}
-        workout={currentWorkout}
-        onNextWorkout={goToNextWorkout}         // still used by Finish button
-        goToFirstUnfinished={goToFirstUnfinishedWorkout}
-/>
+        <WorkoutView
+          week={currentWeek}
+          workout={currentWorkout}
+          onNextWorkout={goToNextWorkout}
+          goToFirstUnfinished={goToFirstUnfinishedWorkout}
+        />
+      </div>
     </div>
   );
 }

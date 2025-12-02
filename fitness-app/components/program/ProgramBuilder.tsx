@@ -212,13 +212,11 @@ export function ProgramBuilder({
         structureJson,
       };
 
-      // support async or sync onSubmit
       const maybePromise = onSubmit(payload);
       if (maybePromise && typeof (maybePromise as any).then === "function") {
         await maybePromise;
       }
 
-      // ✅ once created, head to workout page
       router.push("/workout");
     } catch (err: any) {
       setError(err.message ?? "Failed to create program.");
@@ -228,94 +226,109 @@ export function ProgramBuilder({
   };
 
   return (
-    <div className="space-y-4 flex flex-col h-full">
-      {/* header / controls */}
-      <div className="flex items-center justify-between p-8">
-        <div>
-          <h2 className="text-xl font-semibold">Program Builder</h2>
-          <p className="text-sm text-muted-foreground">
-            Drag workouts and exercises to reorder. This defines a single week
-            that will be duplicated when the program is created.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            onClick={handleSubmit}
-            variant="default"
-            disabled={submitting}
-          >
-            {submitting ? "Creating…" : "Create program"}
-          </Button>
-        </div>
-      </div>
-
-      {/* friendly loading + error state */}
-      <div className="px-8 space-y-3">
-        {submitting && (
-          <div className="rounded-2xl border bg-slate-50 px-4 py-3 text-sm animate-pulse">
-            <p className="font-medium mb-1">Saving your program… 💾</p>
-            <p className="text-xs text-muted-foreground">
-              We’re creating your program so you can start tracking your
-              workouts. This should only take a moment.
+    <div className="flex h-full flex-col">
+      {/* Builder shell */}
+      <div className="flex h-full flex-col rounded-xl border border-[#2E2E32] bg-[#121214] shadow-sm">
+        {/* header / controls */}
+        <div className="flex items-start justify-between gap-4 border-b border-[#2E2E32] bg-[#18181B] px-6 py-4 rounded-t-xl">
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold text-zinc-50">
+              Program Builder
+            </h2>
+            <p className="max-w-xl text-xs text-zinc-400">
+              Arrange workouts and exercises for a single training week. This
+              week will be duplicated across the program length when you create
+              it.
             </p>
           </div>
-        )}
 
-        {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm">
-            <p className="font-medium text-red-700 mb-1">
-              Something went wrong.
-            </p>
-            <p className="text-xs text-red-600">{error}</p>
-          </div>
-        )}
-      </div>
-
-      {/* DnD area */}
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable
-          droppableId="all-workouts"
-          direction="horizontal"
-          type="workout"
-        >
-          {(provided) => (
-            <div
-              className="flex gap-4 overflow-x-auto pb-4 flex-1 justify-self-start items-start px-8"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              onClick={handleSubmit}
+              variant="default"
+              disabled={submitting}
+              className="rounded-md border-0 bg-[#A64DFF] px-4 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#B56BFF] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {state.workoutOrder.map((workoutId, index) => {
-                const workout = state.workouts[workoutId];
-                const exercises = workout.exerciseIds.map(
-                  (id) => state.exercises[id]
-                );
+              {submitting ? "Creating…" : "Create program"}
+            </Button>
+          </div>
+        </div>
 
-                return (
-                  <WorkoutColumn
-                    key={workout.id}
-                    workout={workout}
-                    exercises={exercises}
-                    index={index}
-                    exerciseTemplates={exerciseTemplates}
-                    onAddExercise={handleAddExerciseToWorkout}
-                  />
-                );
-              })}
-              <Button
-                type="button"
-                className="px-3 py-1 rounded border text-sm self-start mt-2 w-[200px]"
-                onClick={handleAddWorkout}
-                variant="secondary"
-                disabled={submitting}
+        {/* loading + error state */}
+        {(submitting || error) && (
+          <div className="space-y-2 border-b border-[#2E2E32] bg-[#18181B] px-6 py-3">
+            {submitting && (
+              <div className="flex flex-col gap-1 rounded-lg border border-[#2E2E32] bg-[#121214] px-4 py-3 text-xs text-zinc-300">
+                <p className="font-medium text-zinc-100">
+                  Saving your program…
+                </p>
+                <p className="text-[0.7rem] text-zinc-400">
+                  We’re creating your program so it’s ready to use on the
+                  workout page.
+                </p>
+              </div>
+            )}
+
+            {error && (
+              <div className="flex flex-col gap-1 rounded-lg border border-red-500/70 bg-red-500/10 px-4 py-3 text-xs">
+                <p className="font-medium text-red-300">
+                  Something went wrong.
+                </p>
+                <p className="text-[0.7rem] text-red-200">{error}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* DnD area */}
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable
+            droppableId="all-workouts"
+            direction="horizontal"
+            type="workout"
+          >
+            {(provided) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className="flex flex-1 items-start gap-4 overflow-x-auto px-6 py-4"
               >
-                Add workout
-              </Button>
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
+                {state.workoutOrder.map((workoutId, index) => {
+                  const workout = state.workouts[workoutId];
+                  const exercises = workout.exerciseIds.map(
+                    (id) => state.exercises[id]
+                  );
+
+                  return (
+                    <WorkoutColumn
+                      key={workout.id}
+                      workout={workout}
+                      exercises={exercises}
+                      index={index}
+                      exerciseTemplates={exerciseTemplates}
+                      onAddExercise={handleAddExerciseToWorkout}
+                    />
+                  );
+                })}
+
+                {/* Add workout button */}
+                <Button
+                  type="button"
+                  onClick={handleAddWorkout}
+                  variant="outline"
+                  disabled={submitting}
+                  className="mt-2 flex w-[210px] flex-col items-center justify-center self-start rounded-lg border border-dashed border-[#3A3A40] bg-transparent px-3 py-3 text-xs font-medium text-zinc-300 transition-colors hover:border-[#A64DFF] hover:bg-[#2A173F] hover:text-white"
+                >
+                  + Add workout
+                </Button>
+
+                {provided.placeholder}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </div>
     </div>
   );
 }
