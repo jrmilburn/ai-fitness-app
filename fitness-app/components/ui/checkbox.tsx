@@ -16,26 +16,45 @@ export function Checkbox({
   className = "",
   ...props
 }: CheckboxProps) {
+  // base dark-theme + nicer rounded box
   const base =
-    "h-4 w-4 rounded border cursor-pointer transition-all accent-black";
-  const normalBorder = "border-gray-300 focus:ring-2 focus:ring-black/20";
-  const errorBorder = "border-red-500 focus:ring-2 focus:ring-red-500/20";
+    "h-5 w-5 rounded-md cursor-pointer transition-all appearance-none";
+
+  // normal state = dark background + subtle border
+  const normal =
+    "bg-[#18181B] border border-[#3A3A40] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A64DFF]/40";
+
+  // checked state overrides (accent color)
+  const checked =
+    "checked:bg-[#A64DFF] checked:border-[#A64DFF] checked:hover:bg-[#A64DFF]/90";
+
+  const errorState =
+    "border-red-500 focus-visible:ring-red-500/40 checked:bg-red-600 checked:border-red-600";
 
   const final =
-    base + " " + (error ? errorBorder : normalBorder) + " " + className;
+    [
+      base,
+      error ? errorState : normal,
+      checked,
+      className,
+    ].join(" ");
 
   return (
     <label className="flex items-start gap-2 cursor-pointer select-none">
+      {/* checkbox */}
       <input type="checkbox" className={final} {...props} />
 
+      {/* label + hint */}
       <div className="flex flex-col leading-none">
         {label && (
-          <span className="text-sm font-medium text-gray-800">{label}</span>
+          <span className="text-sm font-medium text-zinc-200">{label}</span>
         )}
-        {hint && !error && (
-          <span className="text-xs text-gray-500">{hint}</span>
+
+        {!error && hint && (
+          <span className="text-xs text-zinc-500">{hint}</span>
         )}
-        {error && <span className="text-xs text-red-600">{error}</span>}
+
+        {error && <span className="text-xs text-red-500">{error}</span>}
       </div>
     </label>
   );

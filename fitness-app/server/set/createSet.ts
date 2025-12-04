@@ -11,7 +11,8 @@ export async function createSet(exerciseId : string) {
             id: exerciseId
         },
         select: {
-            sets: true
+            sets: true,
+            exerciseType: true
         }
     })
 
@@ -20,7 +21,7 @@ export async function createSet(exerciseId : string) {
     const newSet = await prisma.set.create({
         data: {
             exerciseId: exerciseId,
-            setNumber: setIndex + 1
+            setNumber: setIndex + 1,
         }
     })
 

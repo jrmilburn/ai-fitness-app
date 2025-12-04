@@ -8,15 +8,12 @@ export default async function ClientLayout({
 }) {
   return (
     <div className="flex h-screen bg-[#050509] text-zinc-50">
-      {/* Left: sidebar */}
+      {/* Sidebar (desktop) + mobile nav logic inside */}
       <ClientSidebar />
 
-      {/* Right: main content */}
-      <main className="flex-1 overflow-y-auto overflow-x-hidden p-4">
-        {/* Center the main app surface */}
-        <div className="mx-auto h-full w-full max-w-6xl">
-          {children}
-        </div>
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto overflow-x-auto pb-10 md:px-8 md:pb-6">
+        {children}
       </main>
     </div>
   );

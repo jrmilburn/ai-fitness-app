@@ -40,6 +40,11 @@ enum SetType {
   INTERVAL
 }
 
+enum WorkoutType {
+  PROGRAMMED
+  ONE_OFF
+}
+
 // =========================================================
 //  User
 // =========================================================
@@ -109,7 +114,7 @@ model ProgramTemplate {
 
   name   String
   goal   ProgramGoal?
-  length Int
+  weeks Int
   days   Int
 
   structureJson Json?
@@ -144,11 +149,12 @@ model Week {
 // =========================================================
 model Workout {
   id     String @id @default(cuid())
-  week   Week   @relation(fields: [weekId], references: [id])
-  weekId String
+  week   Week?   @relation(fields: [weekId], references: [id])
+  weekId String?
 
   dayNumber Int
   name      String
+  type WorkoutType @default(PROGRAMMED)
 
   mode WorkoutMode @default(STRENGTH)
 
@@ -185,6 +191,7 @@ model ExerciseTemplate {
 
   name        String
   description String?
+  exerciseType ExerciseType @default(STRENGTH)
 
   // Link to muscle group (optional)
   muscleGroup   MuscleGroup? @relation(fields: [muscleGroupId], references: [id])
@@ -196,6 +203,8 @@ model ExerciseTemplate {
   defaultRepsUpper Int? // e.g. 12
   defaultRir       Int? // e.g. 1–2
   defaultDetails   Json? // extra config (tempo, cues, etc.)
+
+  timeSeconds Int? //For cardio workouts
 
   exercises Exercise[] // back-relation to Exercise.template
 

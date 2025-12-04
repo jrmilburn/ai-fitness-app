@@ -43,7 +43,7 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
 
   return (
     <>
-      <div className="relative w-full max-w-3xl rounded-lg border border-[#2E2E32] bg-[#18181B] shadow-sm">
+      <div className="relative w-full rounded-lg border border-[#2E2E32] bg-[#18181B] shadow-sm">
         {setsCompleted && (
           <p className="absolute right-3 top-2 text-[0.7rem] font-medium text-emerald-300">
             Exercise complete
@@ -73,10 +73,10 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
           </Button>
         </div>
 
-        {/* Sets */}
+        {/* If exercise is strenght or interval based*/}
         <div className="flex w-full flex-col">
-          {exercise?.sets.map((set) => (
-            <Set key={set.id} set={set} />
+          {(exercise?.exerciseType === "STRENGTH" || exercise?.exerciseType === "CARDIO_INTERVAL" || exercise?.exerciseType === "CARDIO_STEADY") && exercise?.sets.map((set) => (
+            <Set key={set.id} set={set} type={exercise?.exerciseType} />
           ))}
         </div>
       </div>

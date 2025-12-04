@@ -3,10 +3,13 @@
 
 import { PrismaClient } from "@prisma/client";
 
+import type { ExerciseType } from "@prisma/client";
+
 const prisma = new PrismaClient();
 
 type MinimalExerciseTemplate = {
   name: string;
+  exerciseType?: ExerciseType;
 };
 
 // Global templates: userId = null
@@ -136,6 +139,15 @@ const exerciseTemplates: MinimalExerciseTemplate[] = [
   { name: "Standing Calf Raise Machine" },
   { name: "Back Extension Machine" },
   { name: "Ab Crunch Machine" },
+
+  // =========================
+  // Cardio
+  // =========================
+
+  { name: "Steady Run", exerciseType: "CARDIO_STEADY"},
+  { name: "Swim", exerciseType: "CARDIO_STEADY"},
+  { name: "Run Intervals", exerciseType: "CARDIO_INTERVAL"},
+  { name: "Swim Intervals", exerciseType: "CARDIO_INTERVAL"},
 ];
 
 async function main() {

@@ -5,12 +5,13 @@ import { prisma } from "@/lib/prisma";
 type UpdatePayload = {
   weight: number | null;
   reps: number | null;
+  time: number | null;
 };
 
 export async function updateSet(
   setId: string,
   completed: boolean,
-  { weight, reps }: UpdatePayload
+  { weight, reps, time }: UpdatePayload
 ) {
   const updatedSet = await prisma.set.update({
     where: {
@@ -20,10 +21,9 @@ export async function updateSet(
       completed,
       actualReps: reps,
       actualWeightKg: weight,
+      actualDurationSec: time
     },
   });
-
-  console.log(updatedSet);
 
   return updatedSet;
 }

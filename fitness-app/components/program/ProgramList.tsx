@@ -9,7 +9,7 @@ export default function ProgramList({ programs }: { programs: Program[] }) {
   return (
     <div className="w-full max-w-2xl flex flex-col gap-4">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-4">
         <h3 className="text-lg font-semibold text-zinc-100">Programs</h3>
         <Link href="/programs/plan">
           <Button
@@ -28,7 +28,7 @@ export default function ProgramList({ programs }: { programs: Program[] }) {
       )}
 
       {/* List */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col md:gap-2">
         {programs.map((program) => (
           <ProgramListItem key={program.id} program={program} />
         ))}
@@ -38,16 +38,20 @@ export default function ProgramList({ programs }: { programs: Program[] }) {
 }
 
 function ProgramListItem({ program }: { program: Program }) {
+
+  console.log(program);
+
   return (
     <Link
       href={`/programs/new?templateId=${program.id}`}
-      className="group flex w-full items-center justify-between rounded-lg border border-[#2E2E32] bg-[#18181B] px-4 py-3 transition-all hover:border-[#A64DFF]/60 hover:bg-[#2A173F]/40"
+      className="group flex w-full items-center justify-between rounded-lg border border-[#2E2E32] bg-[#18181B] px-4 py-4 transition-all hover:border-[#A64DFF]/60 hover:bg-[#2A173F]/40"
     >
-      <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-medium text-zinc-100">{program.name}</h3>
+      <div className="flex flex-col gap-2">
+        <h3 className="text-md font-medium text-zinc-100 truncate max-w-[320px] h-8">
+          {program.name}
+        </h3>
 
         <div className="flex gap-3 text-[0.7rem] uppercase tracking-wide text-zinc-500">
-          <span>{program.goal ?? "Unspecified"}</span>
           <span>
             {program.length} weeks, {program.days} days
           </span>

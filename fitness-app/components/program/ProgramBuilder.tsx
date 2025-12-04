@@ -19,14 +19,13 @@ import {
 } from "@/lib/builderTypes";
 
 import { WorkoutColumn } from "./WorkoutColumn";
-
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 
 type ProgramBuilderProps = {
   initialTemplate?: ProgramTemplateWithStructure;
   exerciseTemplates: ExerciseTemplate[];
-  onSubmit: (payload: ProgramTemplateWithStructure) => Promise<void> | void;
+  onSubmit: (payload: ProgramTemplateWithStructure) => Promise<void> | void, existingTemplate : boolean;
 };
 
 export function ProgramBuilder({
@@ -39,13 +38,40 @@ export function ProgramBuilder({
   );
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const [existingTemplate, setExistingTemplate] = React.useState(false); // use to determine if program changes and needs a new template
+
+  const [activeWorkoutId, setActiveWorkoutId] = React.useState<string | null>(
+    null
+  );
 
   const router = useRouter();
 
-  // ---- DnD handlers ----
+  React.useEffect(() => {
 
+  if (initialTemplate) setExistingTemplate(true);
+
+  }, [initialTemplate])
+
+  // keep mobile active workout in sync
+  React.useEffect(() => {
+    if (!activeWorkoutId && state.workoutOrder.length > 0) {
+      setActiveWorkoutId(state.workoutOrder[0]);
+    } else if (
+      activeWorkoutId &&
+      !state.workoutOrder.includes(activeWorkoutId)
+    ) {
+      // if a workout was removed, fall back to first
+      setActiveWorkoutId(
+        state.workoutOrder.length ? state.workoutOrder[0] : null
+      );
+    }
+  }, [activeWorkoutId, state.workoutOrder]);
+
+  // ---- DnD handlers ----
   const handleDragEnd = (result: DropResult) => {
     const { destination, source, draggableId, type } = result;
+
+    setExistingTemplate(false);
 
     if (!destination) return;
 
@@ -57,7 +83,6 @@ export function ProgramBuilder({
     }
 
     if (type === "workout") {
-      // reorder workouts
       const newOrder = Array.from(state.workoutOrder);
       newOrder.splice(source.index, 1);
       newOrder.splice(destination.index, 0, draggableId);
@@ -76,7 +101,6 @@ export function ProgramBuilder({
     if (!startWorkout || !finishWorkout) return;
 
     if (startWorkout === finishWorkout) {
-      // reorder within same workout
       const newExerciseIds = Array.from(startWorkout.exerciseIds);
       newExerciseIds.splice(source.index, 1);
       newExerciseIds.splice(destination.index, 0, draggableId);
@@ -96,7 +120,6 @@ export function ProgramBuilder({
       return;
     }
 
-    // move exercise across workouts
     const startExerciseIds = Array.from(startWorkout.exerciseIds);
     startExerciseIds.splice(source.index, 1);
     const newStart = {
@@ -121,10 +144,11 @@ export function ProgramBuilder({
     }));
   };
 
-  // ---- simple helpers to add workout/exercise in UI ----
-
+  // ---- helpers ----
   const handleAddWorkout = () => {
     const id = createId("workout");
+
+    setExistingTemplate(false);
 
     setState((prev) => ({
       ...prev,
@@ -142,11 +166,17 @@ export function ProgramBuilder({
       },
       workoutOrder: [...prev.workoutOrder, id],
     }));
+    setActiveWorkoutId((prevActive) => prevActive ?? id);
   };
 
-  const handleAddExerciseToWorkout = (workoutId: string, templateId: string) => {
+  const handleAddExerciseToWorkout = (
+    workoutId: string,
+    templateId: string
+  ) => {
     const workout = state.workouts[workoutId];
     if (!workout) return;
+
+    setExistingTemplate(false);
 
     const exerciseId = createId("exercise");
 
@@ -186,8 +216,7 @@ export function ProgramBuilder({
     }));
   };
 
-  // ---- submit -> return a ProgramTemplate-like payload ----
-
+  // ---- submit ----
   const handleSubmit = async () => {
     setSubmitting(true);
     setError(null);
@@ -197,13 +226,12 @@ export function ProgramBuilder({
 
       const payload: ProgramTemplateWithStructure = {
         ...(initialTemplate ?? {
-          // these will normally be set on the server
           id: "",
           userId: null,
           user: null,
           name: "",
           goal: null,
-          length: state.days,
+          weeks: state.weeks,
           days: state.days,
           aiPlanJson: null,
           createdAt: new Date(),
@@ -212,7 +240,7 @@ export function ProgramBuilder({
         structureJson,
       };
 
-      const maybePromise = onSubmit(payload);
+      const maybePromise = onSubmit(payload, existingTemplate);
       if (maybePromise && typeof (maybePromise as any).then === "function") {
         await maybePromise;
       }
@@ -225,21 +253,24 @@ export function ProgramBuilder({
     }
   };
 
+  // convenience for mobile
+  const activeIndex = activeWorkoutId
+    ? state.workoutOrder.indexOf(activeWorkoutId)
+    : -1;
+  const activeWorkout =
+    activeIndex >= 0 ? state.workouts[activeWorkoutId!] : null;
+  const activeExercises =
+    activeWorkout?.exerciseIds.map((id) => state.exercises[id]) ?? [];
+
   return (
     <div className="flex h-full flex-col">
-      {/* Builder shell */}
       <div className="flex h-full flex-col rounded-xl border border-[#2E2E32] bg-[#121214] shadow-sm">
         {/* header / controls */}
-        <div className="flex items-start justify-between gap-4 border-b border-[#2E2E32] bg-[#18181B] px-6 py-4 rounded-t-xl">
+        <div className="flex items-start justify-between gap-4 rounded-t-xl border-b border-[#2E2E32] bg-[#18181B] px-6 py-4">
           <div className="space-y-1">
             <h2 className="text-lg font-semibold text-zinc-50">
-              Program Builder
+              Builder
             </h2>
-            <p className="max-w-xl text-xs text-zinc-400">
-              Arrange workouts and exercises for a single training week. This
-              week will be duplicated across the program length when you create
-              it.
-            </p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -255,7 +286,7 @@ export function ProgramBuilder({
           </div>
         </div>
 
-        {/* loading + error state */}
+        {/* loading + error */}
         {(submitting || error) && (
           <div className="space-y-2 border-b border-[#2E2E32] bg-[#18181B] px-6 py-3">
             {submitting && (
@@ -264,8 +295,8 @@ export function ProgramBuilder({
                   Saving your program…
                 </p>
                 <p className="text-[0.7rem] text-zinc-400">
-                  We’re creating your program so it’s ready to use on the
-                  workout page.
+                  We’re creating your program so it’s ready to use on the workout
+                  page.
                 </p>
               </div>
             )}
@@ -281,8 +312,8 @@ export function ProgramBuilder({
           </div>
         )}
 
-        {/* DnD area */}
         <DragDropContext onDragEnd={handleDragEnd}>
+          {/* Desktop: multi-column builder */}
           <Droppable
             droppableId="all-workouts"
             direction="horizontal"
@@ -292,7 +323,7 @@ export function ProgramBuilder({
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className="flex flex-1 items-start gap-4 overflow-x-auto px-6 py-4"
+                className="hidden flex-1 items-start gap-4 overflow-x-auto px-6 py-4 md:flex"
               >
                 {state.workoutOrder.map((workoutId, index) => {
                   const workout = state.workouts[workoutId];
@@ -312,7 +343,8 @@ export function ProgramBuilder({
                   );
                 })}
 
-                {/* Add workout button */}
+                {provided.placeholder}
+
                 <Button
                   type="button"
                   onClick={handleAddWorkout}
@@ -322,11 +354,79 @@ export function ProgramBuilder({
                 >
                   + Add workout
                 </Button>
-
-                {provided.placeholder}
               </div>
             )}
           </Droppable>
+
+          {/* Mobile: tabbed days + single column */}
+          <div className="flex flex-1 flex-col border-t border-[#2E2E32] px-4 py-3 md:hidden">
+            {state.workoutOrder.length === 0 ? (
+              <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
+                <p className="text-sm font-medium text-zinc-200">
+                  This week has no workouts yet.
+                </p>
+                <Button
+                  type="button"
+                  onClick={handleAddWorkout}
+                  className="rounded-full bg-[#A64DFF] px-5 py-2 text-xs font-medium text-white hover:bg-[#B56BFF]"
+                >
+                  + Add first workout
+                </Button>
+              </div>
+            ) : (
+              <>
+                {/* Tabs */}
+                <div className="mb-3 flex items-center gap-2 flex-wrap justify-center pb-1">
+                  {state.workoutOrder.map((id, idx) => {
+                    const workout = state.workouts[id];
+                    const isActive = id === activeWorkoutId;
+
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        onClick={() => setActiveWorkoutId(id)}
+                        className={[
+                          "flex min-w-[96px] flex-col items-center justify-center rounded-xl px-3 py-2 text-xs font-medium transition-colors",
+                          isActive
+                            ? "bg-[#1C1C1E] text-zinc-50 shadow-sm border border-[#A64DFF]"
+                            : "bg-[#18181B] text-zinc-400 border border-[#2E2E32]",
+                        ].join(" ")}
+                      >
+                        <span className="text-[0.7rem] uppercase tracking-wide">
+                          Day {idx + 1}
+                        </span>
+                      </button>
+                    );
+                  })}
+
+                  <Button
+                    type="button"
+                    onClick={handleAddWorkout}
+                    variant="outline"
+                    disabled={submitting}
+                    className="flex h-9 w-9 items-center justify-center rounded-full border-[#3A3A40] bg-[#18181B] text-zinc-200 hover:border-[#A64DFF] hover:bg-[#2A173F]"
+                  >
+                    +
+                  </Button>
+                </div>
+
+                {/* Active workout */}
+                {activeWorkout && (
+                  <div className="pb-2">
+                    <WorkoutColumn
+                      workout={activeWorkout}
+                      exercises={activeExercises}
+                      index={activeIndex}
+                      exerciseTemplates={exerciseTemplates}
+                      onAddExercise={handleAddExerciseToWorkout}
+                      draggable={false} // 👈 no column dragging on mobile
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </DragDropContext>
       </div>
     </div>

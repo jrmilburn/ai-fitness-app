@@ -8,7 +8,8 @@ import { prisma } from "@/lib/prisma";
 import { getOrCreateCurrentUser } from "../user/getOrCreateCurrentUser";
 
 export async function createProgram(
-  programTemplate: ProgramTemplateWithStructure
+  programTemplate: ProgramTemplateWithStructure,
+  existingTemplate: boolean
 ) {
   const { clerkId } = await getOrCreateCurrentUser();
 
@@ -24,7 +25,7 @@ export async function createProgram(
       userId: user?.id ?? undefined,
       name: programTemplate.name,
       goal: programTemplate.goal,
-      length: programTemplate.length,
+      length: programTemplate.weeks,
       days: programTemplate.days,
     },
   });
@@ -39,16 +40,18 @@ export async function createProgram(
   })
 
   // Save program template
-  await prisma.programTemplate.create({
-    data: {
-      userId: user?.id ?? undefined,
-      name: programTemplate.name,
-      goal: programTemplate.goal,
-      length: programTemplate.length,
-      days: programTemplate.days,
-      ...(structureJson !== undefined ? { structureJson } : {}),
-    },
-  });
+  if (!existingTemplate){
+    await prisma.programTemplate.create({
+      data: {
+        userId: user?.id ?? undefined,
+        name: programTemplate.name,
+        goal: programTemplate.goal,
+        weeks: programTemplate.weeks,
+        days: programTemplate.days,
+        ...(structureJson !== undefined ? { structureJson } : {}),
+      },
+    });
+  }
 
   if (!programTemplate.structureJson) {
     // you can also early-return or create empty weeks here
@@ -60,7 +63,7 @@ export async function createProgram(
 
   // For each week in the program length, create a week + nested workouts/exercises/sets
   await Promise.all(
-    Array.from({ length: newProgram.length }, (_, weekIndex) =>
+    Array.from({ length: programTemplate.weeks }, (_, weekIndex) =>
       prisma.week.create({
         data: {
           programId: newProgram.id,

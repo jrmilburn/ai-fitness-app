@@ -3,12 +3,9 @@
 import * as React from "react";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
 import type { ExerciseTemplate } from "@/generated/prisma";
-
 import type { BuilderWorkout, BuilderExercise } from "@/lib/builderTypes";
 
 import { ExerciseCard } from "./Exercise";
-
-// shadcn UI
 import {
   Dialog,
   DialogContent,
@@ -23,6 +20,7 @@ type WorkoutColumnProps = {
   index: number;
   exerciseTemplates: ExerciseTemplate[];
   onAddExercise: (workoutId: string, templateId: string) => void;
+  draggable?: boolean; // 👈 NEW
 };
 
 export function WorkoutColumn({
@@ -31,6 +29,7 @@ export function WorkoutColumn({
   index,
   exerciseTemplates,
   onAddExercise,
+  draggable = true,
 }: WorkoutColumnProps) {
   const [pickerOpen, setPickerOpen] = React.useState(false);
 
@@ -43,73 +42,80 @@ export function WorkoutColumn({
     setPickerOpen(false);
   };
 
-  return (
-    <>
-      <Draggable draggableId={workout.id} index={index}>
-        {(provided) => (
+  const CardBody = () => (
+    <div className="m-2 flex min-w-[260px] flex-col rounded-lg border border-[#2E2E32] bg-[#1C1C1E] shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between rounded-t-lg border-b border-[#2E2E32] bg-[#18181B] px-3 py-2">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[0.65rem] uppercase tracking-wide text-zinc-500">
+            Day {index + 1}
+          </span>
+          <span className="text-sm font-medium text-zinc-50">
+            {workout.name}
+          </span>
+        </div>
+
+        <div className="inline-flex items-center gap-1 rounded-full border border-[#2E2E32] px-2 py-[2px] text-[0.65rem] text-zinc-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#A64DFF]" />
+          Workout
+        </div>
+      </div>
+
+      {/* Exercise list */}
+      <Droppable droppableId={workout.id} type="exercise">
+        {(dropProvided, snapshot) => (
           <div
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            className="m-2 flex min-w-[260px] flex-col rounded-lg border border-[#2E2E32] bg-[#1C1C1E] shadow-sm"
+            ref={dropProvided.innerRef}
+            {...dropProvided.droppableProps}
+            className={`rounded-b-lg border-b border-[#2E2E32] p-3 transition-colors ${
+              snapshot.isDraggingOver ? "bg-[#232327]" : "bg-[#18181B]"
+            }`}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-[#2E2E32] bg-[#18181B] px-3 py-2 rounded-t-lg">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-[0.65rem] uppercase tracking-wide text-zinc-500">
-                  Day {index + 1}
-                </span>
-                <span className="text-sm font-medium text-zinc-50">
-                  {workout.name}
-                </span>
-              </div>
-
-              <div className="inline-flex items-center gap-1 rounded-full border border-[#2E2E32] px-2 py-[2px] text-[0.65rem] text-zinc-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#A64DFF]" />
-                Workout
-              </div>
-            </div>
-
-            {/* Exercise list */}
-            <Droppable droppableId={workout.id} type="exercise">
-              {(dropProvided, snapshot) => (
-                <div
-                  ref={dropProvided.innerRef}
-                  {...dropProvided.droppableProps}
-                  className={`grow min-h-[110px] p-3 rounded-b-lg border-b border-[#2E2E32] transition-colors ${
-                    snapshot.isDraggingOver
-                      ? "bg-[#232327]"
-                      : "bg-[#18181B]"
-                  }`}
-                >
-                  {exercises.map((exercise, exIndex) => (
-                    <ExerciseCard
-                      key={exercise.id}
-                      exercise={exercise}
-                      index={exIndex}
-                      exerciseTemplates={exerciseTemplates}
-                    />
-                  ))}
-                  {dropProvided.placeholder}
-                </div>
-              )}
-            </Droppable>
-
-            {/* Add exercise button */}
-            <div className="border-t border-[#2E2E32] bg-[#18181B] px-3 py-2 rounded-b-lg">
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={() => setPickerOpen(true)}
-                className="w-full justify-center rounded-md border border-dashed border-[#3A3A40] bg-transparent text-xs font-medium text-zinc-300 hover:border-[#A64DFF] hover:bg-[#2A173F] hover:text-white transition-colors"
-              >
-                + Add exercise
-              </Button>
-            </div>
+            {exercises.map((exercise, exIndex) => (
+              <ExerciseCard
+                key={exercise.id}
+                exercise={exercise}
+                index={exIndex}
+                exerciseTemplates={exerciseTemplates}
+              />
+            ))}
+            {dropProvided.placeholder}
           </div>
         )}
-      </Draggable>
+      </Droppable>
+
+      {/* Add exercise button */}
+      <div className="rounded-b-lg border-t border-[#2E2E32] bg-[#18181B] px-3 py-2">
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => setPickerOpen(true)}
+          className="w-full justify-center rounded-md border border-dashed border-[#3A3A40] bg-transparent text-xs font-medium text-zinc-300 transition-colors hover:border-[#A64DFF] hover:bg-[#2A173F] hover:text-white"
+        >
+          + Add exercise
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {draggable ? (
+        <Draggable draggableId={workout.id} index={index}>
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+            >
+              <CardBody />
+            </div>
+          )}
+        </Draggable>
+      ) : (
+        <CardBody />
+      )}
 
       {/* Exercise template picker modal */}
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>

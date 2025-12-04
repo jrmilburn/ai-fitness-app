@@ -4,12 +4,13 @@ import type {
     WorkoutMode,
     ExerciseType,
     SetType
-} from "@/generated/prisma";
+} from "@prisma/client";
 
 // ---------- structureJson shape stored in ProgramTemplate.structureJson ----------
 
 export type ProgramTemplateStructure = {
   days: number;
+  weeks: number;
   workouts: Array<{
     id: string;
     name: string;
@@ -69,6 +70,7 @@ export type ProgramBuilderState = {
   exercises: Record<string, BuilderExercise>;
   workoutOrder: string[]; // ordered workout IDs (like columnOrder)
   days: number;
+  weeks: number;
 };
 
 // ---------- small ID helper ----------

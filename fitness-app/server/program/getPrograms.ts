@@ -9,7 +9,7 @@ export async function getPrograms() {
     const programs = await prisma.programTemplate.findMany({
         where:{
             userId: user.id
-        }
+        },
     })
 
     return programs

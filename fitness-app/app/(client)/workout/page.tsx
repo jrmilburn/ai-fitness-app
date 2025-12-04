@@ -13,7 +13,7 @@ export default async function WorkoutPage() {
   const program = await getProgram(user.currentProgramId);
 
   return (
-    <div className="mx-auto h-full w-full max-w-5xl px-4 py-6">
+    <div className="mx-auto h-full w-full max-w-5xl md:px-4 md:py-6">
       <WorkoutWrapper program={program} />
     </div>
   );

@@ -19,13 +19,15 @@ import { useRouter } from "next/navigation";
 import { deleteSet } from "@/server/set/deleteSet";
 
 type Props = {
-  set: SetModel;
+  set?: SetModel;
+  type?: string;
 };
 
-export default function Set({ set }: Props) {
-  const [reps, setReps] = useState(set.actualReps?.toString() ?? "");
-  const [weight, setWeight] = useState(set.actualWeightKg?.toString() ?? "");
-  const [completed, setCompleted] = useState(set.completed);
+export default function Set({ set, type }: Props) {
+  const [reps, setReps] = useState(set?.actualReps?.toString() ?? "");
+  const [weight, setWeight] = useState(set?.actualWeightKg?.toString() ?? "");
+  const [time, setTime] = useState(set?.actualDurationSec?.toString() ?? "");
+  const [completed, setCompleted] = useState(set?.completed);
   const [setModalShown, setSetModalShown] = useState(false);
 
   const router = useRouter();
@@ -38,30 +40,38 @@ export default function Set({ set }: Props) {
 
     const numericWeight = weight === "" ? null : Number(weight);
     const numericReps = reps === "" ? null : Number(reps);
+    const numericTime = time === "" ? null : Number(time);
 
-    await updateSet(set.id, next, {
+    if(set?.id)
+
+    await updateSet(set?.id, next, {
       weight: numericWeight,
       reps: numericReps,
+      time: numericTime
     });
 
     router.refresh();
   };
 
   const handleAddSet = async () => {
-    await createSet(set.exerciseId);
+    if(set?.exerciseId) {
+      await createSet(set?.exerciseId);
+    }
     router.refresh();
   };
 
   const handleDeleteSet = async () => {
-    await deleteSet(set.id);
+    if(set?.id)
+      await deleteSet(set?.id);
     router.refresh();
   };
 
   return (
     <>
-      <div className="flex w-full items-center gap-3 border-t border-[#2E2E32] bg-[#121214]! px-3 py-2 text-xs text-zinc-100!">
+    {type === "STRENGTH" ? (
+      <div className="flex w-full items-center gap-2 border-t border-[#2E2E32] bg-[#121214]! px-1 py-2 text-xs text-zinc-100!">
         {/* Left: menu button */}
-        <div className="flex min-w-[48px] flex-col items-start">
+        <div className="flex min-w-[16px] flex-col items-start">
           <Button
             type="button"
             variant="ghost"
@@ -73,13 +83,13 @@ export default function Set({ set }: Props) {
         </div>
 
         {/* Middle: main inputs */}
-        <div className="grid flex-1 grid-cols-2 items-center gap-2">
+        <div className="grid flex-1 w-full grid-cols-2 items-center gap-2">
           <Input
             type="number"
             value={reps}
             onChange={(e) => setReps(e.target.value)}
             placeholder={
-              set.targetReps != null ? set.targetReps.toString() : "Reps"
+              set?.targetReps != null ? set?.targetReps.toString() : "Reps"
             }
             className="h-9 text-xs bg-[#18181b]! border-black!"
           />
@@ -88,8 +98,8 @@ export default function Set({ set }: Props) {
             value={weight}
             onChange={(e) => setWeight(e.target.value)}
             placeholder={
-              set.targetWeightKg != null
-                ? `${set.targetWeightKg} kg`
+              set?.targetWeightKg != null
+                ? `${set?.targetWeightKg} kg`
                 : "Weight (kg)"
             }
             className="h-9 text-xs bg-[#18181b]! border-black!"
@@ -106,6 +116,81 @@ export default function Set({ set }: Props) {
           />
         </div>
       </div>
+    ) : type === "CARDIO_INTERVAL" ? (
+      <div className="flex w-full items-center gap-2 border-t border-[#2E2E32] bg-[#121214]! px-1 py-2 text-xs text-zinc-100!">
+        {/* Left: menu button */}
+        <div className="flex min-w-[16px] flex-col items-start">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setSetModalShown(true)}
+            className="h-8 w-8 rounded-full p-0 text-zinc-400! hover:bg-[#18181B]! hover:text-zinc-100!"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </div>
+
+        
+        <div className="grid flex-1 w-full grid-cols-1 items-center gap-2">
+          <Input
+            type="number"
+            value={reps}
+            onChange={(e) => setTime(e.target.value)}
+            placeholder={
+              set?.targetDurationSec != null ? set?.targetDurationSec.toString() : "Time (s)"
+            }
+            className="h-9 text-xs bg-[#18181b]! border-black!"
+          />
+        </div>
+
+        {/* Right: completed checkbox */}
+        <div className="flex items-center gap-2">
+          <Checkbox
+            checked={completed}
+            onChange={handleToggleCompleted}
+            aria-label="Mark set completed"
+            className="bg-[#18181b]!"
+          />
+        </div>
+      </div>
+    ) : (
+            <div className="flex w-full items-center gap-2 border-t border-[#2E2E32] bg-[#121214]! px-1 py-2 text-xs text-zinc-100!">
+        {/* Left: menu button */}
+        <div className="flex min-w-[16px] flex-col items-start">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setSetModalShown(true)}
+            className="h-8 w-8 rounded-full p-0 text-zinc-400! hover:bg-[#18181B]! hover:text-zinc-100!"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </div>
+
+        
+        <div className="grid flex-1 w-full grid-cols-1 items-center gap-2">
+          <Input
+            type="number"
+            value={reps}
+            onChange={(e) => setTime(e.target.value)}
+            placeholder={
+              set?.targetDurationSec != null ? set?.targetDurationSec.toString() : "Time (s)"
+            }
+            className="h-9 text-xs bg-[#18181b]! border-black!"
+          />
+        </div>
+
+        {/* Right: completed checkbox */}
+        <div className="flex items-center gap-2">
+          <Checkbox
+            checked={completed}
+            onChange={handleToggleCompleted}
+            aria-label="Mark set completed"
+            className="bg-[#18181b]!"
+          />
+        </div>
+      </div>
+    )}
 
       <Dialog open={setModalShown} onOpenChange={setSetModalShown}>
         <DialogContent className="border border-[#2E2E32]! bg-[#1C1C1E] text-zinc-50">
