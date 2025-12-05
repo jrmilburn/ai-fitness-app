@@ -10,14 +10,14 @@ export default async function PlanPage() {
         <ListItem
           title="Build with AI"
           description="Use an AI prompt to automatically create a tailored program."
-          href="/programs/plan/ai"
+          href="/templates/plan/ai"
           icon={<FlaskConical className="h-5 w-5" />}
         />
 
         <ListItem
           title="Start from scratch"
           description="Create a completely custom program with no preset structure."
-          href="/programs/new"
+          href="/templates/new"
           icon={<Pencil className="h-5 w-5" />}
         />
       </ListSection>

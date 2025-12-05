@@ -1,20 +1,21 @@
-
-import ProgramList from "@/components/program/ProgramList"
-
 import { getPrograms } from "@/server/program/getPrograms";
 
-import type { Program } from "@/generated/prisma/client";
+import ProgramList from "@/components/program/ProgramList";
+import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
 
-export default async function Programs() {
+export default async function ProgramsPage() {
 
-    const programs: Program[] = await getPrograms();
+    const user = await getOrCreateCurrentUser()
+
+    const programs = await getPrograms();
+
 
     return (
         <div className="max-w-2xl w-full mx-auto py-4">
-        <ProgramList 
-            programs={programs}
-        />
+            <ProgramList 
+                programs={programs}
+                user={user}
+            />
         </div>
     )
-
 }

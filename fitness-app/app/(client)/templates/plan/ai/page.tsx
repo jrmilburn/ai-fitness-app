@@ -140,7 +140,7 @@ export default function AiBuildPage() {
       const templateId = data.template?.id as string | undefined;
       if (!templateId) throw new Error("No template returned from server.");
 
-      router.push(`/programs/new?templateId=${templateId}`);
+      router.push(`/templates/new?templateId=${templateId}`);
     } catch (err: any) {
       setError(err.message || "Failed to generate program.");
     } finally {

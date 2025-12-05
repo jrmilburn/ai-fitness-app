@@ -21,7 +21,8 @@ import {
 
 const navItems = [
   { href: "/workout", label: "Current workout", short: "Workout" },
-  { href: "/programs", label: "Programs", short: "Programs" },
+  { href: "/programs", label: "Programs", short: "Programs"},
+  { href: "/templates", label: "Templates", short: "Templates" },
 ];
 
 export function ClientSidebar() {
