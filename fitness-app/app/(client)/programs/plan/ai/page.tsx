@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,38 +19,96 @@ type ProgramGoalApi =
   | "ENDURANCE"
   | "GENERAL_FITNESS";
 
+const EQUIPMENT_OPTIONS = [
+  "Full commercial gym",
+  "Barbell + rack",
+  "Dumbbells",
+  "Machines / cables",
+  "Kettlebells",
+  "Bands",
+  "Bodyweight",
+];
+
+
+const TOTAL_STEPS = 7;
+
 export default function AiBuildPage() {
-  const [goal, setGoal] = useState<Goal>("MUSCLE");
+  // now multi-select
+  const [goals, setGoals] = useState<Goal[]>(["MUSCLE"]);
+
   const [isSportSpecific, setIsSportSpecific] = useState<"YES" | "NO">("NO");
   const [sport, setSport] = useState("");
   const [daysPerWeek, setDaysPerWeek] = useState(4);
   const [weeks, setWeeks] = useState(6);
-  const [sessionLength, setSessionLength] = useState(60);
   const [experience, setExperience] = useState<Experience>("INTERMEDIATE");
-  const [equipment, setEquipment] = useState("");
+  const [equipment, setEquipment] = useState<string[]>([]);
   const [injuries, setInjuries] = useState("");
   const [extraNotes, setExtraNotes] = useState("");
+
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState<"forward" | "backward">("forward");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
+  const toggleEquipment = (item: string) => {
+  setEquipment((prev) =>
+    prev.includes(item) ? prev.filter((e) => e !== item) : [...prev, item]
+  );
+  };
+
+  const isSport = isSportSpecific === "YES";
+  const isLastStep = step === TOTAL_STEPS - 1;
+
+  const goNext = () => {
+    if (step < TOTAL_STEPS - 1) {
+      setDirection("forward");
+      setStep((prev) => prev + 1);
+    }
+  };
+
+  const goBack = () => {
+    if (step > 0) {
+      setDirection("backward");
+      setStep((prev) => prev - 1);
+    }
+  };
+
+  const toggleGoal = (goal: Goal) => {
+    setGoals((prev) => {
+      if (prev.includes(goal)) {
+        const next = prev.filter((g) => g !== goal);
+        // never allow 0 goals – keep at least one selected
+        return next.length ? next : [goal];
+      }
+      return [...prev, goal];
+    });
+  };
+
+  // derive a single ProgramGoalApi for the backend
+  const deriveProgramGoal = (selected: Goal[]): ProgramGoalApi => {
+    if (selected.includes("STRENGTH")) return "STRENGTH";
+    if (selected.includes("MUSCLE")) return "HYPERTROPHY";
+    return "GENERAL_FITNESS"; // FITNESS or fallback
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // On non-final steps, treat submit/Enter as "Next"
+    if (!isLastStep) {
+      goNext();
+      return;
+    }
 
     if (!daysPerWeek || !weeks) return;
 
     setLoading(true);
     setError(null);
 
-    // Map UI goal to backend ProgramGoal enum
-    const mappedGoal: ProgramGoalApi =
-      goal === "STRENGTH"
-        ? "STRENGTH"
-        : goal === "MUSCLE"
-        ? "HYPERTROPHY"
-        : "GENERAL_FITNESS"; // FITNESS -> GENERAL_FITNESS
+    const mappedGoal: ProgramGoalApi = deriveProgramGoal(goals);
 
     const body = {
       goal: mappedGoal,
@@ -56,11 +116,12 @@ export default function AiBuildPage() {
       sport,
       daysPerWeek,
       weeks,
-      sessionLength,
-      experience, // already matches backend union
-      equipment,
+      experience,
+      equipment: equipment.join(", "),
       injuries,
       extraNotes,
+      // optional: send raw goals array too if you want to use it later
+      // goals,
     };
 
     try {
@@ -87,8 +148,6 @@ export default function AiBuildPage() {
     }
   };
 
-  const isSport = isSportSpecific === "YES";
-
   return (
     <div className="flex min-h-screen flex-col items-center bg-[#050509]! px-4 py-12 text-zinc-50">
       <div className="w-full max-w-3xl space-y-8">
@@ -101,180 +160,249 @@ export default function AiBuildPage() {
             We&apos;ll turn your goals, schedule, and equipment into a complete program
             you can edit in the builder.
           </p>
+          <p className="text-[0.7rem] text-zinc-500">
+            Step {step + 1} of {TOTAL_STEPS}
+          </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Goals */}
-          <section className="space-y-2">
-            <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-              Primary goal
-            </Label>
-            <div className="grid gap-2 sm:grid-cols-3">
-              <GoalCard
-                label="Strength"
-                description="Get stronger on key lifts."
-                active={goal === "STRENGTH"}
-                onClick={() => setGoal("STRENGTH")}
-              />
-              <GoalCard
-                label="Muscle building"
-                description="Hypertrophy-focused training."
-                active={goal === "MUSCLE"}
-                onClick={() => setGoal("MUSCLE")}
-              />
-              <GoalCard
-                label="Fitness / conditioning"
-                description="Work capacity & cardio."
-                active={goal === "FITNESS"}
-                onClick={() => setGoal("FITNESS")}
-              />
-            </div>
-          </section>
+        <form onSubmit={handleSubmit} className="space-y-6 overflow-hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={step}
+              initial={{
+                x: direction === "forward" ? 40 : -40,
+                opacity: 0,
+              }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{
+                x: direction === "forward" ? -40 : 40,
+                opacity: 0,
+              }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="space-y-6"
+            >
+              {/* STEP 0 – Goals (multi-select) */}
+              {step === 0 && (
+                <section className="space-y-2">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    What are you trying to get out of this program?
+                  </Label>
+                  <p className="text-[0.7rem] text-zinc-500">
+                    You can pick more than one. We&apos;ll prioritise strength, then
+                    muscle, then general fitness when building your plan.
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <GoalCard
+                      label="Strength"
+                      description="Get stronger on key lifts."
+                      active={goals.includes("STRENGTH")}
+                      onClick={() => toggleGoal("STRENGTH")}
+                    />
+                    <GoalCard
+                      label="Muscle building"
+                      description="Hypertrophy-focused training."
+                      active={goals.includes("MUSCLE")}
+                      onClick={() => toggleGoal("MUSCLE")}
+                    />
+                    <GoalCard
+                      label="Fitness / conditioning"
+                      description="Work capacity & cardio."
+                      active={goals.includes("FITNESS")}
+                      onClick={() => toggleGoal("FITNESS")}
+                    />
+                  </div>
+                </section>
+              )}
 
-          {/* Sport-specific */}
-          <section className="space-y-2">
-            <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-              Sport specific?
-            </Label>
-            <div className="flex gap-2">
-              <TogglePill
-                label="No"
-                active={isSportSpecific === "NO"}
-                onClick={() => setIsSportSpecific("NO")}
-              />
-              <TogglePill
-                label="Yes"
-                active={isSportSpecific === "YES"}
-                onClick={() => setIsSportSpecific("YES")}
-              />
-            </div>
-            {isSport && (
-              <div className="mt-2">
-                <Input
-                  value={sport}
-                  onChange={(e) => setSport(e.target.value)}
-                  placeholder="e.g. soccer, AFL, BJJ, marathon running"
-                  className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
-                />
-              </div>
+              {/* STEP 1 – Sport specific */}
+              {step === 1 && (
+                <section className="space-y-3">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    Is this program for a specific sport?
+                  </Label>
+                  <div className="flex gap-2">
+                    <TogglePill
+                      label="No"
+                      active={isSportSpecific === "NO"}
+                      onClick={() => setIsSportSpecific("NO")}
+                    />
+                    <TogglePill
+                      label="Yes"
+                      active={isSportSpecific === "YES"}
+                      onClick={() => setIsSportSpecific("YES")}
+                    />
+                  </div>
+                  {isSport && (
+                    <div className="mt-2">
+                      <Input
+                        value={sport}
+                        onChange={(e) => setSport(e.target.value)}
+                        placeholder="e.g. soccer, AFL, BJJ, marathon running"
+                        className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
+                      />
+                    </div>
+                  )}
+                </section>
+              )}
+
+              {/* STEP 2 – Days per week (pills 1–7) */}
+              {step === 2 && (
+                <section className="space-y-3">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    How many days per week can you train?
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                    {[1, 2, 3, 4, 5, 6, 7].map((day) => (
+                      <TogglePill
+                        key={day}
+                        label={`${day}`}
+                        active={daysPerWeek === day}
+                        onClick={() => setDaysPerWeek(day)}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-[0.7rem] text-zinc-500">
+                    We&apos;ll spread your training stress across these days.
+                  </p>
+                </section>
+              )}
+
+            {step === 3 && (
+              <section className="space-y-3">
+                <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                  Program length (weeks)
+                </Label>
+            
+                <div className="flex flex-wrap gap-2">
+                  {[4, 6, 8].map((wk) => (
+                    <TogglePill
+                      key={wk}
+                      label={`${wk}`}
+                      active={weeks === wk}
+                      onClick={() => setWeeks(wk)}
+                    />
+                  ))}
+                </div>
+                
+                <p className="text-[0.7rem] text-zinc-500">
+                  Choose how long you want your program block to run.
+                </p>
+              </section>
             )}
-          </section>
 
-          {/* Schedule */}
-          <section className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1">
-              <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-                Days per week
-              </Label>
-              <Input
-                type="number"
-                min={1}
-                max={7}
-                value={daysPerWeek}
-                onChange={(e) => setDaysPerWeek(Number(e.target.value) || 1)}
-                className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-                Program length (weeks)
-              </Label>
-              <Input
-                type="number"
-                min={4}
-                max={8}
-                value={weeks}
-                onChange={(e) => setWeeks(Number(e.target.value) || 4)}
-                className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
-              />
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-                Session length (minutes)
-              </Label>
-              <Input
-                type="number"
-                min={20}
-                max={180}
-                value={sessionLength}
-                onChange={(e) => setSessionLength(Number(e.target.value) || 60)}
-                className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
-              />
-            </div>
-          </section>
 
-          {/* Experience */}
-          <section className="space-y-2">
-            <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-              Experience level
-            </Label>
-            <div className="flex flex-wrap gap-2">
-              <TogglePill
-                label="Beginner"
-                active={experience === "BEGINNER"}
-                onClick={() => setExperience("BEGINNER")}
-              />
-              <TogglePill
-                label="Intermediate"
-                active={experience === "INTERMEDIATE"}
-                onClick={() => setExperience("INTERMEDIATE")}
-              />
-              <TogglePill
-                label="Advanced"
-                active={experience === "ADVANCED"}
-                onClick={() => setExperience("ADVANCED")}
-              />
-            </div>
-          </section>
+              {/* STEP 4 – Session length + experience */}
+              {step === 4 && (
+                <section className="space-y-4">
 
-          {/* Equipment */}
-          <section className="space-y-1">
-            <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-              Available equipment
-            </Label>
-            <Input
-              value={equipment}
-              onChange={(e) => setEquipment(e.target.value)}
-              placeholder="e.g. full gym, home dumbbells up to 25kg, bands only"
-              className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
-            />
-          </section>
+                  <div className="space-y-2">
+                    <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                      Experience level
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      <TogglePill
+                        label="Beginner"
+                        active={experience === "BEGINNER"}
+                        onClick={() => setExperience("BEGINNER")}
+                      />
+                      <TogglePill
+                        label="Intermediate"
+                        active={experience === "INTERMEDIATE"}
+                        onClick={() => setExperience("INTERMEDIATE")}
+                      />
+                      <TogglePill
+                        label="Advanced"
+                        active={experience === "ADVANCED"}
+                        onClick={() => setExperience("ADVANCED")}
+                      />
+                    </div>
+                  </div>
+                </section>
+              )}
 
-          {/* Injuries */}
-          <section className="space-y-1">
-            <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-              Injuries or limitations
-            </Label>
-            <Input
-              value={injuries}
-              onChange={(e) => setInjuries(e.target.value)}
-              placeholder="e.g. low back sensitivity, avoid overhead pressing"
-              className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
-            />
-          </section>
+              {/* STEP 5 – Equipment & injuries */}
+            {step === 5 && (
+              <section className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    Available equipment
+                  </Label>            
 
-          {/* Extra notes */}
-          <section className="space-y-1">
-            <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
-              Anything else we should know?
-            </Label>
-            <Textarea
-              value={extraNotes}
-              onChange={(e) => setExtraNotes(e.target.value)}
-              placeholder="e.g. I like push/pull/legs, prefer machines over barbells, want one hard interval day per week."
-              className="min-h-[90px] rounded-2xl border border-[#2E2E32]! bg-[#18181B]! px-4 py-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
-            />
-          </section>
+                  <div className="flex flex-wrap gap-2">
+                    {EQUIPMENT_OPTIONS.map((item) => (
+                      <TogglePill
+                        key={item}
+                        label={item}
+                        active={equipment.includes(item)}
+                        onClick={() => toggleEquipment(item)}
+                      />
+                    ))}
+                  </div>            
 
-          {/* Submit */}
-          <div className="flex justify-end">
+                  <p className="text-[0.7rem] text-zinc-500">
+                    Pick everything you have regular access to. We&apos;ll build the plan around it.
+                  </p>
+                </div>            
+
+                {/* Injuries section stays the same */}
+                <div className="space-y-1">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    Injuries or limitations
+                  </Label>
+                  <Input
+                    value={injuries}
+                    onChange={(e) => setInjuries(e.target.value)}
+                    placeholder="e.g. low back sensitivity, avoid overhead pressing"
+                    className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
+                  />
+                </div>
+              </section>
+            )}
+
+              {/* STEP 6 – Extra notes + confirm */}
+              {step === 6 && (
+                <section className="space-y-3">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    Anything else we should know?
+                  </Label>
+                  <Textarea
+                    value={extraNotes}
+                    onChange={(e) => setExtraNotes(e.target.value)}
+                    placeholder="e.g. I like push/pull/legs, prefer machines over barbells, want one hard interval day per week."
+                    className="min-h-[90px] rounded-2xl border border-[#2E2E32]! bg-[#18181B]! px-4 py-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
+                  />
+                  <p className="text-[0.7rem] text-zinc-500">
+                    We&apos;ll use all of this to build your first training week and
+                    program structure. You can tweak everything in the builder.
+                  </p>
+                </section>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation buttons */}
+          <div className="mt-4 flex items-center justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={goBack}
+              disabled={step === 0 || loading}
+              className="h-9 rounded-full border border-[#2E2E32]! bg-transparent text-xs text-zinc-200 hover:border-[#A64DFF]/60! hover:bg-[#18181B]! disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Back
+            </Button>
+
             <Button
               type="submit"
               disabled={loading}
               className="h-11 rounded-full border-0 bg-[#A64DFF]! px-6 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#B56BFF]! disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Generating…" : "Generate program"}
+              {loading
+                ? "Generating…"
+                : isLastStep
+                ? "Generate program"
+                : "Next"}
             </Button>
           </div>
         </form>
@@ -349,7 +477,7 @@ function TogglePill({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-full px-3 py-1 text-xs transition-colors ${
+      className={`rounded px-4 py-2 text-lg transition-colors ${
         active
           ? "bg-[#A64DFF]! text-white"
           : "bg-[#18181B]! text-zinc-300 border border-[#2E2E32]! hover:border-[#A64DFF]/60!"

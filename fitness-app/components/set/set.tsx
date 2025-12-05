@@ -30,6 +30,8 @@ export default function Set({ set, type }: Props) {
   const [completed, setCompleted] = useState(set?.completed);
   const [setModalShown, setSetModalShown] = useState(false);
 
+  const isWarmup = set?.type === "WARMUP";
+
   const router = useRouter();
 
   const handleToggleCompleted = async (

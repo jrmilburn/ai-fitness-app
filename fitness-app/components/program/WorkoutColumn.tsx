@@ -20,8 +20,10 @@ type WorkoutColumnProps = {
   index: number;
   exerciseTemplates: ExerciseTemplate[];
   onAddExercise: (workoutId: string, templateId: string) => void;
-  draggable?: boolean; // 👈 NEW
+  onAddSetToExercise: (exerciseId: string) => void; // 👈 NEW
+  draggable?: boolean;
 };
+
 
 export function WorkoutColumn({
   workout,
@@ -29,6 +31,7 @@ export function WorkoutColumn({
   index,
   exerciseTemplates,
   onAddExercise,
+  onAddSetToExercise,
   draggable = true,
 }: WorkoutColumnProps) {
   const [pickerOpen, setPickerOpen] = React.useState(false);
@@ -71,14 +74,16 @@ export function WorkoutColumn({
               snapshot.isDraggingOver ? "bg-[#232327]" : "bg-[#18181B]"
             }`}
           >
-            {exercises.map((exercise, exIndex) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                index={exIndex}
-                exerciseTemplates={exerciseTemplates}
-              />
-            ))}
+          {exercises.map((exercise, exIndex) => (
+            <ExerciseCard
+              key={exercise.id}
+              exercise={exercise}
+              index={exIndex}
+              exerciseTemplates={exerciseTemplates}
+              onAddSet={onAddSetToExercise} // 👈 pass handler
+            />
+          ))}
+
             {dropProvided.placeholder}
           </div>
         )}

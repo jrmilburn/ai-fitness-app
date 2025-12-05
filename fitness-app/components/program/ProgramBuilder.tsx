@@ -216,6 +216,37 @@ export function ProgramBuilder({
     }));
   };
 
+  const handleAddSetToExercise = (exerciseId: string) => {
+  setExistingTemplate(false);
+
+  setState((prev) => {
+    const exercise = prev.exercises[exerciseId];
+    if (!exercise) return prev;
+
+    const nextSetNumber = exercise.sets.length + 1;
+
+    const newSet = {
+      id: createId("set"),
+      setNumber: nextSetNumber,
+      type: "NORMAL" as const,
+      targetReps: 8,
+      targetWeightKg: null,
+    };
+
+    return {
+      ...prev,
+      exercises: {
+        ...prev.exercises,
+        [exerciseId]: {
+          ...exercise,
+          sets: [...exercise.sets, newSet],
+        },
+      },
+    };
+  });
+};
+
+
   // ---- submit ----
   const handleSubmit = async () => {
     setSubmitting(true);
@@ -332,14 +363,16 @@ export function ProgramBuilder({
                   );
 
                   return (
-                    <WorkoutColumn
-                      key={workout.id}
-                      workout={workout}
-                      exercises={exercises}
-                      index={index}
-                      exerciseTemplates={exerciseTemplates}
-                      onAddExercise={handleAddExerciseToWorkout}
-                    />
+                  <WorkoutColumn
+                    key={workout.id}
+                    workout={workout}
+                    exercises={exercises}
+                    index={index}
+                    exerciseTemplates={exerciseTemplates}
+                    onAddExercise={handleAddExerciseToWorkout}
+                    onAddSetToExercise={handleAddSetToExercise} // 👈 here
+                  />
+
                   );
                 })}
 
@@ -420,10 +453,12 @@ export function ProgramBuilder({
                       index={activeIndex}
                       exerciseTemplates={exerciseTemplates}
                       onAddExercise={handleAddExerciseToWorkout}
-                      draggable={false} // 👈 no column dragging on mobile
+                      onAddSetToExercise={handleAddSetToExercise} // 👈 here as well
+                      draggable={false}
                     />
                   </div>
                 )}
+
               </>
             )}
           </div>
