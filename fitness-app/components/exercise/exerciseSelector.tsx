@@ -75,19 +75,19 @@ export default function ExerciseSelector({
 
   return (
     <Dialog open={newExerciseSelector} onOpenChange={setNewExerciseSelector}>
-      <DialogContent className="h-[520px] max-w-lg border border-[#2E2E32] bg-[#1C1C1E] text-zinc-50">
+      <DialogContent className="h-[520px] max-w-lg border border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-[var(--text-strong)]">
         <DialogHeader>
           <div className="flex items-center gap-2">
             {inDetail && (
               <button
                 type="button"
                 onClick={() => setDetailTemplate(null)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#18181B] text-zinc-300 transition-colors hover:bg-[#2A173F] hover:text-white"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--surface-secondary)] text-[var(--text-muted)] transition-colors hover:bg-[var(--surface-accent)] hover:text-white"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
             )}
-            <DialogTitle className="text-sm font-medium text-zinc-100">
+            <DialogTitle className="text-sm font-medium text-[var(--text-strong)]">
               {inDetail
                 ? detailTemplate?.name ?? "Exercise details"
                 : "Select new exercise"}
@@ -115,7 +115,7 @@ export default function ExerciseSelector({
 
               <div className="max-h-[360px] space-y-2 overflow-y-auto">
                 {filteredTemplates.length === 0 ? (
-                  <p className="text-sm text-zinc-500">
+                  <p className="text-sm text-[var(--text-strong)]">
                     No exercise templates found.
                   </p>
                 ) : (
@@ -138,11 +138,11 @@ export default function ExerciseSelector({
               {detailTemplate ? (
                 <div className="max-h-[360px] space-y-4 overflow-y-auto">
                   <div className="space-y-1">
-                    <h3 className="text-base font-semibold text-zinc-50">
+                    <h3 className="text-base font-semibold text-[var(--text-strong)]">
                       {detailTemplate.name}
                     </h3>
                     {detailTemplate.description && (
-                      <p className="text-sm text-zinc-400">
+                      <p className="text-sm text-[var(--text-muted)]">
                         {detailTemplate.description}
                       </p>
                     )}
@@ -159,7 +159,7 @@ export default function ExerciseSelector({
                   </div>
                 </div>
               ) : (
-                <div className="flex h-[360px] items-center justify-center text-sm text-zinc-500">
+                <div className="flex h-[360px] items-center justify-center text-sm text-[var(--text-strong)]">
                   Select an exercise to view details.
                 </div>
               )}

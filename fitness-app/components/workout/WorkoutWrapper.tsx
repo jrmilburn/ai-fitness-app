@@ -49,7 +49,7 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
 
   if (!currentWeek || !currentWorkout) {
     return (
-      <div className="rounded-lg border border-[#2E2E32] bg-[#121214] p-4 text-sm text-zinc-400">
+      <div className="rounded-lg border border-[var(--border-strong)] bg-[var(--surface-tertiary)] p-4 text-sm text-[var(--text-muted)]">
         No workouts found in this program.
       </div>
     );
@@ -75,7 +75,7 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
   };
 
   return (
-    <div className="rounded-xl border border-[#2E2E32] bg-[#121214] p-4 shadow-sm md:p-6">
+    <div className="rounded-xl border border-[var(--border-strong)] bg-[var(--surface-tertiary)] p-4 shadow-sm md:p-6">
       <div className="grid gap-6 md:grid-cols-[260px,1fr]">
         <WorkoutSelector
           program={program}
