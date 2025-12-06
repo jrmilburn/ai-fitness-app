@@ -164,7 +164,7 @@ function ProgramListItem({
             e.preventDefault();
             setMenuOpen((v) => !v);
           }}
-          className="h-8 w-8 rounded-full text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[#23232A]"
+          className="h-8 w-8 rounded-full text-[var(--text-muted)] hover:text-[var(--text-strong)]!"
         >
           <MoreVertical className="h-4 w-4" />
         </Button>
@@ -195,7 +195,7 @@ function ProgramListItem({
             <button
               disabled={deleting}
               onClick={handleDeleteClick}
-              className="block w-full px-3 py-2 text-left text-[11px] text-red-300 hover:bg-red-500/10 hover:text-red-200 disabled:opacity-60"
+              className="block w-full px-3 py-2 text-left text-[11px] text-red-600 hover:bg-red-500/10 hover:text-red-600 disabled:opacity-60"
             >
               Delete program
             </button>
@@ -217,7 +217,7 @@ function ProgramListItem({
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-[var(--text-muted)] bg-[#2E2E32]">
+            <AlertDialogCancel className="text-[var(--secondary)] bg-[#2E2E32]">
               Cancel
             </AlertDialogCancel>
 

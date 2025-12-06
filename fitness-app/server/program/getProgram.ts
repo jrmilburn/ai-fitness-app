@@ -18,8 +18,7 @@ export async function getProgram(programId: string) {
                 orderBy: { order: "asc" },
                 include: {
                   sets: { orderBy: { setNumber: "asc" } },
-                  template: { include: { muscleGroup: true } },
-                  muscleGroup: true,
+                  template: true,
                 },
               },
             },
