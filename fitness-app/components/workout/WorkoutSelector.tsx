@@ -63,14 +63,14 @@ export function WorkoutSelector({
       </div>
 
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-w-lg border border-[#2E2E32] bg-[#1C1C1E] text-zinc-50">
+        <DialogContent className="max-w-md border border-[#2E2E32] bg-[#1C1C1E] text-zinc-50">
           <DialogHeader>
-            <DialogTitle className="text-sm font-medium text-zinc-100">
+            <DialogTitle className="text-sm text-center font-medium text-zinc-100">
               Jump to workout
             </DialogTitle>
           </DialogHeader>
 
-          <div className="mt-2 flex flex-col gap-2 text-xs">
+          <div className="mt-2 flex flex-col items-center gap-2 text-xs">
             {program.weeks.map((week, weekInd) => (
               <div key={week.id} className="flex items-center gap-2">
                 <span className="w-16 text-[0.7rem] uppercase tracking-wide text-zinc-500">

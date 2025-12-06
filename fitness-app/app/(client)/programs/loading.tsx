@@ -7,7 +7,7 @@ export default function Loading() {
 
         {/* Text */}
         <p className="text-sm font-medium text-zinc-300">
-          Loading templates...
+          Loading programs...
         </p>
       </div>
     </div>

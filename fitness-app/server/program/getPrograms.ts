@@ -10,6 +10,12 @@ export async function getPrograms() {
     const programs = await prisma.program.findMany({
         where: {
             userId: user.id
+        },
+        include: {
+            template: true
+        },
+        orderBy: {
+            createdAt: "desc"
         }
     })
 

@@ -19,6 +19,21 @@ export async function createProgram(
     (programTemplate?.structureJson as ProgramTemplateStructure | null) ??
     undefined;
 
+  let template;
+
+  if (!existingTemplate){
+    template = await prisma.programTemplate.create({
+      data: {
+        userId: user?.id ?? undefined,
+        name: programTemplate.name,
+        goal: programTemplate.goal,
+        weeks: programTemplate.weeks,
+        days: programTemplate.days,
+        ...(structureJson !== undefined ? { structureJson } : {}),
+      },
+    });
+  }
+
   // Create overarching program
   const newProgram = await prisma.program.create({
     data: {
@@ -27,6 +42,7 @@ export async function createProgram(
       goal: programTemplate.goal,
       length: programTemplate.weeks,
       days: programTemplate.days,
+      templateId: template?.id || programTemplate.id
     },
   });
 
@@ -38,20 +54,6 @@ export async function createProgram(
         currentProgramId: newProgram.id
     }
   })
-
-  // Save program template
-  if (!existingTemplate){
-    await prisma.programTemplate.create({
-      data: {
-        userId: user?.id ?? undefined,
-        name: programTemplate.name,
-        goal: programTemplate.goal,
-        weeks: programTemplate.weeks,
-        days: programTemplate.days,
-        ...(structureJson !== undefined ? { structureJson } : {}),
-      },
-    });
-  }
 
   if (!programTemplate.structureJson) {
     // you can also early-return or create empty weeks here

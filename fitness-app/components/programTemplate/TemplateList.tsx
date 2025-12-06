@@ -4,7 +4,7 @@ import type { Program, User } from "@prisma/client";
 import { ChevronRight, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { deleteTemplate } from "@/server/exerciseTemplate/deleteTemplate";
+import { deleteTemplate } from "@/server/programTemplate/deleteTemplate";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
@@ -16,7 +16,7 @@ export default function TemplateList({ programs }: { programs: Program[] }) {
       {/* Header */}
       <div className="flex items-center justify-between px-4">
         <h3 className="text-lg font-semibold text-zinc-100">Templates</h3>
-        <Link href="/programs/plan">
+        <Link href="/templates/plan">
           <Button className="rounded-md bg-[#A64DFF] px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#B56BFF]">
             New +
           </Button>
@@ -33,7 +33,7 @@ export default function TemplateList({ programs }: { programs: Program[] }) {
       {/* List */}
       <div className="flex flex-col md:gap-2">
         {programs.map((program) => (
-          <ProgramListItem key={program.id} program={program} user={user} />
+          <ProgramListItem key={program.id} program={program} />
         ))}
       </div>
     </div>
@@ -65,7 +65,7 @@ function ProgramListItem({ program }: { program: Program }) {
   return (
     <div className="group relative">
       <Link
-        href={`/programs/new?templateId=${program.id}`}
+        href={`/templates/new?templateId=${program.id}`}
         className="flex w-full items-center justify-between rounded-lg border border-[#2E2E32] bg-[#18181B] px-4 py-4 pr-12 transition-all hover:border-[#A64DFF]/60 hover:bg-[#2A173F]/40"
       >
         <div className="flex flex-col gap-2">

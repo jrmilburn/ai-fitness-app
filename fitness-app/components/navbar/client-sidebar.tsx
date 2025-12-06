@@ -12,24 +12,49 @@ import {
 } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 
-import {
-  CalendarDays,
-  Dumbbell,
-  MoreHorizontal,
-  X,
-} from "lucide-react";
+import { CalendarDays, Dumbbell, MoreHorizontal, X } from "lucide-react";
+
+type ClientSidebarProps = {
+  currentProgramId?: string | null;
+};
 
 const navItems = [
-  { href: "/workout", label: "Current workout", short: "Workout" },
-  { href: "/programs", label: "Programs", short: "Programs"},
-  { href: "/templates", label: "Templates", short: "Templates" },
+  { key: "workout", label: "Current workout", short: "Workout" },
+  { key: "programs", label: "Programs", short: "Programs" },
+  { key: "templates", label: "Templates", short: "Templates" },
 ];
 
-export function ClientSidebar() {
+export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = React.useState(false);
 
-  const isActive = (href: string) => pathname.startsWith(href);
+  // Where the workout button should go
+  const currentProgramHref = currentProgramId
+    ? `/programs/${currentProgramId}`
+    : "/programs";
+
+  const isWorkoutActive = pathname === currentProgramHref;
+  const isProgramsActive =
+    pathname.startsWith("/programs") && !isWorkoutActive;
+
+  const getHrefForItem = (key: string) => {
+    switch (key) {
+      case "workout":
+        return currentProgramHref;
+      case "programs":
+        return "/programs";
+      case "templates":
+        return "/templates";
+      default:
+        return "/";
+    }
+  };
+
+  const isItemActive = (key: string, href: string) => {
+    if (key === "workout") return isWorkoutActive;
+    if (key === "programs") return isProgramsActive;
+    return pathname.startsWith(href);
+  };
 
   return (
     <>
@@ -42,21 +67,26 @@ export function ClientSidebar() {
 
         {/* Nav links */}
         <nav className="flex-1 space-y-1 px-2 py-4">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} prefetch>
-              <button
-                className={cn(
-                  "flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  "hover:bg-[#1C1C1E] hover:text-zinc-50",
-                  isActive(item.href)
-                    ? "bg-[#1C1C1E] text-zinc-50 border border-[#A64DFF]"
-                    : "text-zinc-300 border border-transparent"
-                )}
-              >
-                {item.label}
-              </button>
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const href = getHrefForItem(item.key);
+            const active = isItemActive(item.key, href);
+
+            return (
+              <Link key={item.key} href={href} prefetch>
+                <button
+                  className={cn(
+                    "flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors border",
+                    "hover:bg-[#1C1C1E] hover:text-zinc-50",
+                    active
+                      ? "bg-[#1C1C1E] text-zinc-50 border-[#A64DFF]"
+                      : "text-zinc-300 border-transparent"
+                  )}
+                >
+                  {item.label}
+                </button>
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Bottom account area */}
@@ -88,11 +118,11 @@ export function ClientSidebar() {
       {/* MOBILE BOTTOM NAV */}
       <nav className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-[#2E2E32] bg-[#1C1C1E] px-4 py-2 md:hidden">
         {/* Workout */}
-        <Link href="/workout" prefetch>
+        <Link href={currentProgramHref} prefetch>
           <button
             className={cn(
               "flex flex-col items-center gap-1 text-[11px] font-medium transition-colors",
-              isActive("/workout") ? "text-[#A64DFF]" : "text-zinc-400"
+              isWorkoutActive ? "text-[#A64DFF]" : "text-zinc-400"
             )}
           >
             <CalendarDays className="h-5 w-5" />
@@ -105,7 +135,7 @@ export function ClientSidebar() {
           <button
             className={cn(
               "flex flex-col items-center gap-1 text-[11px] font-medium transition-colors",
-              isActive("/programs") ? "text-[#A64DFF]" : "text-zinc-400"
+              isProgramsActive ? "text-[#A64DFF]" : "text-zinc-400"
             )}
           >
             <Dumbbell className="h-5 w-5" />
@@ -159,25 +189,30 @@ export function ClientSidebar() {
           {/* Nav section */}
           <div className="flex-1 space-y-4">
             <div className="space-y-2">
-              {navItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  prefetch
-                  onClick={() => setMoreOpen(false)}
-                >
-                  <div
-                    className={cn(
-                      "flex items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition-colors",
-                      isActive(item.href)
-                        ? "bg-[#1C1C1E] text-zinc-50 border border-[#A64DFF]"
-                        : "bg-transparent text-zinc-200 border border-transparent hover:bg-[#33333A]"
-                    )}
+              {navItems.map((item) => {
+                const href = getHrefForItem(item.key);
+                const active = isItemActive(item.key, href);
+
+                return (
+                  <Link
+                    key={item.key}
+                    href={href}
+                    prefetch
+                    onClick={() => setMoreOpen(false)}
                   >
-                    <span>{item.label}</span>
-                  </div>
-                </Link>
-              ))}
+                    <div
+                      className={cn(
+                        "flex items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition-colors border",
+                        active
+                          ? "bg-[#1C1C1E] text-zinc-50 border-[#A64DFF]"
+                          : "bg-transparent text-zinc-200 border-transparent hover:bg-[#33333A]"
+                      )}
+                    >
+                      <span>{item.label}</span>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Auth / account block */}
@@ -199,9 +234,7 @@ export function ClientSidebar() {
 
               <SignedIn>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-zinc-300">
-                    Signed in
-                  </span>
+                  <span className="text-xs text-zinc-300">Signed in</span>
                   <UserButton />
                 </div>
               </SignedIn>

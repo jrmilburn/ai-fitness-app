@@ -1,4 +1,4 @@
-import { FlaskConical, Pencil } from "lucide-react";
+import { FlaskConical, Pencil, LayoutTemplate } from "lucide-react";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,13 @@ export default async function PlanPage() {
           description="Create a completely custom program with no preset structure."
           href="/templates/new"
           icon={<Pencil className="h-5 w-5" />}
+        />
+
+        <ListItem
+          title="Use a template"
+          description="Start with a pre made template."
+          href="/templates"
+          icon={<LayoutTemplate className="h-5 w-5" />}
         />
       </ListSection>
     </div>

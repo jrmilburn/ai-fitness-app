@@ -49,8 +49,8 @@ enum WorkoutType {
 //  User
 // =========================================================
 model User {
-  id      String  @id @default(cuid())
-  clerkId String  @unique
+  id      String @id @default(cuid())
+  clerkId String @unique
 
   currentProgramId String?
 
@@ -92,6 +92,9 @@ model Program {
   length Int
   days   Int
 
+  templateId String?
+  template   ProgramTemplate? @relation(fields: [templateId], references: [id])
+
   // One-to-many Program -> Weeks
   weeks Week[] @relation("ProgramWeeks")
 
@@ -103,8 +106,8 @@ model Program {
 
   aiPlanJson Json?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model ProgramTemplate {
@@ -112,15 +115,16 @@ model ProgramTemplate {
   user   User?   @relation(fields: [userId], references: [id])
   userId String?
 
-  name   String
-  goal   ProgramGoal?
+  name  String
+  goal  ProgramGoal?
   weeks Int
-  days   Int
+  days  Int
 
   structureJson Json?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  programs  Program[]
 }
 
 // =========================================================
@@ -129,7 +133,7 @@ model ProgramTemplate {
 model Week {
   id String @id @default(cuid())
 
-  program   Program @relation("ProgramWeeks", fields: [programId], references: [id])
+  program   Program @relation("ProgramWeeks", fields: [programId], references: [id], onDelete: Cascade)
   programId String
 
   weekNumber Int
@@ -148,13 +152,13 @@ model Week {
 //  Workout
 // =========================================================
 model Workout {
-  id     String @id @default(cuid())
-  week   Week?   @relation(fields: [weekId], references: [id])
+  id     String  @id @default(cuid())
+  week   Week?   @relation(fields: [weekId], references: [id], onDelete: Cascade)
   weekId String?
 
   dayNumber Int
   name      String
-  type WorkoutType @default(PROGRAMMED)
+  type      WorkoutType @default(PROGRAMMED)
 
   mode WorkoutMode @default(STRENGTH)
 
@@ -189,8 +193,8 @@ model ExerciseTemplate {
   user   User?   @relation(fields: [userId], references: [id])
   userId String?
 
-  name        String
-  description String?
+  name         String
+  description  String?
   exerciseType ExerciseType @default(STRENGTH)
 
   // Link to muscle group (optional)
@@ -217,7 +221,7 @@ model ExerciseTemplate {
 // =========================================================
 model Exercise {
   id        String  @id @default(cuid())
-  workout   Workout @relation("WorkoutExercises", fields: [workoutId], references: [id])
+  workout   Workout @relation("WorkoutExercises", fields: [workoutId], references: [id], onDelete: Cascade)
   workoutId String
 
   order        Int
@@ -256,7 +260,7 @@ model Exercise {
 // =========================================================
 model Set {
   id         String   @id @default(cuid())
-  exercise   Exercise @relation("ExerciseSets", fields: [exerciseId], references: [id])
+  exercise   Exercise @relation("ExerciseSets", fields: [exerciseId], references: [id], onDelete: Cascade)
   exerciseId String
 
   setNumber Int
