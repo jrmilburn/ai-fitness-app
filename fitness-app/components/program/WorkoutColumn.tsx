@@ -367,7 +367,7 @@ export function WorkoutColumn({
           <div className="relative mt-3 h-[360px] overflow-hidden">
             {/* Filters panel */}
             <div
-              className={`absolute inset-y-0 left-0 w-56 border-r border-[var(--border-strong)] bg-[#141416] px-3 py-3 text-[11px] transition-transform duration-200 ${
+              className={`absolute inset-y-0 left-0 w-56 border-r border-[var(--border-strong)] bg-[var(--surface-tertiary)] px-3 py-3 text-[11px] transition-transform duration-200 ${
                 showFilters ? "translate-x-0" : "-translate-x-full"
               }`}
             >

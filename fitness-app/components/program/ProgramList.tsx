@@ -164,7 +164,7 @@ function ProgramListItem({
             e.preventDefault();
             setMenuOpen((v) => !v);
           }}
-          className="h-8 w-8 rounded-full text-[var(--text-muted)] hover:text-[var(--text-strong)]!"
+          className="h-8 w-8 rounded-full text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[#23232A]"
         >
           <MoreVertical className="h-4 w-4" />
         </Button>
@@ -217,7 +217,7 @@ function ProgramListItem({
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-[var(--secondary)] bg-[#2E2E32]">
+            <AlertDialogCancel className="text-[var(--text-muted)] bg-[#2E2E32]">
               Cancel
             </AlertDialogCancel>
 
