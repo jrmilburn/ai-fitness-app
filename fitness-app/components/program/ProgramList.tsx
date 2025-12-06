@@ -164,7 +164,7 @@ function ProgramListItem({
             e.preventDefault();
             setMenuOpen((v) => !v);
           }}
-          className="h-8 w-8 rounded-full text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[#23232A]"
+          className="h-8 w-8 rounded-full text-[var(--text-muted)] hover:text-[var(--text-strong)]"
         >
           <MoreVertical className="h-4 w-4" />
         </Button>
