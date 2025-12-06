@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 export default async function PlanPage() {
   return (
-    <div className="mx-auto flex h-full max-w-2xl flex-col px-6 py-6 text-[var(--text-strong)]">
+    <div className="mx-auto flex h-full max-w-2xl flex-col py-6 text-[var(--text-strong)]">
       <ListSection title="Plan a program">
         <ListItem
           title="Build with AI"
@@ -43,12 +43,9 @@ export function ListSection({
     <div className="flex flex-col gap-4">
       {title && (
         <div className="space-y-1">
-          <h2 className="text-xl font-semibold text-[var(--text-strong)]">
+          <h2 className="text-lg text-[var(--text-strong)]">
             {title}
           </h2>
-          <p className="text-xs text-[var(--text-muted)]">
-            Choose how you want to design your next training block.
-          </p>
         </div>
       )}
       {children}
