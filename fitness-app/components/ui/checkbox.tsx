@@ -16,13 +16,13 @@ export function Checkbox({
   className = "",
   ...props
 }: CheckboxProps) {
-  // base dark-theme + nicer rounded box
+  // base styling
   const base =
     "h-5 w-5 rounded-md cursor-pointer transition-all appearance-none";
 
-  // normal state = dark background + subtle border
+  // normal state using theme variables for light mode
   const normal =
-    "bg-[#18181B] border border-[#3A3A40] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A64DFF]/40";
+    "bg-[var(--surface-secondary)] border border-[var(--border-strong)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A64DFF]/30";
 
   // checked state overrides (accent color)
   const checked =
@@ -47,11 +47,11 @@ export function Checkbox({
       {/* label + hint */}
       <div className="flex flex-col leading-none">
         {label && (
-          <span className="text-sm font-medium text-zinc-200">{label}</span>
+          <span className="text-sm font-medium text-[var(--text-strong)]">{label}</span>
         )}
 
         {!error && hint && (
-          <span className="text-xs text-zinc-500">{hint}</span>
+          <span className="text-xs text-[var(--text-muted)]">{hint}</span>
         )}
 
         {error && <span className="text-xs text-red-500">{error}</span>}

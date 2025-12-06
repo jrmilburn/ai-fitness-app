@@ -71,7 +71,7 @@ export function WorkoutView({
           <Button
             variant="outline"
             onClick={handleCurrentWorkout}
-            className="rounded-md border border-[#2E2E32] bg-[#18181B] px-4 py-2 text-xs font-medium text-zinc-100 hover:border-[#A64DFF] hover:bg-[#2A173F]"
+            className="rounded-md border border-[var(--border-strong)] bg-[var(--surface-secondary)] px-4 py-2 text-xs font-medium text-[var(--text-strong)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]"
           >
             Go to current workout
           </Button>

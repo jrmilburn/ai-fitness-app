@@ -71,14 +71,14 @@ export default function Set({ set, type }: Props) {
   return (
     <>
     {type === "STRENGTH" ? (
-      <div className="flex w-full items-center gap-2 border-t border-[#2E2E32] bg-[#121214]! px-1 py-2 text-xs text-zinc-100!">
+      <div className="flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]!">
         {/* Left: menu button */}
         <div className="flex min-w-[16px] flex-col items-start">
           <Button
             type="button"
             variant="ghost"
             onClick={() => setSetModalShown(true)}
-            className="h-8 w-8 rounded-full p-0 text-zinc-400! hover:bg-[#18181B]! hover:text-zinc-100!"
+            className="h-8 w-8 rounded-full p-0 text-[var(--text-muted)]! hover:bg-[var(--surface-secondary)]! hover:text-[var(--text-strong)]!"
           >
             <MoreVertical className="h-4 w-4" />
           </Button>
@@ -93,7 +93,7 @@ export default function Set({ set, type }: Props) {
             placeholder={
               set?.targetReps != null ? set?.targetReps.toString() : "Reps"
             }
-            className="h-9 text-xs bg-[#18181b]! border-black!"
+            className="h-9 text-xs bg-[var(--surface-secondary)]! border-[var(--border-subtle)]!"
           />
           <Input
             type="number"
@@ -104,7 +104,7 @@ export default function Set({ set, type }: Props) {
                 ? `${set?.targetWeightKg} kg`
                 : "Weight (kg)"
             }
-            className="h-9 text-xs bg-[#18181b]! border-black!"
+            className="h-9 text-xs bg-[var(--surface-secondary)]! border-[var(--border-subtle)]!"
           />
         </div>
 
@@ -114,19 +114,19 @@ export default function Set({ set, type }: Props) {
             checked={completed}
             onChange={handleToggleCompleted}
             aria-label="Mark set completed"
-            className="bg-[#18181b]!"
+            className="bg-[var(--surface-secondary)]!"
           />
         </div>
       </div>
     ) : type === "CARDIO_INTERVAL" ? (
-      <div className="flex w-full items-center gap-2 border-t border-[#2E2E32] bg-[#121214]! px-1 py-2 text-xs text-zinc-100!">
+      <div className="flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]!">
         {/* Left: menu button */}
         <div className="flex min-w-[16px] flex-col items-start">
           <Button
             type="button"
             variant="ghost"
             onClick={() => setSetModalShown(true)}
-            className="h-8 w-8 rounded-full p-0 text-zinc-400! hover:bg-[#18181B]! hover:text-zinc-100!"
+            className="h-8 w-8 rounded-full p-0 text-[var(--text-muted)]! hover:bg-[var(--surface-secondary)]! hover:text-[var(--text-strong)]!"
           >
             <MoreVertical className="h-4 w-4" />
           </Button>
@@ -141,7 +141,7 @@ export default function Set({ set, type }: Props) {
             placeholder={
               set?.targetDurationSec != null ? set?.targetDurationSec.toString() : "Time (s)"
             }
-            className="h-9 text-xs bg-[#18181b]! border-black!"
+            className="h-9 text-xs bg-[var(--surface-secondary)]! border-[var(--border-subtle)]!"
           />
         </div>
 
@@ -151,19 +151,19 @@ export default function Set({ set, type }: Props) {
             checked={completed}
             onChange={handleToggleCompleted}
             aria-label="Mark set completed"
-            className="bg-[#18181b]!"
+            className="bg-[var(--surface-secondary)]!"
           />
         </div>
       </div>
     ) : (
-            <div className="flex w-full items-center gap-2 border-t border-[#2E2E32] bg-[#121214]! px-1 py-2 text-xs text-zinc-100!">
+            <div className="flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]!">
         {/* Left: menu button */}
         <div className="flex min-w-[16px] flex-col items-start">
           <Button
             type="button"
             variant="ghost"
             onClick={() => setSetModalShown(true)}
-            className="h-8 w-8 rounded-full p-0 text-zinc-400! hover:bg-[#18181B]! hover:text-zinc-100!"
+            className="h-8 w-8 rounded-full p-0 text-[var(--text-muted)]! hover:bg-[var(--surface-secondary)]! hover:text-[var(--text-strong)]!"
           >
             <MoreVertical className="h-4 w-4" />
           </Button>
@@ -178,7 +178,7 @@ export default function Set({ set, type }: Props) {
             placeholder={
               set?.targetDurationSec != null ? set?.targetDurationSec.toString() : "Time (s)"
             }
-            className="h-9 text-xs bg-[#18181b]! border-black!"
+            className="h-9 text-xs bg-[var(--surface-secondary)]! border-[var(--border-subtle)]!"
           />
         </div>
 
@@ -188,14 +188,14 @@ export default function Set({ set, type }: Props) {
             checked={completed}
             onChange={handleToggleCompleted}
             aria-label="Mark set completed"
-            className="bg-[#18181b]!"
+            className="bg-[var(--surface-secondary)]!"
           />
         </div>
       </div>
     )}
 
       <Dialog open={setModalShown} onOpenChange={setSetModalShown}>
-        <DialogContent className="border border-[#2E2E32]! bg-[#1C1C1E] text-zinc-50">
+        <DialogContent className="border border-[var(--border-strong)]! bg-[var(--surface-tertiary)] text-[var(--text-strong)]">
           <DialogHeader>
             <DialogTitle className="text-sm font-medium">
               Set actions
@@ -208,7 +208,7 @@ export default function Set({ set, type }: Props) {
                 handleAddSet();
                 setSetModalShown(false);
               }}
-              className="border-[#2E2E32] bg-[#18181B] text-xs text-zinc-100 hover:border-[#A64DFF] hover:bg-[#2A173F]"
+              className="border-[var(--border-strong)] bg-[var(--surface-secondary)] text-xs text-[var(--text-strong)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]"
             >
               Add set
             </Button>
