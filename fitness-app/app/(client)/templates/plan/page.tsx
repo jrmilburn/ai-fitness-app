@@ -43,7 +43,7 @@ export function ListSection({
     <div className="flex flex-col gap-4">
       {title && (
         <div className="space-y-1">
-          <h2 className="text-xl font-semibold text-[var(--text-strong)]">
+          <h2 className="text-lg text-[var(--text-strong)]">
             {title}
           </h2>
           <p className="text-xs text-[var(--text-muted)]">

@@ -27,7 +27,7 @@ export default function ProgramList({
     <div className="w-full max-w-2xl flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between px-4">
-        <h3 className="text-lg font-semibold text-[var(--text-strong)]">Programs</h3>
+        <h3 className="text-lg text-[var(--text-strong)]">Programs</h3>
         <Link href="/templates/plan">
           <Button className="rounded-md bg-[#A64DFF] px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#B56BFF]">
             New +
@@ -195,7 +195,7 @@ function ProgramListItem({
             <button
               disabled={deleting}
               onClick={handleDeleteClick}
-              className="block w-full px-3 py-2 text-left text-[11px] text-red-300 hover:bg-red-500/10 hover:text-red-200 disabled:opacity-60"
+              className="block w-full px-3 py-2 text-left text-[11px] text-red-600 hover:bg-red-500/10 hover:text-red-600 disabled:opacity-60"
             >
               Delete program
             </button>
