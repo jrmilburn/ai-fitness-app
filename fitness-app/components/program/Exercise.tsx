@@ -69,8 +69,8 @@ export function ExerciseCard({
                 mb-2 rounded-md border px-3 py-2 text-xs transition-all
                 ${
                   isDragging
-                    ? "border-[#A64DFF] bg-[#2A173F]/50 shadow-md"
-                    : "border-[#2E2E32] bg-[#18181B]"
+                    ? "border-[#A64DFF] bg-[var(--surface-accent)]/50 shadow-md"
+                    : "border-[var(--border-strong)] bg-[var(--surface-secondary)]"
                 }
               `}
               style={{
@@ -79,7 +79,7 @@ export function ExerciseCard({
             >
               {/* Top row: name + menu */}
               <div className="mb-1 flex items-center justify-between gap-2">
-                <div className="text-sm font-medium text-zinc-100">
+                <div className="text-sm font-medium text-[var(--text-strong)]">
                   {template?.name ?? "Unnamed exercise"}
                 </div>
 
@@ -89,25 +89,25 @@ export function ExerciseCard({
                       <button
                         type="button"
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex h-6 w-6 items-center justify-center rounded-full text-zinc-500 hover:bg-[#232327] hover:text-zinc-100"
+                        className="inline-flex h-6 w-6 items-center justify-center rounded-full text-[var(--text-strong)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-strong)]"
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="border-[#2E2E32] bg-[#18181B] text-xs text-zinc-100"
+                      className="border-[var(--border-strong)] bg-[var(--surface-secondary)] text-xs text-[var(--text-strong)]"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <DropdownMenuItem
                         onClick={() => setOpen(true)}
-                        className="cursor-pointer text-xs hover:bg-[#2A173F]"
+                        className="cursor-pointer text-xs hover:bg-[var(--surface-accent)]"
                       >
                         Edit sets
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={onReplace}
-                        className="cursor-pointer text-xs hover:bg-[#2A173F]"
+                        className="cursor-pointer text-xs hover:bg-[var(--surface-accent)]"
                       >
                         Replace exercise
                       </DropdownMenuItem>
@@ -123,7 +123,7 @@ export function ExerciseCard({
               </div>
 
               {/* Sets summary */}
-              <div className="text-[11px] text-zinc-500">
+              <div className="text-[11px] text-[var(--text-strong)]">
                 {exercise.sets.length} set{exercise.sets.length !== 1 && "s"}
               </div>
             </div>
@@ -133,9 +133,9 @@ export function ExerciseCard({
 
       {/* Sets modal */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-md border border-[#2E2E32] bg-[#1C1C1E] text-zinc-50">
+        <DialogContent className="max-w-md border border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-[var(--text-strong)]">
           <DialogHeader>
-            <DialogTitle className="text-sm font-medium text-zinc-50">
+            <DialogTitle className="text-sm font-medium text-[var(--text-strong)]">
               Sets for{" "}
               <span className="text-[#A64DFF]">
                 {template?.name ?? "Unnamed exercise"}
@@ -145,9 +145,9 @@ export function ExerciseCard({
 
           <div className="mt-3 space-y-2 text-xs">
             {exercise.sets.length === 0 ? (
-              <p className="text-zinc-400">No sets yet. Add your first set.</p>
+              <p className="text-[var(--text-muted)]">No sets yet. Add your first set.</p>
             ) : (
-              <div className="space-y-1 rounded-md border border-[#2E2E32] bg-[#18181B] p-2">
+              <div className="space-y-1 rounded-md border border-[var(--border-strong)] bg-[var(--surface-secondary)] p-2">
                 {exercise.sets.map((set) => {
                   const canRemove = exercise.sets.length > 1;
 
@@ -156,11 +156,11 @@ export function ExerciseCard({
                       key={set.id}
                       className="flex items-center justify-between rounded px-2 py-1 text-[11px]"
                     >
-                      <span className="text-zinc-300">
+                      <span className="text-[var(--text-muted)]">
                         Set {set.setNumber}
                       </span>
                       <div className="flex items-center gap-2">
-                        <span className="text-zinc-400">
+                        <span className="text-[var(--text-muted)]">
                           {set.targetReps != null && (
                             <>
                               {set.targetReps} reps
@@ -178,7 +178,7 @@ export function ExerciseCard({
                           variant="outline"
                           disabled={!canRemove}
                           onClick={() => handleRemoveSetClick(set.id)}
-                          className="h-6 rounded-full border-[#2E2E32] bg-transparent px-2 text-[10px] text-zinc-300 hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-40"
+                          className="h-6 rounded-full border-[var(--border-strong)] bg-transparent px-2 text-[10px] text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-40"
                         >
                           Remove
                         </Button>
@@ -194,7 +194,7 @@ export function ExerciseCard({
             <Button
               variant="outline"
               onClick={() => setOpen(false)}
-              className="h-8 rounded-full border-[#2E2E32] bg-[#18181B] px-4 text-[11px] text-zinc-200 hover:border-[#A64DFF] hover:bg-[#2A173F]"
+              className="h-8 rounded-full border-[var(--border-strong)] bg-[var(--surface-secondary)] px-4 text-[11px] text-[var(--text-muted)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]"
             >
               Close
             </Button>

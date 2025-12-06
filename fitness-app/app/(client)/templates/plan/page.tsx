@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 export default async function PlanPage() {
   return (
-    <div className="mx-auto flex h-full max-w-2xl flex-col px-6 py-6">
+    <div className="mx-auto flex h-full max-w-2xl flex-col px-6 py-6 text-[var(--text-strong)]">
       <ListSection title="Plan a program">
         <ListItem
           title="Build with AI"
@@ -43,10 +43,10 @@ export function ListSection({
     <div className="flex flex-col gap-4">
       {title && (
         <div className="space-y-1">
-          <h2 className="text-xl font-semibold text-zinc-100">
+          <h2 className="text-xl font-semibold text-[var(--text-strong)]">
             {title}
           </h2>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[var(--text-muted)]">
             Choose how you want to design your next training block.
           </p>
         </div>
@@ -71,27 +71,25 @@ export function ListItem({
     <Link href={href}>
       <div
         className={cn(
-          "flex w-full items-center gap-4 rounded-lg border border-[#2E2E32] bg-[#18181B] px-4 py-4 transition-all",
-          "hover:border-[#A64DFF]/70 hover:bg-[#2A173F]/40 cursor-pointer"
+          "group flex w-full items-center gap-4 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-secondary)] px-4 py-4 transition-all",
+          "hover:border-[#A64DFF]/70 hover:bg-[var(--surface-accent)] cursor-pointer"
         )}
       >
         {/* Icon */}
         {icon && (
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#2A173F]/40 text-[#A64DFF]">
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--surface-accent)] text-[#A64DFF]">
             {icon}
           </div>
         )}
 
         {/* Text content */}
         <div className="flex-1">
-          <p className="text-sm font-medium text-zinc-100">{title}</p>
-          {description && (
-            <p className="mt-1 text-xs text-zinc-400">{description}</p>
-          )}
+          <p className="text-sm font-medium text-[var(--text-strong)]">{title}</p>
+          {description && <p className="mt-1 text-xs text-[var(--text-muted)]">{description}</p>}
         </div>
 
         {/* Right Chevron */}
-        <ChevronRight className="h-4 w-4 text-zinc-500 transition-all group-hover:translate-x-[2px]" />
+        <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-all group-hover:translate-x-[2px] group-hover:text-[#A64DFF]" />
       </div>
     </Link>
   );

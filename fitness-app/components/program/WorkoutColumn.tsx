@@ -185,14 +185,14 @@ export function WorkoutColumn({
 
   // ---- card body ----
   const CardBody = () => (
-    <div className="md:m-2 flex min-w-[260px] flex-col rounded-lg border border-[#2E2E32] bg-[#1C1C1E] shadow-sm">
+    <div className="md:m-2 flex min-w-[260px] flex-col rounded-lg border border-[var(--border-strong)] bg-[var(--surface-tertiary)] shadow-sm">
       {/* Header */}
-      <div className="flex items-center justify-between rounded-t-lg border-b border-[#2E2E32] bg-[#18181B] px-3 py-2">
+      <div className="flex items-center justify-between rounded-t-lg border-b border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2">
         <div className="flex flex-col gap-0.5">
-          <span className="text-[0.65rem] uppercase tracking-wide text-zinc-500">
+          <span className="text-[0.65rem] uppercase tracking-wide text-[var(--text-strong)]">
             Day {index + 1}
           </span>
-          <span className="text-sm font-medium text-zinc-50">
+          <span className="text-sm font-medium text-[var(--text-strong)]">
             {workout.name}
           </span>
         </div>
@@ -202,19 +202,19 @@ export function WorkoutColumn({
             <button
               type="button"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-zinc-500 hover:bg-[#232327] hover:text-zinc-100"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-strong)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-strong)]"
             >
               <MoreHorizontal className="h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="border-[#2E2E32] bg-[#18181B] text-xs text-zinc-100"
+            className="border-[var(--border-strong)] bg-[var(--surface-secondary)] text-xs text-[var(--text-strong)]"
             onClick={(e) => e.stopPropagation()}
           >
             <DropdownMenuItem
               onClick={handleOpenRename}
-              className="cursor-pointer text-xs hover:bg-[#2A173F]"
+              className="cursor-pointer text-xs hover:bg-[var(--surface-accent)]"
             >
               Rename workout
             </DropdownMenuItem>
@@ -234,8 +234,8 @@ export function WorkoutColumn({
           <div
             ref={dropProvided.innerRef}
             {...dropProvided.droppableProps}
-            className={`rounded-b-lg border-b border-[#2E2E32] p-3 transition-colors ${
-              snapshot.isDraggingOver ? "bg-[#232327]" : "bg-[#18181B]"
+            className={`rounded-b-lg border-b border-[var(--border-strong)] p-3 transition-colors ${
+              snapshot.isDraggingOver ? "bg-[var(--surface-tertiary)]" : "bg-[var(--surface-secondary)]"
             }`}
           >
             {exercises.map((exercise, exIndex) => (
@@ -257,13 +257,13 @@ export function WorkoutColumn({
       </Droppable>
 
       {/* Add exercise button */}
-      <div className="rounded-b-lg border-t border-[#2E2E32] bg-[#18181B] px-3 py-2">
+      <div className="rounded-b-lg border-t border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2">
         <Button
           type="button"
           size="sm"
           variant="outline"
           onClick={openAddPicker}
-          className="w-full justify-center rounded-md border border-dashed border-[#3A3A40] bg-transparent text-xs font-medium text-zinc-300 transition-colors hover:border-[#A64DFF] hover:bg-[#2A173F] hover:text-white"
+          className="w-full justify-center rounded-md border border-dashed border-[var(--border-subtle)] bg-transparent text-xs font-medium text-[var(--text-muted)] transition-colors hover:border-[#A64DFF] hover:bg-[var(--surface-accent)] hover:text-white"
         >
           + Add exercise
         </Button>
@@ -293,14 +293,14 @@ export function WorkoutColumn({
 
       {/* Workout rename dialog */}
       <Dialog open={nameDialogOpen} onOpenChange={setNameDialogOpen}>
-        <DialogContent className="max-w-sm border border-[#2E2E32]! bg-[#1C1C1E]! text-zinc-50">
+        <DialogContent className="max-w-sm border border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! text-[var(--text-strong)]">
           <DialogHeader>
-            <DialogTitle className="text-sm font-medium text-zinc-50">
+            <DialogTitle className="text-sm font-medium text-[var(--text-strong)]">
               Rename workout
             </DialogTitle>
           </DialogHeader>
           <div className="mt-3 space-y-2">
-            <label className="text-xs font-medium text-zinc-300">
+            <label className="text-xs font-medium text-[var(--text-muted)]">
               Workout name
             </label>
             <Input
@@ -308,7 +308,7 @@ export function WorkoutColumn({
               onChange={(e) => setPendingName(e.target.value)}
               autoFocus
               placeholder="e.g. Upper – Push"
-              className="bg-[#121214]! border-[#2E2E32]! text-sm text-zinc-100 placeholder:text-zinc-500"
+              className="bg-[var(--surface-tertiary)]! border-[var(--border-strong)]! text-sm text-[var(--text-strong)] placeholder:text-[var(--text-strong)]"
             />
           </div>
           <div className="mt-4 flex justify-end gap-2">
@@ -316,7 +316,7 @@ export function WorkoutColumn({
               type="button"
               variant="outline"
               onClick={() => setNameDialogOpen(false)}
-              className="border-[#2E2E32]! bg-[#121214]! text-xs text-zinc-200 hover:bg-[#202024]! hover:text-zinc-200!"
+              className="border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! text-xs text-[var(--text-muted)] hover:bg-[#202024]! hover:text-[var(--text-muted)]!"
             >
               Cancel
             </Button>
@@ -334,9 +334,9 @@ export function WorkoutColumn({
 
       {/* Exercise template picker modal (add / replace) */}
       <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
-        <DialogContent className="max-w-xl border border-[#2E2E32] bg-[#1C1C1E] text-zinc-50">
+        <DialogContent className="max-w-xl border border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-[var(--text-strong)]">
           <DialogHeader>
-            <DialogTitle className="text-sm font-medium text-zinc-50">
+            <DialogTitle className="text-sm font-medium text-[var(--text-strong)]">
               {pickerMode === "add" ? "Add exercise" : "Replace exercise"}
             </DialogTitle>
           </DialogHeader>
@@ -347,7 +347,7 @@ export function WorkoutColumn({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search exercises…"
-              className="h-8 flex-1 border-[#2E2E32]! bg-[#121214]! text-xs text-zinc-100 placeholder:text-zinc-500"
+              className="h-8 flex-1 border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! text-xs text-[var(--text-strong)] placeholder:text-[var(--text-strong)]"
             />
             <Button
               type="button"
@@ -356,7 +356,7 @@ export function WorkoutColumn({
               className={`h-8 rounded-full px-3 text-[11px] ${
                 showFilters
                   ? "bg-[#A64DFF]! text-white! hover:bg-[#B56BFF]!"
-                  : "border-[#2E2E32]! bg-[#18181B]! text-zinc-200 hover:border-[#A64DFF]! hover:text-white! hover:bg-[#2A173F]!"
+                  : "border-[var(--border-strong)]! bg-[var(--surface-secondary)]! text-[var(--text-muted)] hover:border-[#A64DFF]! hover:text-white! hover:bg-[var(--surface-accent)]!"
               }`}
             >
               {showFilters && "Close "}Filters
@@ -367,18 +367,18 @@ export function WorkoutColumn({
           <div className="relative mt-3 h-[360px] overflow-hidden">
             {/* Filters panel */}
             <div
-              className={`absolute inset-y-0 left-0 w-56 border-r border-[#2E2E32] bg-[#141416] px-3 py-3 text-[11px] transition-transform duration-200 ${
+              className={`absolute inset-y-0 left-0 w-56 border-r border-[var(--border-strong)] bg-[var(--surface-tertiary)] px-3 py-3 text-[11px] transition-transform duration-200 ${
                 showFilters ? "translate-x-0" : "-translate-x-full"
               }`}
             >
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-zinc-300">
+                <span className="text-[11px] font-semibold text-[var(--text-muted)]">
                   Filters
                 </span>
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="text-[10px] text-zinc-400 hover:text-zinc-200"
+                  className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-muted)]"
                 >
                   Clear
                 </button>
@@ -387,7 +387,7 @@ export function WorkoutColumn({
               <div className="space-y-3">
                 {/* Equipment */}
                 <div>
-                  <div className="mb-1 text-[10px] uppercase tracking-wide text-zinc-500">
+                  <div className="mb-1 text-[10px] uppercase tracking-wide text-[var(--text-strong)]">
                     Equipment
                   </div>
                   <div className="flex flex-wrap gap-1">
@@ -401,8 +401,8 @@ export function WorkoutColumn({
                           className={[
                             "rounded-full border px-2 py-[2px] text-[10px] transition-colors",
                             active
-                              ? "border-[#A64DFF] bg-[#2A173F] text-zinc-50"
-                              : "border-[#2E2E32] bg-transparent text-zinc-300 hover:border-[#A64DFF] hover:bg-[#2A173F]/60",
+                              ? "border-[#A64DFF] bg-[var(--surface-accent)] text-[var(--text-strong)]"
+                              : "border-[var(--border-strong)] bg-transparent text-[var(--text-muted)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]/60",
                           ].join(" ")}
                         >
                           {eq}
@@ -414,7 +414,7 @@ export function WorkoutColumn({
 
                 {/* Muscle groups */}
                 <div>
-                  <div className="mb-1 text-[10px] uppercase tracking-wide text-zinc-500">
+                  <div className="mb-1 text-[10px] uppercase tracking-wide text-[var(--text-strong)]">
                     Muscle group
                   </div>
                   <div className="flex flex-wrap gap-1">
@@ -428,8 +428,8 @@ export function WorkoutColumn({
                           className={[
                             "rounded-full border px-2 py-[2px] text-[10px] transition-colors",
                             active
-                              ? "border-[#A64DFF] bg-[#2A173F] text-zinc-50"
-                              : "border-[#2E2E32] bg-transparent text-zinc-300 hover:border-[#A64DFF] hover:bg-[#2A173F]/60",
+                              ? "border-[#A64DFF] bg-[var(--surface-accent)] text-[var(--text-strong)]"
+                              : "border-[var(--border-strong)] bg-transparent text-[var(--text-muted)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]/60",
                           ].join(" ")}
                         >
                           {mg}
@@ -448,7 +448,7 @@ export function WorkoutColumn({
               }`}
             >
               {filteredTemplates.length === 0 ? (
-                <p className="mt-2 text-xs text-zinc-400">
+                <p className="mt-2 text-xs text-[var(--text-muted)]">
                   No exercises match your filters.
                 </p>
               ) : (
@@ -458,25 +458,25 @@ export function WorkoutColumn({
                       key={t.id}
                       type="button"
                       onClick={() => handleSelectTemplate(t.id)}
-                      className="w-full rounded-md border border-[#2E2E32] bg-[#18181B] px-3 py-2 text-left text-xs text-zinc-100 transition-colors hover:border-[#A64DFF] hover:bg-[#2A173F]"
+                      className="w-full rounded-md border border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2 text-left text-xs text-[var(--text-strong)] transition-colors hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]"
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="font-medium text-sm">{t.name}</div>
-                        <div className="flex items-center gap-1 text-[9px] text-zinc-500">
+                        <div className="flex items-center gap-1 text-[9px] text-[var(--text-strong)]">
                           {t.muscleGroup && (
-                            <span className="rounded-full border border-[#2E2E32] bg-[#121214] px-2 py-[1px]">
+                            <span className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-tertiary)] px-2 py-[1px]">
                               {t.muscleGroup}
                             </span>
                           )}
                           {t.equipment && (
-                            <span className="rounded-full border border-[#2E2E32] bg-[#121214] px-2 py-[1px]">
+                            <span className="rounded-full border border-[var(--border-strong)] bg-[var(--surface-tertiary)] px-2 py-[1px]">
                               {t.equipment}
                             </span>
                           )}
                         </div>
                       </div>
                       {t.description ? (
-                        <div className="mt-1 text-[11px] text-zinc-400 line-clamp-2">
+                        <div className="mt-1 text-[11px] text-[var(--text-muted)] line-clamp-2">
                           {t.description}
                         </div>
                       ) : null}
