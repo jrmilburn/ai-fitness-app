@@ -36,8 +36,12 @@ export default function Set({
   const [completed, setCompleted] = useState(set?.completed ?? false);
   const [setModalShown, setSetModalShown] = useState(false);
   const [validationModalOpen, setValidationModalOpen] = useState(false);
+  const [warmupInfoOpen, setWarmupInfoOpen] = useState(false);
+
 
   const router = useRouter();
+
+  const isWarmup = set?.type === "WARMUP";
 
   // Autofill weight from cascadedWeight ONLY if this set doesn't already have a value
   useEffect(() => {
@@ -126,9 +130,15 @@ export default function Set({
 
   // ---- render variants ----
   const renderStrengthRow = () => (
-    <div className="flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]!">
-      {/* Left: menu button */}
-      <div className="flex min-w-[16px] flex-col items-start">
+    <div
+      className={`relative flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]! ${
+        isWarmup
+          ? "before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:bg-[#A64DFF] before:rounded-l"
+          : "before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:bg-[#1c1c1e] before:rounded-l"
+      }`}
+    >
+      {/* Left: menu button + warm-up label */}
+      <div className="flex min-w-[16px] flex-col items-start gap-1">
         <Button
           type="button"
           variant="ghost"
@@ -137,6 +147,18 @@ export default function Set({
         >
           <MoreVertical className="h-4 w-4" />
         </Button>
+
+        {isWarmup && (
+          <button
+            type="button"
+            onClick={() => setWarmupInfoOpen(true)}
+            className="absolute top-0 -translate-y-[60%] rounded-full bg-[#A64DFF1a] px-2 py-0.5 text-[9px] uppercase tracking-wide text-[#A64DFF] cursor-pointer hover:bg-[#A64DFF26] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#A64DFF]"
+          >
+            warm-up
+          </button>
+        )}
+
+
       </div>
 
       {/* Middle: reps + weight */}
@@ -175,6 +197,7 @@ export default function Set({
       </div>
     </div>
   );
+
 
   const renderIntervalRow = () => (
     <div className="flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]!">
@@ -322,6 +345,42 @@ export default function Set({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Warm-up info modal */}
+      <Dialog open={warmupInfoOpen} onOpenChange={setWarmupInfoOpen}>
+        <DialogContent className="max-w-sm border border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-[var(--text-strong)]">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-medium">
+              How to use warm-up sets
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-2 space-y-2 text-xs text-[var(--text-muted)]">
+            <p>
+              Warm-up sets let you gradually work up to your top working weight
+              without creating extra volume to track.
+            </p>
+            <ul className="list-disc pl-4 space-y-1">
+              <li>Start light and increase the weight each warm-up set.</li>
+              <li>Keep 4–6 reps and stay well away from failure (easy RPE).</li>
+              <li>
+                Use them to groove the movement and joints, then log your harder
+                working sets as normal.
+              </li>
+            </ul>
+          </div>
+          <div className="mt-4 flex justify-end">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => setWarmupInfoOpen(false)}
+              className="h-8 rounded-full border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-[11px] text-[var(--text-strong)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]"
+            >
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </>
   );
 }

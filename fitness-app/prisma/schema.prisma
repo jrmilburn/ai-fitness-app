@@ -58,6 +58,8 @@ model User {
   exerciseTemplates ExerciseTemplate[]
   programTemplates  ProgramTemplate[]
 
+  admin Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -104,6 +106,8 @@ model ProgramTemplate {
   days  Int
 
   structureJson Json?
+
+  sptemplate Boolean @default(false)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -183,6 +187,8 @@ model ExerciseTemplate {
   muscleGroup MuscleGroup?
 
   equipment Equipment?
+
+  sptemplate Boolean @default(false)
 
   // Defaults that get copied into the concrete Exercise / Sets
   defaultSets      Int? // e.g. 3

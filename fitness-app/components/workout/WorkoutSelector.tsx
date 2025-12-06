@@ -48,7 +48,7 @@ export function WorkoutSelector({
           <Button
             variant="outline"
             size="icon"
-            className="h-8 w-8 rounded-full border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! text-[var(--text-muted)]! hover:border-[#A64DFF]! hover:bg-[var(--surface-accent)]! hover:text-white!"
+            className="h-8 w-8 rounded-full border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! text-[var(--text-muted)]! hover:border-[#A64DFF]! hover:bg-[var(--surface-accent)]!"
             onClick={() => setPickerOpen(true)}
           >
             <CalendarDaysIcon className="h-4 w-4" />
@@ -90,7 +90,7 @@ export function WorkoutSelector({
                           setPickerOpen(false);
                         }}
                         variant={isActive ? "secondary" : "outline"}
-                        className={`h-8 min-w-[2.25rem] rounded-full px-2 text-xs ${
+                        className={`h-8 min-w-[2.25rem] rounded-full px-2 text-xs text-white hover:text-black ${
                           workout.completed
                             ? "border-emerald-500/60! bg-emerald-500/10! text-emerald-200!"
                             : "bg-[#A64DFF]"

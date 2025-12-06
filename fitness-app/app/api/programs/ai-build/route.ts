@@ -56,6 +56,7 @@ const programStructureSchema = {
                           enum: ["NORMAL", "WARMUP", "BACKOFF", "INTERVAL"],
                         },
                         targetDurationSec: { type: ["number", "null"] },
+                        targetReps: { type : ["number", "null"]}
                       },
                       required: ["id", "setNumber", "type"],
                       additionalProperties: false,
@@ -189,7 +190,7 @@ export async function POST(req: Request) {
       select: {
         id: true,
         name: true,
-        muscleGroup: { select: { name: true } },
+        muscleGroup: true
       },
     });
 
@@ -204,7 +205,7 @@ export async function POST(req: Request) {
       .map(
         (t) =>
           `- id: ${t.id}, name: ${t.name}, muscleGroup: ${
-            t.muscleGroup?.name ?? "N/A"
+            t.muscleGroup ?? "N/A"
           }`
       )
       .join("\n");

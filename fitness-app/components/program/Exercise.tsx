@@ -164,7 +164,6 @@ export function ExerciseCard({
                           {set.targetReps != null && (
                             <>
                               {set.targetReps} reps
-                              {set.targetWeightKg != null && " @ "}
                             </>
                           )}
                           {set.targetWeightKg != null &&
