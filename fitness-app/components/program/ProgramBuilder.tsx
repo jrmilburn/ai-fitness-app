@@ -488,12 +488,12 @@ export function ProgramBuilder({
 
   return (
     <div className="flex h-full flex-col md:pt-4">
-      <div className="flex h-full flex-col rounded-xl border border-[#2E2E32] bg-[#121214] shadow-sm">
+      <div className="flex h-full flex-col rounded-xl border border-[var(--border-strong)] bg-[var(--surface-tertiary)] shadow-sm">
         {/* header / controls */}
-        <div className="flex items-start justify-between gap-4 rounded-t-xl border-b border-[#2E2E32] bg-[#18181B] px-6 py-4">
+        <div className="flex items-start justify-between gap-4 rounded-t-xl border-b border-[var(--border-strong)] bg-[var(--surface-secondary)] px-6 py-4">
           {/* Left: program name */}
           <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-zinc-50">
+            <h2 className="text-lg font-semibold text-[var(--text-strong)]">
               {programName}
             </h2>
             {/* optional helper text later if you want */}
@@ -516,18 +516,18 @@ export function ProgramBuilder({
                 <Button
                   type="button"
                   variant="ghost"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 hover:bg-[#232327] hover:text-zinc-100"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-strong)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-strong)]"
                 >
                   <MoreVerticalIcon className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="border-[#2E2E32] bg-[#18181B] text-xs text-zinc-100"
+                className="border-[var(--border-strong)] bg-[var(--surface-secondary)] text-xs text-[var(--text-strong)]"
               >
                 <DropdownMenuItem
                   onClick={handleOpenNameDialog}
-                  className="cursor-pointer text-xs hover:bg-[#2A173F]"
+                  className="cursor-pointer text-xs hover:bg-[var(--surface-accent)]"
                 >
                   Rename program
                 </DropdownMenuItem>
@@ -540,14 +540,14 @@ export function ProgramBuilder({
 
         {/* name dialog */}
         <Dialog open={isNameDialogOpen} onOpenChange={setIsNameDialogOpen}>
-          <DialogContent className="bg-[#18181B] border-[#2E2E32]">
+          <DialogContent className="bg-[var(--surface-secondary)] border-[var(--border-strong)]">
             <DialogHeader>
-              <DialogTitle className="text-zinc-50">
+              <DialogTitle className="text-[var(--text-strong)]">
                 Rename program
               </DialogTitle>
             </DialogHeader>
             <div className="mt-3 space-y-2">
-              <label className="text-xs font-medium text-zinc-300">
+              <label className="text-xs font-medium text-[var(--text-muted)]">
                 Program name
               </label>
               <Input
@@ -555,7 +555,7 @@ export function ProgramBuilder({
                 autoFocus
                 onChange={(e) => setPendingName(e.target.value)}
                 placeholder="e.g. Push/Pull/Legs – 4 Day Strength"
-                className="bg-[#121214]! border-[#2E2E32]! text-sm text-zinc-100 placeholder:text-zinc-500"
+                className="bg-[var(--surface-tertiary)]! border-[var(--border-strong)]! text-sm text-[var(--text-strong)] placeholder:text-[var(--text-strong)]"
               />
             </div>
             <DialogFooter className="mt-4 flex gap-2">
@@ -563,7 +563,7 @@ export function ProgramBuilder({
                 type="button"
                 variant="outline"
                 onClick={() => setIsNameDialogOpen(false)}
-                className="border-[#2E2E32]! bg-[#121214]! text-xs text-zinc-200 hover:bg-[#202024]! hover:text-white!"
+                className="border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! text-xs text-[var(--text-muted)] hover:bg-[#202024]! hover:text-white!"
               >
                 Cancel
               </Button>
@@ -581,13 +581,13 @@ export function ProgramBuilder({
 
         {/* loading + error */}
         {(submitting || error) && (
-          <div className="space-y-2 border-b border-[#2E2E32] bg-[#18181B] px-6 py-3">
+          <div className="space-y-2 border-b border-[var(--border-strong)] bg-[var(--surface-secondary)] px-6 py-3">
             {submitting && (
-              <div className="flex flex-col gap-1 rounded-lg border border-[#2E2E32] bg-[#121214] px-4 py-3 text-xs text-zinc-300">
-                <p className="font-medium text-zinc-100">
+              <div className="flex flex-col gap-1 rounded-lg border border-[var(--border-strong)] bg-[var(--surface-tertiary)] px-4 py-3 text-xs text-[var(--text-muted)]">
+                <p className="font-medium text-[var(--text-strong)]">
                   Saving your program…
                 </p>
-                <p className="text-[0.7rem] text-zinc-400">
+                <p className="text-[0.7rem] text-[var(--text-muted)]">
                   We’re creating your program so it’s ready to use on the
                   workout page.
                 </p>
@@ -650,7 +650,7 @@ export function ProgramBuilder({
                   onClick={handleAddWorkout}
                   variant="outline"
                   disabled={submitting}
-                  className="mt-2 flex w-[210px] flex-col items-center justify-center self-start rounded-lg border border-dashed border-[#3A3A40] bg-transparent px-3 py-3 text-xs font-medium text-zinc-300 transition-colors hover:border-[#A64DFF] hover:bg-[#2A173F] hover:text-white"
+                  className="mt-2 flex w-[210px] flex-col items-center justify-center self-start rounded-lg border border-dashed border-[var(--border-subtle)] bg-transparent px-3 py-3 text-xs font-medium text-[var(--text-muted)] transition-colors hover:border-[#A64DFF] hover:bg-[var(--surface-accent)] hover:text-white"
                 >
                   + Add workout
                 </Button>
@@ -659,10 +659,10 @@ export function ProgramBuilder({
           </Droppable>
 
           {/* Mobile: tabbed days + single column */}
-          <div className="flex flex-1 flex-col border-t border-[#2E2E32] md:px-4 py-3 md:hidden">
+          <div className="flex flex-1 flex-col border-t border-[var(--border-strong)] md:px-4 py-3 md:hidden">
             {state.workoutOrder.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-                <p className="text-sm font-medium text-zinc-200">
+                <p className="text-sm font-medium text-[var(--text-muted)]">
                   This week has no workouts yet.
                 </p>
                 <Button
@@ -688,8 +688,8 @@ export function ProgramBuilder({
                         className={[
                           "flex min-w-[96px] flex-col items-center justify-center rounded-xl px-3 py-2 text-xs font-medium transition-colors",
                           isActive
-                            ? "bg-[#1C1C1E] text-zinc-50 shadow-sm border border-[#A64DFF]"
-                            : "bg-[#18181B] text-zinc-400 border border-[#2E2E32]",
+                            ? "bg-[var(--surface-tertiary)] text-[var(--text-strong)] shadow-sm border border-[#A64DFF]"
+                            : "bg-[var(--surface-secondary)] text-[var(--text-muted)] border border-[var(--border-strong)]",
                         ].join(" ")}
                       >
                         <span className="text-[0.7rem] uppercase tracking-wide">
@@ -704,7 +704,7 @@ export function ProgramBuilder({
                     onClick={handleAddWorkout}
                     variant="outline"
                     disabled={submitting}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border-[#3A3A40] bg-[#18181B] text-zinc-200 hover:border-[#A64DFF] hover:bg-[#2A173F]"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border-[var(--border-subtle)] bg-[var(--surface-secondary)] text-[var(--text-muted)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]"
                   >
                     +
                   </Button>
