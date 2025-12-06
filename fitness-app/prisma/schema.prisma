@@ -63,23 +63,6 @@ model User {
 }
 
 // =========================================================
-//  MuscleGroup
-// =========================================================
-model MuscleGroup {
-  id          String  @id @default(cuid())
-  name        String  @unique // e.g. "Chest", "Quads"
-  shortName   String? // e.g. "PEC", "QUAD"
-  description String?
-
-  // Back-relations
-  exercises         Exercise[]
-  exerciseTemplates ExerciseTemplate[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// =========================================================
 //  Program
 // =========================================================
 model Program {
@@ -197,9 +180,9 @@ model ExerciseTemplate {
   description  String?
   exerciseType ExerciseType @default(STRENGTH)
 
-  // Link to muscle group (optional)
-  muscleGroup   MuscleGroup? @relation(fields: [muscleGroupId], references: [id])
-  muscleGroupId String?
+  muscleGroup MuscleGroup?
+
+  equipment Equipment?
 
   // Defaults that get copied into the concrete Exercise / Sets
   defaultSets      Int? // e.g. 3
@@ -214,6 +197,29 @@ model ExerciseTemplate {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum Equipment {
+  Barbell
+  Dumbbell
+  Cable
+  Kettlebell
+  Bodyweight
+  Machine
+}
+
+enum MuscleGroup {
+  Calves
+  Quads
+  Hamstrings
+  Glutes
+  Abs
+  Back
+  Chest
+  Shoulders
+  Biceps
+  Triceps
+  Cardio
 }
 
 // =========================================================
@@ -231,9 +237,8 @@ model Exercise {
   exerciseTemplateId String?
   template           ExerciseTemplate? @relation(fields: [exerciseTemplateId], references: [id])
 
-  // NEW: structured muscle group instead of free-text
-  muscleGroupId String?
-  muscleGroup   MuscleGroup? @relation(fields: [muscleGroupId], references: [id])
+  muscleGroup MuscleGroup?
+  equipment Equipment?
 
   details String?
 

@@ -25,7 +25,7 @@ export default function TemplateList({ programs }: { programs: Program[] }) {
 
       {/* Empty state */}
       {programs.length === 0 && (
-        <p className="mt-2 text-sm text-zinc-400">
+        <p className="mt-2 text-sm text-zinc-400 px-4 md:px-0">
           You have no programs yet. Create one to get started.
         </p>
       )}

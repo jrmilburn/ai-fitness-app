@@ -7,7 +7,7 @@ import {
   type DropResult,
 } from "@hello-pangea/dnd";
 
-import type { ExerciseTemplate } from "@/generated/prisma";
+import type { ExerciseTemplate } from "@prisma/client";
 import type {
   ProgramTemplateWithStructure,
   ProgramBuilderState,
@@ -18,14 +18,37 @@ import {
   createId,
 } from "@/lib/builderTypes";
 
+import { MoreVerticalIcon, Pencil } from "lucide-react";
+
 import { WorkoutColumn } from "./WorkoutColumn";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../ui/dialog";
+
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "../ui/dropdown-menu";
+
+
 import { useRouter } from "next/navigation";
 
 type ProgramBuilderProps = {
   initialTemplate?: ProgramTemplateWithStructure;
   exerciseTemplates: ExerciseTemplate[];
-  onSubmit: (payload: ProgramTemplateWithStructure) => Promise<void> | void, existingTemplate : boolean;
+  onSubmit: (
+    payload: ProgramTemplateWithStructure,
+    existingTemplate: boolean
+  ) => Promise<void> | void;
 };
 
 export function ProgramBuilder({
@@ -40,6 +63,15 @@ export function ProgramBuilder({
   const [error, setError] = React.useState<string | null>(null);
   const [existingTemplate, setExistingTemplate] = React.useState(false); // use to determine if program changes and needs a new template
 
+  // --- program name state ---
+  const [programName, setProgramName] = React.useState<string>(
+    initialTemplate?.name ?? "New program"
+  );
+  const [isNameDialogOpen, setIsNameDialogOpen] = React.useState(false);
+  const [pendingName, setPendingName] = React.useState<string>(
+    initialTemplate?.name ?? "New program"
+  );
+
   const [activeWorkoutId, setActiveWorkoutId] = React.useState<string | null>(
     null
   );
@@ -47,10 +79,12 @@ export function ProgramBuilder({
   const router = useRouter();
 
   React.useEffect(() => {
-
-  if (initialTemplate) setExistingTemplate(true);
-
-  }, [initialTemplate])
+    if (initialTemplate) {
+      setExistingTemplate(true);
+      setProgramName(initialTemplate.name);
+      setPendingName(initialTemplate.name);
+    }
+  }, [initialTemplate]);
 
   // keep mobile active workout in sync
   React.useEffect(() => {
@@ -217,35 +251,48 @@ export function ProgramBuilder({
   };
 
   const handleAddSetToExercise = (exerciseId: string) => {
-  setExistingTemplate(false);
+    setExistingTemplate(false);
 
-  setState((prev) => {
-    const exercise = prev.exercises[exerciseId];
-    if (!exercise) return prev;
+    setState((prev) => {
+      const exercise = prev.exercises[exerciseId];
+      if (!exercise) return prev;
 
-    const nextSetNumber = exercise.sets.length + 1;
+      const nextSetNumber = exercise.sets.length + 1;
 
-    const newSet = {
-      id: createId("set"),
-      setNumber: nextSetNumber,
-      type: "NORMAL" as const,
-      targetReps: 8,
-      targetWeightKg: null,
-    };
+      const newSet = {
+        id: createId("set"),
+        setNumber: nextSetNumber,
+        type: "NORMAL" as const,
+        targetReps: 8,
+        targetWeightKg: null,
+      };
 
-    return {
-      ...prev,
-      exercises: {
-        ...prev.exercises,
-        [exerciseId]: {
-          ...exercise,
-          sets: [...exercise.sets, newSet],
+      return {
+        ...prev,
+        exercises: {
+          ...prev.exercises,
+          [exerciseId]: {
+            ...exercise,
+            sets: [...exercise.sets, newSet],
+          },
         },
-      },
-    };
-  });
-};
+      };
+    });
+  };
 
+  // ---- program name modal handlers ----
+  const handleOpenNameDialog = () => {
+    setPendingName(programName);
+    setIsNameDialogOpen(true);
+  };
+
+  const handleSaveProgramName = () => {
+    const trimmed = pendingName.trim();
+    if (!trimmed) return;
+    setProgramName(trimmed);
+    setExistingTemplate(false);
+    setIsNameDialogOpen(false);
+  };
 
   // ---- submit ----
   const handleSubmit = async () => {
@@ -267,7 +314,9 @@ export function ProgramBuilder({
           aiPlanJson: null,
           createdAt: new Date(),
           updatedAt: new Date(),
+          structureJson: null,
         }),
+        name: programName,
         structureJson,
       };
 
@@ -284,6 +333,150 @@ export function ProgramBuilder({
     }
   };
 
+  const handleRenameWorkout = (workoutId: string, name: string) => {
+    setExistingTemplate(false);
+    setState((prev) => {
+      const workout = prev.workouts[workoutId];
+      if (!workout) return prev;  
+
+      return {
+        ...prev,
+        workouts: {
+          ...prev.workouts,
+          [workoutId]: {
+            ...workout,
+            name,
+          },
+        },
+      };
+    });
+  };  
+
+  const handleReplaceExercise = (
+    workoutId: string,
+    exerciseId: string,
+    templateId: string
+  ) => {
+    setExistingTemplate(false);
+    setState((prev) => {
+      const exercise = prev.exercises[exerciseId];
+      if (!exercise) return prev; 
+
+      return {
+        ...prev,
+        exercises: {
+          ...prev.exercises,
+          [exerciseId]: {
+            ...exercise,
+            exerciseTemplateId: templateId,
+          },
+        },
+      };
+    });
+  };  
+
+  const handleDeleteExercise = (workoutId: string, exerciseId: string) => {
+    setExistingTemplate(false);
+    setState((prev) => {
+      const workout = prev.workouts[workoutId];
+      if (!workout) return prev;  
+
+      const { [exerciseId]: _removed, ...restExercises } = prev.exercises;  
+
+      return {
+        ...prev,
+        exercises: restExercises,
+        workouts: {
+          ...prev.workouts,
+          [workoutId]: {
+            ...workout,
+            exerciseIds: workout.exerciseIds.filter((id) => id !== exerciseId),
+          },
+        },
+      };
+    });
+  };
+
+  const handleDeleteWorkout = (workoutId: string) => {
+    setExistingTemplate(false);
+
+    setState((prev) => {
+      const workout = prev.workouts[workoutId];
+      if (!workout) return prev;
+
+      // 1. Remove workout from order
+      const newOrder = prev.workoutOrder.filter((id) => id !== workoutId);
+
+      // 2. Remove all exercises that belong to this workout
+      const newExercises = { ...prev.exercises };
+      workout.exerciseIds.forEach((exId) => {
+        delete newExercises[exId];
+      });
+
+      // 3. Remove the workout itself
+      const { [workoutId]: _removedWorkout, ...restWorkouts } = prev.workouts;
+
+      // 4. Renumber dayNumber based on new order
+      const updatedWorkouts: typeof restWorkouts = { ...restWorkouts };
+      newOrder.forEach((id, idx) => {
+        const w = updatedWorkouts[id];
+        if (w) {
+          updatedWorkouts[id] = {
+            ...w,
+            dayNumber: idx + 1,
+          };
+        }
+      });
+
+      // 5. Update activeWorkoutId (outer state), if needed
+      if (activeWorkoutId === workoutId) {
+        setActiveWorkoutId(newOrder.length ? newOrder[0] : null);
+      }
+
+      return {
+        ...prev,
+        workoutOrder: newOrder,
+        workouts: updatedWorkouts,
+        exercises: newExercises,
+      };
+    });
+  };
+
+  const handleRemoveSetFromExercise = (exerciseId: string, setId: string) => {
+  setExistingTemplate(false);
+
+  setState((prev) => {
+    const exercise = prev.exercises[exerciseId];
+    if (!exercise) return prev;
+
+    const filteredSets = exercise.sets.filter((s) => s.id !== setId);
+
+    // Enforce minimum of 1 set
+    if (filteredSets.length === 0) return prev;
+
+    // Renumber setNumber
+    const renumbered = filteredSets.map((s, idx) => ({
+      ...s,
+      setNumber: idx + 1,
+    }));
+
+    return {
+      ...prev,
+      exercises: {
+        ...prev.exercises,
+        [exerciseId]: {
+          ...exercise,
+          sets: renumbered,
+        },
+      },
+    };
+  });
+};
+
+
+
+
+
   // convenience for mobile
   const activeIndex = activeWorkoutId
     ? state.workoutOrder.indexOf(activeWorkoutId)
@@ -294,17 +487,21 @@ export function ProgramBuilder({
     activeWorkout?.exerciseIds.map((id) => state.exercises[id]) ?? [];
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col md:pt-4">
       <div className="flex h-full flex-col rounded-xl border border-[#2E2E32] bg-[#121214] shadow-sm">
         {/* header / controls */}
         <div className="flex items-start justify-between gap-4 rounded-t-xl border-b border-[#2E2E32] bg-[#18181B] px-6 py-4">
+          {/* Left: program name */}
           <div className="space-y-1">
             <h2 className="text-lg font-semibold text-zinc-50">
-              Builder
+              {programName}
             </h2>
+            {/* optional helper text later if you want */}
           </div>
 
+          {/* Right: menu + primary action */}
           <div className="flex items-center gap-2">
+
             <Button
               type="button"
               onClick={handleSubmit}
@@ -314,8 +511,73 @@ export function ProgramBuilder({
             >
               {submitting ? "Creating…" : "Create program"}
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full text-zinc-500 hover:bg-[#232327] hover:text-zinc-100"
+                >
+                  <MoreVerticalIcon className="h-4 w-4" aria-hidden="true" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="border-[#2E2E32] bg-[#18181B] text-xs text-zinc-100"
+              >
+                <DropdownMenuItem
+                  onClick={handleOpenNameDialog}
+                  className="cursor-pointer text-xs hover:bg-[#2A173F]"
+                >
+                  Rename program
+                </DropdownMenuItem>
+                {/* future options can go here */}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
+
+
+        {/* name dialog */}
+        <Dialog open={isNameDialogOpen} onOpenChange={setIsNameDialogOpen}>
+          <DialogContent className="bg-[#18181B] border-[#2E2E32]">
+            <DialogHeader>
+              <DialogTitle className="text-zinc-50">
+                Rename program
+              </DialogTitle>
+            </DialogHeader>
+            <div className="mt-3 space-y-2">
+              <label className="text-xs font-medium text-zinc-300">
+                Program name
+              </label>
+              <Input
+                value={pendingName}
+                autoFocus
+                onChange={(e) => setPendingName(e.target.value)}
+                placeholder="e.g. Push/Pull/Legs – 4 Day Strength"
+                className="bg-[#121214]! border-[#2E2E32]! text-sm text-zinc-100 placeholder:text-zinc-500"
+              />
+            </div>
+            <DialogFooter className="mt-4 flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsNameDialogOpen(false)}
+                className="border-[#2E2E32]! bg-[#121214]! text-xs text-zinc-200 hover:bg-[#202024]! hover:text-white!"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSaveProgramName}
+                disabled={!pendingName.trim()}
+                className="bg-[#A64DFF]! text-xs text-white hover:bg-[#B56BFF]! disabled:opacity-60"
+              >
+                Save name
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* loading + error */}
         {(submitting || error) && (
@@ -326,8 +588,8 @@ export function ProgramBuilder({
                   Saving your program…
                 </p>
                 <p className="text-[0.7rem] text-zinc-400">
-                  We’re creating your program so it’s ready to use on the workout
-                  page.
+                  We’re creating your program so it’s ready to use on the
+                  workout page.
                 </p>
               </div>
             )}
@@ -370,7 +632,12 @@ export function ProgramBuilder({
                     index={index}
                     exerciseTemplates={exerciseTemplates}
                     onAddExercise={handleAddExerciseToWorkout}
-                    onAddSetToExercise={handleAddSetToExercise} // 👈 here
+                    onAddSetToExercise={handleAddSetToExercise}
+                    onRenameWorkout={handleRenameWorkout}
+                    onReplaceExercise={handleReplaceExercise}
+                    onDeleteExercise={handleDeleteExercise}
+                    onDeleteWorkout={handleDeleteWorkout}
+                    onRemoveSetFromExercise={handleRemoveSetFromExercise}
                   />
 
                   );
@@ -392,7 +659,7 @@ export function ProgramBuilder({
           </Droppable>
 
           {/* Mobile: tabbed days + single column */}
-          <div className="flex flex-1 flex-col border-t border-[#2E2E32] px-4 py-3 md:hidden">
+          <div className="flex flex-1 flex-col border-t border-[#2E2E32] md:px-4 py-3 md:hidden">
             {state.workoutOrder.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
                 <p className="text-sm font-medium text-zinc-200">
@@ -409,9 +676,8 @@ export function ProgramBuilder({
             ) : (
               <>
                 {/* Tabs */}
-                <div className="mb-3 flex items-center gap-2 flex-wrap justify-center pb-1">
+                <div className="mb-3 flex flex-wrap items-center justify-center gap-2 pb-1">
                   {state.workoutOrder.map((id, idx) => {
-                    const workout = state.workouts[id];
                     const isActive = id === activeWorkoutId;
 
                     return (
@@ -453,12 +719,16 @@ export function ProgramBuilder({
                       index={activeIndex}
                       exerciseTemplates={exerciseTemplates}
                       onAddExercise={handleAddExerciseToWorkout}
-                      onAddSetToExercise={handleAddSetToExercise} // 👈 here as well
+                      onAddSetToExercise={handleAddSetToExercise}
+                      onDeleteWorkout={handleDeleteWorkout}
+                      onDeleteExercise={handleDeleteExercise}
+                      onReplaceExercise={handleReplaceExercise}
+                      onRenameWorkout={handleRenameWorkout}
+                      onRemoveSetFromExercise={handleRemoveSetFromExercise}
                       draggable={false}
                     />
                   </div>
                 )}
-
               </>
             )}
           </div>
