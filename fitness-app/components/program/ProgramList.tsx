@@ -27,7 +27,7 @@ export default function ProgramList({
     <div className="w-full max-w-2xl flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between px-4">
-        <h3 className="text-lg font-semibold text-zinc-100">Programs</h3>
+        <h3 className="text-lg font-semibold text-[var(--text-strong)]">Programs</h3>
         <Link href="/templates/plan">
           <Button className="rounded-md bg-[#A64DFF] px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#B56BFF]">
             New +
@@ -37,7 +37,7 @@ export default function ProgramList({
 
       {/* Empty state */}
       {programs.length === 0 && (
-        <p className="mt-2 text-sm text-zinc-400 px-4 md:px-0">
+        <p className="mt-2 text-sm text-[var(--text-muted)] px-4 md:px-0">
           You have no programs yet. Create one to get started.
         </p>
       )}
@@ -126,11 +126,11 @@ function ProgramListItem({
       {/* Main row */}
       <Link
         href={`/programs/${program.id}`}
-        className="flex w-full items-center justify-between rounded-lg border border-[#2E2E32] bg-[#18181B] px-4 py-4 pr-12 transition-all hover:border-[#A64DFF]/60 hover:bg-[#2A173F]/40"
+        className="flex w-full items-center justify-between rounded-lg border border-[var(--border-strong)] bg-[var(--surface-secondary)] px-4 py-4 pr-12 transition-all hover:border-[#A64DFF]/60 hover:bg-[var(--surface-accent)]/40"
       >
         <div className="flex flex-col gap-2 w-full">
           <div className="flex items-center gap-4 justify-between">
-            <h3 className="text-md font-medium text-zinc-100 truncate max-w-[320px]">
+            <h3 className="text-md font-medium text-[var(--text-strong)] truncate max-w-[320px]">
               {program.name}
             </h3>
 
@@ -146,7 +146,7 @@ function ProgramListItem({
             )}
           </div>
 
-          <div className="flex gap-3 text-[0.7rem] uppercase tracking-wide text-zinc-500">
+          <div className="flex gap-3 text-[0.7rem] uppercase tracking-wide text-[var(--text-strong)]">
             <span>
               {program.length} weeks, {program.days} days
             </span>
@@ -164,21 +164,21 @@ function ProgramListItem({
             e.preventDefault();
             setMenuOpen((v) => !v);
           }}
-          className="h-8 w-8 rounded-full text-zinc-400 hover:text-zinc-100 hover:bg-[#23232A]"
+          className="h-8 w-8 rounded-full text-[var(--text-muted)] hover:text-[var(--text-strong)] hover:bg-[#23232A]"
         >
           <MoreVertical className="h-4 w-4" />
         </Button>
 
         {menuOpen && (
           <div
-            className="absolute right-0 top-9 min-w-[180px] rounded-md border border-[#2E2E32] bg-[#1C1C1E] py-1 text-xs text-zinc-100 shadow-lg z-[10000]"
+            className="absolute right-0 top-9 min-w-[180px] rounded-md border border-[var(--border-strong)] bg-[var(--surface-tertiary)] py-1 text-xs text-[var(--text-strong)] shadow-lg z-[10000]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Set current */}
             <button
               disabled={isCurrent}
               onClick={handleSetCurrent}
-              className="block w-full px-3 py-2 text-left text-[11px] hover:bg-[#2A173F] hover:text-zinc-50 disabled:opacity-50"
+              className="block w-full px-3 py-2 text-left text-[11px] hover:bg-[var(--surface-accent)] hover:text-[var(--text-strong)] disabled:opacity-50"
             >
               {isCurrent ? "Already current" : "Set as current"}
             </button>
@@ -186,7 +186,7 @@ function ProgramListItem({
             {/* Copy */}
             <button
               onClick={handleCopy}
-              className="block w-full px-3 py-2 text-left text-[11px] hover:bg-[#2A173F] hover:text-zinc-50"
+              className="block w-full px-3 py-2 text-left text-[11px] hover:bg-[var(--surface-accent)] hover:text-[var(--text-strong)]"
             >
               Copy program
             </button>
@@ -205,19 +205,19 @@ function ProgramListItem({
 
       {/* 🔥 Delete warning modal */}
       <AlertDialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <AlertDialogContent className="bg-[#18181B] border border-[#2E2E32]">
+        <AlertDialogContent className="bg-[var(--surface-secondary)] border border-[var(--border-strong)]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-zinc-100">
+            <AlertDialogTitle className="text-[var(--text-strong)]">
               Delete current program?
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-zinc-400 text-sm">
+            <AlertDialogDescription className="text-[var(--text-muted)] text-sm">
               This is your current program. Deleting it will permanently remove
               your active workout data. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel className="text-zinc-300 bg-[#2E2E32]">
+            <AlertDialogCancel className="text-[var(--text-muted)] bg-[#2E2E32]">
               Cancel
             </AlertDialogCancel>
 

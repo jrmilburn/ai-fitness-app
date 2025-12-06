@@ -11,9 +11,9 @@ export default async function ClientLayout({
   const user = await getOrCreateCurrentUser();
 
   return (
-    <div className="flex h-screen bg-[#050509] text-zinc-50">
+    <div className="flex h-screen bg-[var(--surface-secondary)] text-[var(--text-strong)]">
       {/* Sidebar (desktop) + mobile nav logic inside */}
-      <ClientSidebar 
+      <ClientSidebar
         currentProgramId={user.currentProgramId}
       />
 

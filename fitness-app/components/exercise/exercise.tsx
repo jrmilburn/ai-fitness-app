@@ -43,7 +43,7 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
 
   return (
     <>
-      <div className="relative w-full rounded-lg border border-[#2E2E32] bg-[#18181B] shadow-sm">
+      <div className="relative w-full rounded-lg border border-[var(--border-strong)] bg-[var(--surface-secondary)] shadow-sm">
         {setsCompleted && (
           <p className="absolute right-3 top-2 text-[0.7rem] font-medium text-emerald-300">
             Exercise complete
@@ -54,19 +54,19 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
         <div className="flex w-full items-center justify-between px-4 py-3">
           <div className="flex flex-col gap-1">
             {exercise?.template?.name && (
-              <h3 className="text-sm font-medium text-zinc-100">
+              <h3 className="text-sm font-medium text-[var(--text-strong)]">
                 {exercise.template.name}
               </h3>
             )}
             {exercise?.muscleGroup?.name && (
-              <h4 className="text-[0.7rem] uppercase tracking-wide text-zinc-500">
+              <h4 className="text-[0.7rem] uppercase tracking-wide text-[var(--text-muted)]">
                 {exercise.muscleGroup.name}
               </h4>
             )}
           </div>
           <Button
             variant="ghost"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 hover:bg-[#121214] hover:text-zinc-100"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-strong)]"
             onClick={() => setActionModalOpen(true)}
           >
             <MoreHorizontal className="h-4 w-4" />
@@ -82,7 +82,7 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
       </div>
 
       <Dialog open={actionModalOpen} onOpenChange={setActionModalOpen}>
-        <DialogContent className="border border-[#2E2E32] bg-[#1C1C1E] text-zinc-50">
+        <DialogContent className="border border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-[var(--text-strong)]">
           <DialogHeader>
             <DialogTitle className="text-sm font-medium">
               Exercise actions
@@ -95,7 +95,7 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
                 handleAddSet();
                 setActionModalOpen(false);
               }}
-              className="border-[#2E2E32] bg-[#18181B] text-xs text-zinc-100 hover:border-[#A64DFF] hover:bg-[#2A173F]"
+              className="border-[var(--border-strong)] bg-[var(--surface-secondary)] text-xs text-[var(--text-strong)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]"
             >
               Add set
             </Button>
@@ -105,7 +105,7 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
                 setActionModalOpen(false);
                 setNewExerciseSelector(true);
               }}
-              className="border-[#2E2E32] bg-[#18181B] text-xs text-zinc-100 hover:border-[#A64DFF] hover:bg-[#2A173F]"
+              className="border-[var(--border-strong)] bg-[var(--surface-secondary)] text-xs text-[var(--text-strong)] hover:border-[#A64DFF] hover:bg-[var(--surface-accent)]"
             >
               Add exercise
             </Button>
