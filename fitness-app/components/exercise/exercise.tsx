@@ -17,7 +17,7 @@ import { deleteExercise } from "@/server/exercise/deleteExercise";
 import ExerciseSelector from "./exerciseSelector";
 
 export type ExerciseWithSets = Prisma.ExerciseGetPayload<{
-  include: { sets: true, template: true, muscleGroup: true };
+  include: { sets: true; template: true; muscleGroup: true };
 }>;
 
 export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
@@ -26,6 +26,11 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
   const router = useRouter();
   const [actionModalOpen, setActionModalOpen] = useState(false);
   const [newExerciseSelector, setNewExerciseSelector] = useState(false);
+
+  // 🔁 map of setId -> cascaded weight (as string)
+  const [cascadedWeights, setCascadedWeights] = useState<Record<string, string>>(
+    {}
+  );
 
   const handleAddSet = async () => {
     await createSet(exercise.id);
@@ -39,6 +44,32 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
   const handleDeleteExercise = async () => {
     await deleteExercise(exercise.id);
     router.refresh();
+  };
+
+  /**
+   * Called by a Set when user types a weight.
+   * We:
+   *  - find that set in the exercise.sets order
+   *  - cascade the weight to all *following* sets that don't have a saved weight yet
+   */
+  const handleCascadeWeightChange = (setId: string, weight: string) => {
+    const idx = exercise.sets.findIndex((s) => s.id === setId);
+    if (idx === -1) return;
+
+    setCascadedWeights((prev) => {
+      const next: Record<string, string> = { ...prev };
+
+      for (let i = idx + 1; i < exercise.sets.length; i++) {
+        const s = exercise.sets[i];
+
+        // Only apply to sets that don't already have a saved weight
+        if (s.actualWeightKg == null) {
+          next[s.id] = weight;
+        }
+      }
+
+      return next;
+    });
   };
 
   return (
@@ -73,11 +104,21 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
           </Button>
         </div>
 
-        {/* If exercise is strenght or interval based*/}
+        {/* Sets */}
         <div className="flex w-full flex-col">
-          {(exercise?.exerciseType === "STRENGTH" || exercise?.exerciseType === "CARDIO_INTERVAL" || exercise?.exerciseType === "CARDIO_STEADY") && exercise?.sets.map((set) => (
-            <Set key={set.id} set={set} type={exercise?.exerciseType} />
-          ))}
+          {(exercise?.exerciseType === "STRENGTH" ||
+            exercise?.exerciseType === "CARDIO_INTERVAL" ||
+            exercise?.exerciseType === "CARDIO_STEADY") &&
+            exercise.sets.map((set) => (
+              <Set
+                key={set.id}
+                set={set}
+                type={exercise.exerciseType}
+                // 🔁 new props for cascading weight
+                onCascadeWeightChange={handleCascadeWeightChange}
+                cascadedWeight={cascadedWeights[set.id]}
+              />
+            ))}
         </div>
       </div>
 
