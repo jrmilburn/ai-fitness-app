@@ -149,18 +149,18 @@ export default function AiBuildPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-[#050509]! px-4 py-12 text-zinc-50">
+    <div className="flex min-h-screen flex-col items-center bg-[var(--surface-primary)] px-4 py-12 text-[var(--text-strong)]">
       <div className="w-full max-w-3xl space-y-8">
         {/* Heading */}
         <div className="space-y-3 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight text-zinc-50">
+          <h1 className="text-3xl font-semibold tracking-tight text-[var(--text-strong)]">
             Tell us about your training
           </h1>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-[var(--text-muted)]">
             We&apos;ll turn your goals, schedule, and equipment into a complete program
             you can edit in the builder.
           </p>
-          <p className="text-[0.7rem] text-zinc-500">
+          <p className="text-[0.7rem] text-[var(--text-muted)]">
             Step {step + 1} of {TOTAL_STEPS}
           </p>
         </div>
@@ -185,10 +185,10 @@ export default function AiBuildPage() {
               {/* STEP 0 – Goals (multi-select) */}
               {step === 0 && (
                 <section className="space-y-2">
-                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                     What are you trying to get out of this program?
                   </Label>
-                  <p className="text-[0.7rem] text-zinc-500">
+                  <p className="text-[0.7rem] text-[var(--text-muted)]">
                     You can pick more than one. We&apos;ll prioritise strength, then
                     muscle, then general fitness when building your plan.
                   </p>
@@ -218,7 +218,7 @@ export default function AiBuildPage() {
               {/* STEP 1 – Sport specific */}
               {step === 1 && (
                 <section className="space-y-3">
-                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                     Is this program for a specific sport?
                   </Label>
                   <div className="flex gap-2">
@@ -239,7 +239,7 @@ export default function AiBuildPage() {
                         value={sport}
                         onChange={(e) => setSport(e.target.value)}
                         placeholder="e.g. soccer, AFL, BJJ, marathon running"
-                        className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
+                        className="h-9 rounded-full border border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! px-4 text-xs text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
                       />
                     </div>
                   )}
@@ -249,7 +249,7 @@ export default function AiBuildPage() {
               {/* STEP 2 – Days per week (pills 1–7) */}
               {step === 2 && (
                 <section className="space-y-3">
-                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                     How many days per week can you train?
                   </Label>
                   <div className="flex flex-wrap gap-2">
@@ -262,7 +262,7 @@ export default function AiBuildPage() {
                       />
                     ))}
                   </div>
-                  <p className="text-[0.7rem] text-zinc-500">
+                  <p className="text-[0.7rem] text-[var(--text-muted)]">
                     We&apos;ll spread your training stress across these days.
                   </p>
                 </section>
@@ -270,7 +270,7 @@ export default function AiBuildPage() {
 
             {step === 3 && (
               <section className="space-y-3">
-                <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                <Label className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                   Program length (weeks)
                 </Label>
             
@@ -285,7 +285,7 @@ export default function AiBuildPage() {
                   ))}
                 </div>
                 
-                <p className="text-[0.7rem] text-zinc-500">
+                <p className="text-[0.7rem] text-[var(--text-muted)]">
                   Choose how long you want your program block to run.
                 </p>
               </section>
@@ -297,7 +297,7 @@ export default function AiBuildPage() {
                 <section className="space-y-4">
 
                   <div className="space-y-2">
-                    <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                    <Label className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                       Experience level
                     </Label>
                     <div className="flex flex-wrap gap-2">
@@ -325,7 +325,7 @@ export default function AiBuildPage() {
             {step === 5 && (
               <section className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                     Available equipment
                   </Label>            
 
@@ -340,21 +340,21 @@ export default function AiBuildPage() {
                     ))}
                   </div>            
 
-                  <p className="text-[0.7rem] text-zinc-500">
+                  <p className="text-[0.7rem] text-[var(--text-muted)]">
                     Pick everything you have regular access to. We&apos;ll build the plan around it.
                   </p>
                 </div>            
 
                 {/* Injuries section stays the same */}
                 <div className="space-y-1">
-                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                     Injuries or limitations
                   </Label>
                   <Input
                     value={injuries}
                     onChange={(e) => setInjuries(e.target.value)}
                     placeholder="e.g. low back sensitivity, avoid overhead pressing"
-                    className="h-9 rounded-full border border-[#2E2E32]! bg-[#18181B]! px-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
+                    className="h-9 rounded-full border border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! px-4 text-xs text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
                   />
                 </div>
               </section>
@@ -363,16 +363,16 @@ export default function AiBuildPage() {
               {/* STEP 6 – Extra notes + confirm */}
               {step === 6 && (
                 <section className="space-y-3">
-                  <Label className="text-xs font-medium uppercase tracking-wide text-zinc-400">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-[var(--text-muted)]">
                     Anything else we should know?
                   </Label>
                   <Textarea
                     value={extraNotes}
                     onChange={(e) => setExtraNotes(e.target.value)}
                     placeholder="e.g. I like push/pull/legs, prefer machines over barbells, want one hard interval day per week."
-                    className="min-h-[90px] rounded-2xl border border-[#2E2E32]! bg-[#18181B]! px-4 py-3 text-xs text-zinc-100 placeholder:text-zinc-500 focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
+                    className="min-h-[90px] rounded-2xl border border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! px-4 py-3 text-xs text-[var(--text-strong)] placeholder:text-[var(--text-muted)] focus-visible:border-[#A64DFF]! focus-visible:ring-1 focus-visible:ring-[#A64DFF] focus-visible:ring-offset-0"
                   />
-                  <p className="text-[0.7rem] text-zinc-500">
+                  <p className="text-[0.7rem] text-[var(--text-muted)]">
                     We&apos;ll use all of this to build your first training week and
                     program structure. You can tweak everything in the builder.
                   </p>
@@ -388,7 +388,7 @@ export default function AiBuildPage() {
               variant="outline"
               onClick={goBack}
               disabled={step === 0 || loading}
-              className="h-9 rounded-full border border-[#2E2E32]! bg-transparent text-xs text-zinc-200 hover:border-[#A64DFF]/60! hover:bg-[#18181B]! disabled:cursor-not-allowed disabled:opacity-50"
+              className="h-9 rounded-full border border-[var(--border-strong)]! bg-[var(--surface-primary)] text-xs text-[var(--text-strong)] hover:border-[#A64DFF]/60! hover:bg-[var(--surface-tertiary)]! disabled:cursor-not-allowed disabled:opacity-50"
             >
               Back
             </Button>
@@ -411,13 +411,13 @@ export default function AiBuildPage() {
         {(loading || error) && (
           <section className="space-y-3">
             {loading && (
-              <div className="flex items-center gap-3 rounded-2xl border border-[#2E2E32]! bg-[#18181B]! px-4 py-3">
+              <div className="flex items-center gap-3 rounded-2xl border border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! px-4 py-3">
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#A64DFF]! border-t-transparent!" />
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-zinc-100">
+                  <p className="text-sm font-medium text-[var(--text-strong)]">
                     Generating your program…
                   </p>
-                  <p className="text-[0.7rem] text-zinc-400">
+                  <p className="text-[0.7rem] text-[var(--text-muted)]">
                     We’re building a training week based on your inputs and exercise
                     library.
                   </p>
@@ -454,12 +454,12 @@ function GoalCard({
       onClick={onClick}
       className={`rounded-2xl border px-4 py-3 text-left text-xs transition-colors ${
         active
-          ? "border-[#A64DFF]! bg-[#2A173F]/60!"
-          : "border-[#2E2E32]! bg-[#18181B]! hover:border-[#A64DFF]/60!"
+          ? "border-[#A64DFF]! bg-[var(--surface-accent)]!"
+          : "border-[var(--border-strong)]! bg-[var(--surface-secondary)]! hover:border-[#A64DFF]/60!"
       }`}
     >
-      <p className="font-medium text-zinc-50">{label}</p>
-      <p className="mt-1 text-[0.7rem] text-zinc-400">{description}</p>
+      <p className="font-medium text-[var(--text-strong)]">{label}</p>
+      <p className="mt-1 text-[0.7rem] text-[var(--text-muted)]">{description}</p>
     </button>
   );
 }
@@ -480,7 +480,7 @@ function TogglePill({
       className={`rounded px-4 py-2 text-lg transition-colors ${
         active
           ? "bg-[#A64DFF]! text-white"
-          : "bg-[#18181B]! text-zinc-300 border border-[#2E2E32]! hover:border-[#A64DFF]/60!"
+          : "border border-[var(--border-strong)]! bg-[var(--surface-secondary)]! text-[var(--text-strong)] hover:border-[#A64DFF]/60!"
       }`}
     >
       {label}
