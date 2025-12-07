@@ -1,8 +1,7 @@
 
-import TemplateList from "@/components/programTemplate/TemplateList"
+import TemplateList from "@/features/programs/ui/TemplateList"
 
-import { getTemplates } from "@/server/programTemplate/getTemplates";
-import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
+import { getTemplates } from "@/server/programs/getTemplates";
 
 import { redirect } from "next/navigation";
 

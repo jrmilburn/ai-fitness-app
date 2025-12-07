@@ -1,8 +1,8 @@
 
-import ExerciseTemplateList from "@/components/exerciseTemplate/ExerciseTemplateList";
+import ExerciseTemplateList from "@/features/exercises/ui/ExerciseTemplateList";
 
-import { getExerciseTemplates } from "@/server/exerciseTemplate/getExerciseTemplates";
-import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
+import { getExerciseTemplates } from "@/server/exercises/getExerciseTemplates";
+import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
 import { redirect } from "next/navigation";
 
 
