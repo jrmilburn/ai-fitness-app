@@ -11,14 +11,14 @@ export default async function ClientLayout({
   const user = await getOrCreateCurrentUser();
 
   return (
-    <div className="flex h-screen bg-[var(--surface-secondary)] text-[var(--text-strong)]">
+    <div className="relative flex h-screen text-[var(--text-strong)]">
       {/* Sidebar (desktop) + mobile nav logic inside */}
       <ClientSidebar
         currentProgramId={user.currentProgramId}
       />
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto overflow-x-auto pb-10 md:px-8 md:pb-6 bg-[var(--surface-secondary)]">
+      <main className="flex-1 overflow-y-auto overflow-x-auto pb-10 md:px-8 md:pb-6 bg-[var(--surface-secondary)] z-[-1]">
         {children}
       </main>
     </div>
