@@ -1,7 +1,7 @@
-import { getPrograms } from "@/server/program/getPrograms";
+import { getPrograms } from "@/server/programs/getPrograms";
 
-import ProgramList from "@/components/program/ProgramList";
-import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
+import ProgramList from "@/features/programs/ui/ProgramList";
+import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
 import { redirect } from "next/navigation";
 
 export default async function ProgramsPage() {

@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ClientSidebar } from "@/components/navbar/client-sidebar";
-import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
+import { ClientSidebar } from "@/shared/ui/client-sidebar";
+import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
 
 export default async function ClientLayout({
   children,

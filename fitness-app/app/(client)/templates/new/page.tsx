@@ -1,10 +1,10 @@
 import { prisma } from "@/lib/prisma";
 
-import { ProgramBuilder } from "@/components/program/ProgramBuilder";
+import { ProgramBuilder } from "@/features/programs/ui/ProgramBuilder";
 
-import { getExerciseTemplates } from "@/server/exerciseTemplate/getExerciseTemplates";
+import { getExerciseTemplates } from "@/server/exercises/getExerciseTemplates";
 
-import { createProgram } from "@/server/program/createProgram";
+import { createProgram } from "@/server/programs/createProgram";
 
 type NewProgramPageProps = {
   searchParams: {

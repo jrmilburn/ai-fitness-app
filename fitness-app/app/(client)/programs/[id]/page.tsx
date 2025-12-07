@@ -1,6 +1,6 @@
-import WorkoutWrapper from "@/components/workout/WorkoutWrapper";
-import { getProgram } from "@/server/program/getProgram";
-import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
+import WorkoutWrapper from "@/features/workouts/ui/WorkoutWrapper";
+import { getProgram } from "@/server/programs/getProgram";
+import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
 import { redirect } from "next/navigation";
 
 type WorkoutPageProps = {
