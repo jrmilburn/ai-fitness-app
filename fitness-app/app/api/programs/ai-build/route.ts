@@ -293,6 +293,7 @@ PROGRAM STRUCTURE CONVENTION
   - Include exactly one workout for each training day (dayNumber 1..days).
   - Do NOT enumerate separate workouts for every week of the program.
 - The client application will repeat this 1-week structure over the given number of weeks.
+- Only use the enums prescribed in the schema template
 
 EXERCISE TEMPLATE LIBRARY:`,
 

@@ -267,11 +267,23 @@ export default function ExerciseTemplateList({
         setEditOpen(false);
       }
       resetForm();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setFormError(
-        err?.message ?? "Something went wrong saving this exercise template."
-      );
+    
+      let message = "Something went wrong saving this exercise template.";
+    
+      if (err instanceof Error) {
+        // Standard Error object
+        message = err.message;
+      } else if (typeof err === "string") {
+        // Some libraries throw strings
+        message = err;
+      } else {
+        // Anything else (number, object, null, undefined)
+        message = JSON.stringify(err);
+      }
+    
+      setFormError(message);
     } finally {
       setSaving(false);
     }
@@ -439,7 +451,7 @@ export default function ExerciseTemplateList({
         {/* Template list (shifts right when filters open) */}
         <div
           className={`flex flex-col gap-2 transition-transform duration-200 ${
-            showFilters ? "translate-x-[100%]" : "translate-x-0"
+            showFilters ? "translate-x-[100%] md:translate-x-56" : "translate-x-0"
           }`}
         >
           {visibleTemplates.length === 0 ? (
