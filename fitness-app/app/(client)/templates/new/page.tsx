@@ -15,7 +15,9 @@ type NewProgramPageProps = {
 };
 
 export default async function NewProgram({ searchParams }: NewProgramPageProps) {
-  const templateId = searchParams.templateId;
+  const { templateId } = await searchParams;
+
+  console.log(templateId);
 
   const rawTemplate = templateId
     ? await prisma.programTemplate.findUnique({
