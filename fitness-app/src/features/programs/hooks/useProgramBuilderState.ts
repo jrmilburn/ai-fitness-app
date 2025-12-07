@@ -2,12 +2,11 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 
 import type { ProgramTemplateWithStructure } from "@/features/programs/model/builderTypes";
+import { createId, type ProgramBuilderState } from "@/features/programs/model/builderTypes";
 import {
   builderStateToStructureJson,
-  createId,
   templateToBuilderState,
-  type ProgramBuilderState,
-} from "@/features/programs/model/builderTypes";
+} from "@/features/programs/model/transformers";
 
 export type ProgramBuilderActions = {
   addWorkout: () => void;
