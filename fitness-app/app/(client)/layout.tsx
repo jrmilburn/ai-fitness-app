@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ClientSidebar } from "@/shared/ui/client-sidebar";
 import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
+import { requireActiveSubscription } from "@/server/subscription/requireActiveSubscription";
 
 export default async function ClientLayout({
   children,
@@ -9,6 +10,7 @@ export default async function ClientLayout({
 }) {
 
   const user = await getOrCreateCurrentUser();
+  await requireActiveSubscription();
 
   return (
     <div className="relative flex h-screen text-[var(--text-strong)]">

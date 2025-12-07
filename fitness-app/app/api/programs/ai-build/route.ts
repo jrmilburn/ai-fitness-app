@@ -1,15 +1,15 @@
-// app/api/programs/ai-build/route.ts
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { requireAiSubscription } from "@/server/subscription/requireAiSubscription";
 
 import type { ExerciseType, WorkoutMode, SetType } from "@prisma/client";
 
 type AiProgramSet = {
   id: string;
   setNumber: number;
-  type: SetType;                // "NORMAL" | "WARMUP" | "BACKOFF" | "INTERVAL"
+  type: SetType;
   targetDurationSec: number | null;
   targetReps: number | null;
 };
@@ -17,7 +17,7 @@ type AiProgramSet = {
 type AiProgramExercise = {
   id: string;
   exerciseTemplateId: string;
-  exerciseType: ExerciseType;   // "STRENGTH" | "CARDIO_STEADY" | "CARDIO_INTERVAL"
+  exerciseType: ExerciseType;
   sets: AiProgramSet[];
 };
 
@@ -25,7 +25,7 @@ type AiProgramWorkout = {
   id: string;
   name: string;
   dayNumber: number;
-  mode: WorkoutMode;            // "STRENGTH" | "CARDIO" | "MIXED"
+  mode: WorkoutMode;
   focusMuscleGroups: string[];
   notes?: string | null;
   exercises: AiProgramExercise[];
@@ -38,6 +38,7 @@ type AiProgramStructure = {
   workouts: AiProgramWorkout[];
 };
 
+const MONTHLY_AI_LIMIT = 5;
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -91,7 +92,7 @@ const programStructureSchema = {
                           enum: ["NORMAL", "WARMUP", "BACKOFF", "INTERVAL"],
                         },
                         targetDurationSec: { type: ["number", "null"] },
-                        targetReps: { type : ["number", "null"]}
+                        targetReps: { type: ["number", "null"] },
                       },
                       required: ["id", "setNumber", "type"],
                       additionalProperties: false,
@@ -128,15 +129,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const subscription = await requireAiSubscription();
+    if (subscription instanceof NextResponse) {
+      return subscription;
+    }
+
     const body = await req.json();
 
     const {
-      goal, // "STRENGTH" | "HYPERTROPHY" | "ENDURANCE" | "GENERAL_FITNESS"
+      goal,
       isSportSpecific,
       sport,
       daysPerWeek,
       weeks,
-      experience, // "BEGINNER" | "INTERMEDIATE" | "ADVANCED"
+      experience,
       equipment,
       injuries,
       extraNotes,
@@ -152,20 +158,13 @@ export async function POST(req: Request) {
       extraNotes?: string;
     };
 
-    // Basic validation
-    if (
-      !goal ||
-      !daysPerWeek ||
-      !weeks ||
-      !experience
-    ) {
+    if (!goal || !daysPerWeek || !weeks || !experience) {
       return NextResponse.json(
         { error: "Missing required program details." },
         { status: 400 }
       );
     }
 
-    // Clamp weeks to 4–8 as per system rules
     const clampedWeeks = Math.min(Math.max(Number(weeks) || 4, 4), 8);
 
     const goalTextMap: Record<string, string> = {
@@ -209,15 +208,50 @@ export async function POST(req: Request) {
 
     const prompt = lines.join("\n");
 
-    // 1) Resolve / ensure app User from Clerk id
-    let user = await prisma.user.findUnique({ where: { clerkId } });
-    if (!user) {
-      user = await prisma.user.create({
-        data: { clerkId },
+    const clerkProfile = await currentUser();
+    const email = clerkProfile?.primaryEmailAddress?.emailAddress ?? null;
+
+    let user = await prisma.user.upsert({
+      where: { clerkId },
+      update: {
+        email: email ?? undefined,
+        subscriptionActive: subscription.subscriptionActive,
+        subscriptionStatus: subscription.subscriptionStatus,
+      },
+      create: {
+        clerkId,
+        email: email ?? undefined,
+        subscriptionActive: subscription.subscriptionActive,
+        subscriptionStatus: subscription.subscriptionStatus,
+      },
+    });
+
+    const now = new Date();
+    let periodStart = user.aiProgramsPeriodStart ?? now;
+    let usedThisPeriod = user.aiProgramsUsedThisPeriod;
+
+    const nextReset = new Date(periodStart);
+    nextReset.setMonth(nextReset.getMonth() + 1);
+
+    if (!user.aiProgramsPeriodStart || now >= nextReset) {
+      periodStart = now;
+      usedThisPeriod = 0;
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          aiProgramsPeriodStart: periodStart,
+          aiProgramsUsedThisPeriod: usedThisPeriod,
+        },
       });
     }
 
-    // 2) Load exercise templates (global + user’s own)
+    if (usedThisPeriod >= MONTHLY_AI_LIMIT) {
+      return NextResponse.json(
+        { error: "Monthly AI program limit reached" },
+        { status: 403 }
+      );
+    }
+
     const templates = await prisma.exerciseTemplate.findMany({
       where: {
         OR: [{ userId: null }, { userId: user.id }],
@@ -225,7 +259,7 @@ export async function POST(req: Request) {
       select: {
         id: true,
         name: true,
-        muscleGroup: true
+        muscleGroup: true,
       },
     });
 
@@ -246,7 +280,7 @@ export async function POST(req: Request) {
       .join("\n");
 
     const systemPrompt = [
-`You are an elite coach able to design structured, effective programs for a full range of goals: maximal strength, muscle hypertrophy, cardiovascular/conditioning/endurance, general fitness, and sport-specific outcomes.
+      `You are an elite coach able to design structured, effective programs for a full range of goals: maximal strength, muscle hypertrophy, cardiovascular/conditioning/endurance, general fitness, and sport-specific outcomes.
 
 Your task is to design a training program using ONLY the provided exercise template library. Follow ALL rules below.
 
@@ -278,7 +312,7 @@ Before you begin, identify the dominant program type:
     - Cardio is optional or minimal—a supplement for health, not focus, unless otherwise requested.
 - If the user requests a MIXED, HYBRID, or ALL-AROUND program (e.g. "general fitness", "athletic base", "look good and move well"):
     - Split the week roughly evenly (about 50% strength/hypertrophy, 50% cardio/conditioning, or use mixed/circuit days).
-    - Structure "mixed" days as circuits or intervals that include both strength and conditioning exercises.
+    - Structure "mixed" days as circuits or intervals that include both strength (multi-joint) and cardio exercises.
 - If user requests SPORT-SPECIFIC programming:
     - Choose exercise types and session structures to reflect the movement patterns, energy systems, and key physical qualities of the sport (e.g., repeated short intervals for field sports, steady-state or tempo for endurance sports, explosive lifts for power sports), still obeying their "main" goal as written.
 
@@ -327,11 +361,9 @@ PROGRAM STRUCTURE CONVENTION
 - You are designing a single, representative training week:
   - Include exactly one workout for each training day (dayNumber 1..days).
   - Do NOT enumerate separate workouts for every week of the program.
-- The client application will repeat this 1-week structure over the given number of weeks.
 - Only use the enums prescribed in the schema template
 
 EXERCISE TEMPLATE LIBRARY:`,
-
       templateLibraryText,
     ].join("\n");
 
@@ -361,17 +393,15 @@ EXERCISE TEMPLATE LIBRARY:`,
       );
     }
 
-    // You could do runtime validation here if you want, but for now:
     const structure = JSON.parse(content) as AiProgramStructure;
 
     const validIds = new Set(templates.map((t) => t.id));
-      
+
     for (const workout of structure.workouts) {
       workout.exercises = workout.exercises.filter((ex) =>
         validIds.has(ex.exerciseTemplateId)
       );
     }
-
 
     const templateName = "AI – " + structure.name;
 
@@ -379,8 +409,6 @@ EXERCISE TEMPLATE LIBRARY:`,
       data: {
         userId: user.id,
         name: templateName,
-        // You could store goal here if you want:
-        // goal: goal as any,
         goal: null,
         weeks: structure.weeks || clampedWeeks,
         days: structure.days,
@@ -388,7 +416,23 @@ EXERCISE TEMPLATE LIBRARY:`,
       },
     });
 
-    return NextResponse.json({ template: createdTemplate });
+    const nextUsed = usedThisPeriod + 1;
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        aiProgramsUsedThisPeriod: nextUsed,
+        aiProgramsPeriodStart: periodStart,
+        subscriptionActive: subscription.subscriptionActive,
+        subscriptionStatus: subscription.subscriptionStatus,
+      },
+    });
+
+    const remainingQuota = Math.max(MONTHLY_AI_LIMIT - nextUsed, 0);
+
+    return NextResponse.json({
+      template: createdTemplate,
+      remainingQuota,
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json(

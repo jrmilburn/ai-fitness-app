@@ -11,11 +11,8 @@ import {
   SignOutButton,
   UserButton,
 } from "@clerk/nextjs";
+import { useSubscription } from "@clerk/clerk-react/experimental";
 import { cn } from "@/lib/utils";
-import { SubscriptionDetailsButton } from '@clerk/clerk-react/experimental';
-
-import { useUser } from "@clerk/nextjs";
-
 import { CalendarDays, Dumbbell, MoreHorizontal, X } from "lucide-react";
 
 type ClientSidebarProps = {
@@ -32,12 +29,8 @@ const navItems = [
 export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = React.useState(false);
+  const { data: subscription } = useSubscription({ preload: true });
 
-  const { user } = useUser();
-
-  console.log(user);
-
-  // Where the workout button should go
   const currentProgramHref = currentProgramId
     ? `/programs/${currentProgramId}`
     : "/programs";
@@ -67,16 +60,24 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
     return pathname.startsWith(href);
   };
 
+  const hasActiveSubscription =
+    subscription?.status === "active" ||
+    subscription?.subscriptionItems?.some(
+      (item) => item.status === "active" || item.status === "upcoming"
+    );
+
+  const billingCta = hasActiveSubscription
+    ? { label: "Billing", href: "/billing" }
+    : { label: "Upgrade", href: "/pricing" };
+
   return (
     <>
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden h-screen w-64 flex-col border-r border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-[var(--text-strong)] md:flex">
-        {/* Top brand */}
         <div className="flex h-16 items-center border-b border-[var(--border-strong)] px-4">
           <span className="text-xl font-semibold tracking-tight">SP</span>
         </div>
 
-        {/* Nav links */}
         <nav className="flex-1 space-y-1 px-2 py-4">
           {navItems.map((item) => {
             const href = getHrefForItem(item.key);
@@ -100,7 +101,6 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
           })}
         </nav>
 
-        {/* Bottom account area */}
         <div className="border-t border-[var(--border-strong)] px-4 py-4">
           <SignedOut>
             <div className="flex flex-col gap-2">
@@ -119,22 +119,20 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
 
           <SignedIn>
             <div className="space-y-3">
-              {/* Billing + Sign out (middle between nav and profile) */}
               <div className="flex gap-2">
-                    <button className="flex-1 w-full rounded-md border border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2 text-xs font-medium text-[var(--text-strong)] hover:bg-[var(--surface-accent)]"
-                      onClick={() => setMoreOpen(false)}>
-                      <SubscriptionDetailsButton />
-                    </button>
-
+                <Link href={billingCta.href} prefetch className="flex-1 w-full">
+                  <button className="flex-1 w-full rounded-md border border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2 text-xs font-medium text-[var(--text-strong)] hover:bg-[var(--surface-accent)] cursor-pointer">
+                    {billingCta.label}
+                  </button>
+                </Link>
 
                 <SignOutButton redirectUrl="/">
-                  <button className="flex-1 rounded-md w-full border border-[var(--border-strong)] bg-transparent px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text-strong)]">
+                  <button className="flex-1 rounded-md w-full border border-[var(--border-strong)] bg-transparent px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text-strong)] cursor-pointer">
                     Sign out
                   </button>
                 </SignOutButton>
               </div>
 
-              {/* Profile row at the very bottom */}
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs text-[var(--text-muted)]">Account</span>
                 <UserButton />
@@ -146,7 +144,6 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
 
       {/* MOBILE BOTTOM NAV */}
       <nav className="fixed bottom-0 left-0 right-0 z-0 flex items-center justify-around border-t border-[var(--border-strong)] bg-[var(--surface-secondary)] px-4 py-2 md:hidden">
-        {/* Workout */}
         <Link href={currentProgramHref} prefetch>
           <button
             className={cn(
@@ -159,7 +156,6 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
           </button>
         </Link>
 
-        {/* Programs */}
         <Link href="/programs" prefetch>
           <button
             className={cn(
@@ -172,7 +168,6 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
           </button>
         </Link>
 
-        {/* More */}
         <button
           type="button"
           onClick={() => setMoreOpen(true)}
@@ -190,15 +185,12 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
           moreOpen ? "pointer-events-auto translate-x-0" : "translate-x-full"
         )}
       >
-        {/* Backdrop */}
         <div
           className="absolute inset-0 bg-black/60"
           onClick={() => setMoreOpen(false)}
         />
 
-        {/* Panel */}
         <div className="absolute right-0 top-0 flex h-full w-full flex-col bg-[var(--surface-primary)] px-6 py-6">
-          {/* Header */}
           <div className="mb-8 flex items-center justify-between">
             <div className="space-y-1">
               <div className="text-xl font-semibold text-[var(--text-strong)]">
@@ -217,7 +209,6 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
             </button>
           </div>
 
-          {/* Nav section */}
           <div className="flex-1 space-y-4">
             <div className="space-y-2">
               {navItems.map((item) => {
@@ -246,8 +237,7 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
               })}
             </div>
 
-            {/* Auth / account block */}
-            <div className="mt-6 border-t border-[var(--border-strong)] pt-4 space-y-3">
+            <div className="mt-6 space-y-3 border-t border-[var(--border-strong)] pt-4">
               <SignedOut>
                 <div className="flex flex-col gap-2">
                   <SignInButton>
@@ -265,14 +255,17 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
 
               <SignedIn>
                 <div className="space-y-3">
-                  {/* Billing + Sign out in the middle */}
                   <div className="flex gap-2">
-                    <div className="relative flex-1 w-full rounded-md border z-[9999] border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2 text-xs font-medium text-[var(--text-strong)] hover:bg-[var(--surface-accent)]"
+                    <Link
+                      href={billingCta.href}
+                      prefetch
                       onClick={() => setMoreOpen(false)}
+                      className="flex-1 w-full"
                     >
-                      <SubscriptionDetailsButton 
-                      />
-                    </div>
+                      <div className="w-full rounded-md border border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2 text-xs font-medium text-[var(--text-strong)] hover:bg-[var(--surface-accent)]">
+                        {billingCta.label}
+                      </div>
+                    </Link>
 
                     <SignOutButton redirectUrl="/">
                       <button className="flex-1 rounded-md border border-[var(--border-strong)] bg-transparent px-3 py-2 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--surface-secondary)] hover:text-[var(--text-strong)]">
@@ -281,7 +274,6 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
                     </SignOutButton>
                   </div>
 
-                  {/* Profile row at bottom */}
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs text-[var(--text-muted)]">
                       Signed in
@@ -293,7 +285,6 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
             </div>
           </div>
 
-          {/* Footer */}
           <div className="mt-4 text-[11px] text-[var(--text-muted)]">
             Version 0.1 • SP Fitness
           </div>

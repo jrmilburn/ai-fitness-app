@@ -50,9 +50,15 @@ enum WorkoutType {
 // =========================================================
 model User {
   id      String @id @default(cuid())
+  email   String? @unique
   clerkId String @unique
 
   currentProgramId String?
+
+  subscriptionActive       Boolean  @default(false)
+  subscriptionStatus       String   @default("inactive") // active | past_due | canceled
+  aiProgramsUsedThisPeriod Int      @default(0)
+  aiProgramsPeriodStart    DateTime?
 
   programs          Program[]
   exerciseTemplates ExerciseTemplate[]
