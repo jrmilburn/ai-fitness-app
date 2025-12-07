@@ -18,7 +18,7 @@ export default async function ClientLayout({
       />
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto overflow-x-auto pb-10 md:px-8 md:pb-6">
+      <main className="flex-1 overflow-y-auto overflow-x-auto pb-10 md:px-8 md:pb-6 bg-[var(--surface-secondary)]">
         {children}
       </main>
     </div>
