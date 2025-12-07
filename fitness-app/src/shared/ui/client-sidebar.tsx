@@ -87,7 +87,7 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
                 <button
                   className={cn(
                     "flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors border",
-                    "hover:bg-[var(--surface-secondary)] hover:text-[var(--text-strong)]",
+                    "hover:bg-[var(--surface-secondary)] hover:text-[var(--text-strong)] cursor-pointer",
                     active
                       ? "bg-[var(--surface-secondary)] text-[var(--text-strong)] border-[#A64DFF]"
                       : "text-[var(--text-muted)] border-transparent"
