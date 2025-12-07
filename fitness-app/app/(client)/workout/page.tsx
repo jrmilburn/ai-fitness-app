@@ -6,6 +6,10 @@ import { redirect } from "next/navigation";
 export default async function WorkoutPage() {
   const user = await getOrCreateCurrentUser();
 
+  if(!user.currentProgramId){
+    redirect("/templates/plan");
+  }
+
   redirect(`/programs/${user.currentProgramId}`)
 
   return (

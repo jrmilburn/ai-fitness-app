@@ -2,6 +2,9 @@
 import TemplateList from "@/components/programTemplate/TemplateList"
 
 import { getTemplates } from "@/server/programTemplate/getTemplates";
+import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
+
+import { redirect } from "next/navigation";
 
 export default async function Programs() {
 
