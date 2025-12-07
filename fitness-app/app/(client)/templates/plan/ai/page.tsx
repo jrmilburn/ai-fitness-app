@@ -164,7 +164,7 @@ export default function AiBuildPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-[var(--surface-primary)] px-4 py-12 text-[var(--text-strong)]">
+    <div className="flex min-h-screen w-full flex-col items-center bg-[var(--surface-primary)] px-4 py-12 text-[var(--text-strong)]">
       <div className="w-full max-w-3xl space-y-8">
         {/* Heading */}
         <div className="space-y-3 text-center">
