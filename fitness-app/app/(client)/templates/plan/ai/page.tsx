@@ -141,8 +141,23 @@ export default function AiBuildPage() {
       if (!templateId) throw new Error("No template returned from server.");
 
       router.push(`/templates/new?templateId=${templateId}`);
-    } catch (err: any) {
-      setError(err.message || "Failed to generate program.");
+    } catch (err: unknown) {
+      console.error(err);
+    
+      let message = "Something went wrong submitting this build";
+    
+      if (err instanceof Error) {
+        // Standard Error object
+        message = err.message;
+      } else if (typeof err === "string") {
+        // Some libraries throw strings
+        message = err;
+      } else {
+        // Anything else (number, object, null, undefined)
+        message = JSON.stringify(err);
+      }
+    
+      setError(message);
     } finally {
       setLoading(false);
     }

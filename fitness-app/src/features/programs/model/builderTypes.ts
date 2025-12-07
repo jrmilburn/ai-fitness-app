@@ -1,6 +1,5 @@
 import type { 
     ProgramTemplate,
-    ExerciseTemplate,
     WorkoutMode,
     ExerciseType,
     SetType
@@ -11,6 +10,7 @@ import type {
 export type ProgramTemplateStructure = {
   days: number;
   weeks: number;
+  sptemplate: boolean;
   workouts: Array<{
     id: string;
     name: string;
@@ -73,6 +73,7 @@ export type ProgramBuilderState = {
   workoutOrder: string[]; // ordered workout IDs (like columnOrder)
   days: number;
   weeks: number;
+  sptemplate: boolean;
 };
 
 // ---------- small ID helper ----------

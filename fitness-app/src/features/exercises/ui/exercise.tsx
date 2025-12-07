@@ -1,6 +1,6 @@
 "use client";
 
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma } from "@prisma/client";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -37,9 +37,9 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
     router.refresh();
   };
 
-  const handleAddExercise = async () => {
+  /*const handleAddExercise = async () => {
     setNewExerciseSelector(true);
-  };
+  };*/
 
   const handleDeleteExercise = async () => {
     await deleteExercise(exercise.id);
@@ -89,9 +89,9 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
                 {exercise.template.name}
               </h3>
             )}
-            {exercise?.muscleGroup?.name && (
+            {exercise?.muscleGroup && (
               <h4 className="text-[0.7rem] uppercase tracking-wide text-[var(--text-muted)]">
-                {exercise.muscleGroup.name}
+                {exercise.muscleGroup}
               </h4>
             )}
           </div>

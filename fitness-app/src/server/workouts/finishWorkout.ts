@@ -1,10 +1,13 @@
 "use server"
 
 import { prisma } from "@/lib/prisma";
+import { getOrCreateCurrentUser } from "../users/getOrCreateCurrentUser";
 
 export async function finishWorkout(workoutId : string) {
 
-    const finishedWorkout = await prisma.workout.update({
+    await getOrCreateCurrentUser();
+
+    await prisma.workout.update({
         where: {
             id: workoutId
         },
@@ -12,5 +15,7 @@ export async function finishWorkout(workoutId : string) {
             completed: true
         }
     })
+
+    return { success: true }
 
 }

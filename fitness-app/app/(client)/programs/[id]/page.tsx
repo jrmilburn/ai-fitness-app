@@ -11,7 +11,7 @@ type WorkoutPageProps = {
 };
 
 export default async function WorkoutPage({ params, searchParams }: WorkoutPageProps) {
-  const user = await getOrCreateCurrentUser();
+  await getOrCreateCurrentUser();
   const { id } = await params; // no need to await
 
   const program = await getProgram(id);

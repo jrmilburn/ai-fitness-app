@@ -1,10 +1,11 @@
 "use server"
 
-import type { Prisma } from "@/generated/prisma/client"
-
 import { prisma } from "@/lib/prisma";
+import { getOrCreateCurrentUser } from "../users/getOrCreateCurrentUser";
 
 export async function createSet(exerciseId : string) {
+
+    await getOrCreateCurrentUser();
 
     const exerciseSets = await prisma.exercise.findUnique({
         where: {
@@ -18,13 +19,13 @@ export async function createSet(exerciseId : string) {
 
     const setIndex = exerciseSets?.sets.length || 0;
 
-    const newSet = await prisma.set.create({
+    await prisma.set.create({
         data: {
             exerciseId: exerciseId,
             setNumber: setIndex + 1,
         }
     })
 
-    return newSet
+    return { success: true }
 
 }

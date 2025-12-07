@@ -7,7 +7,7 @@ export async function setCurrentProgram( programId : string ) {
 
     const user = await getOrCreateCurrentUser()
 
-    const updateUserCurrentProgram = await prisma.user.update({
+    await prisma.user.update({
         where: {
             id: user.id
         },
@@ -16,6 +16,6 @@ export async function setCurrentProgram( programId : string ) {
         }
     })
 
-    return updateUserCurrentProgram;
+    return { success: true }
 
 }

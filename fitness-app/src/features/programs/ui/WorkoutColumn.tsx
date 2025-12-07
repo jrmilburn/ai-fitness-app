@@ -46,6 +46,124 @@ type WorkoutColumnProps = {
   draggable?: boolean;
 };
 
+type CardBodyProps = {
+  workout: BuilderWorkout;
+  exercises: BuilderExercise[];
+  index: number;
+  exerciseTemplates: ExerciseTemplate[];
+  onAddSetToExercise: (exerciseId: string) => void;
+  onReplaceExercise: (exerciseId: string) => void;
+  onDeleteExercise: (exerciseId: string) => void;
+  onRemoveSetFromExercise: (exerciseId: string, setId: string) => void;
+  onOpenAddPicker: () => void;
+  onOpenRenameWorkout: () => void;
+  onDeleteWorkout: () => void;
+};
+
+function CardBody({
+  workout,
+  exercises,
+  index,
+  exerciseTemplates,
+  onAddSetToExercise,
+  onReplaceExercise,
+  onDeleteExercise,
+  onRemoveSetFromExercise,
+  onOpenAddPicker,
+  onOpenRenameWorkout,
+  onDeleteWorkout,
+}: CardBodyProps) {
+  return (
+    <div className="md:m-2 flex min-w-[260px] flex-col rounded-lg border border-[var(--border-strong)] bg-[var(--surface-tertiary)] shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between rounded-t-lg border-b border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[0.65rem] uppercase tracking-wide text-[var(--text-strong)]">
+            Day {index + 1}
+          </span>
+          <span className="text-sm font-medium text-[var(--text-strong)]">
+            {workout.name}
+          </span>
+        </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-strong)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-strong)]"
+            >
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="end"
+            className="border-[var(--border-strong)] bg-[var(--surface-secondary)] text-xs text-[var(--text-strong)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DropdownMenuItem
+              onClick={onOpenRenameWorkout}
+              className="cursor-pointer text-xs hover:bg-[var(--surface-accent)]"
+            >
+              Rename workout
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={onDeleteWorkout}
+              className="cursor-pointer text-xs text-red-300 hover:bg-red-500/10"
+            >
+              Delete workout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Exercise list */}
+      <Droppable droppableId={workout.id} type="exercise">
+        {(dropProvided, snapshot) => (
+          <div
+            ref={dropProvided.innerRef}
+            {...dropProvided.droppableProps}
+            className={`rounded-b-lg border-b border-[var(--border-strong)] p-3 transition-colors ${
+              snapshot.isDraggingOver
+                ? "bg-[var(--surface-tertiary)]"
+                : "bg-[var(--surface-secondary)]"
+            }`}
+          >
+            {exercises.map((exercise, exIndex) => (
+              <ExerciseCard
+                key={exercise.id}
+                exercise={exercise}
+                index={exIndex}
+                exerciseTemplates={exerciseTemplates}
+                onAddSet={onAddSetToExercise}
+                onReplace={() => onReplaceExercise(exercise.id)}
+                onDelete={() => onDeleteExercise(exercise.id)}
+                onRemoveSet={onRemoveSetFromExercise}
+              />
+            ))}
+
+            {dropProvided.placeholder}
+          </div>
+        )}
+      </Droppable>
+
+      {/* Add exercise button */}
+      <div className="rounded-b-lg border-t border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2">
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={onOpenAddPicker}
+          className="w-full justify-center rounded-md border border-dashed border-[var(--border-subtle)] bg-transparent text-xs font-medium text-[var(--text-muted)] transition-colors hover:border-[#A64DFF] hover:bg-[var(--surface-accent)] hover:text-white"
+        >
+          + Add exercise
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+
 export function WorkoutColumn({
   workout,
   exercises,
@@ -185,95 +303,6 @@ export function WorkoutColumn({
     [exerciseTemplates, search, selectedEquipment, selectedMuscleGroups]
   );
 
-
-  // ---- card body ----
-  const CardBody = () => (
-    <div className="md:m-2 flex min-w-[260px] flex-col rounded-lg border border-[var(--border-strong)] bg-[var(--surface-tertiary)] shadow-sm">
-      {/* Header */}
-      <div className="flex items-center justify-between rounded-t-lg border-b border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2">
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[0.65rem] uppercase tracking-wide text-[var(--text-strong)]">
-            Day {index + 1}
-          </span>
-          <span className="text-sm font-medium text-[var(--text-strong)]">
-            {workout.name}
-          </span>
-        </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[var(--text-strong)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-strong)]"
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="border-[var(--border-strong)] bg-[var(--surface-secondary)] text-xs text-[var(--text-strong)]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <DropdownMenuItem
-              onClick={handleOpenRename}
-              className="cursor-pointer text-xs hover:bg-[var(--surface-accent)]"
-            >
-              Rename workout
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onDeleteWorkout(workout.id)}
-              className="cursor-pointer text-xs text-red-300 hover:bg-red-500/10"
-            >
-              Delete workout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
-      {/* Exercise list */}
-      <Droppable droppableId={workout.id} type="exercise">
-        {(dropProvided, snapshot) => (
-          <div
-            ref={dropProvided.innerRef}
-            {...dropProvided.droppableProps}
-            className={`rounded-b-lg border-b border-[var(--border-strong)] p-3 transition-colors ${
-              snapshot.isDraggingOver ? "bg-[var(--surface-tertiary)]" : "bg-[var(--surface-secondary)]"
-            }`}
-          >
-            {exercises.map((exercise, exIndex) => (
-              <ExerciseCard
-                key={exercise.id}
-                exercise={exercise}
-                index={exIndex}
-                exerciseTemplates={exerciseTemplates}
-                onAddSet={onAddSetToExercise}
-                onReplace={() => openReplacePicker(exercise.id)}
-                onDelete={() => onDeleteExercise(workout.id, exercise.id)}
-                onRemoveSet={onRemoveSetFromExercise}
-              />
-            ))}
-
-            {dropProvided.placeholder}
-          </div>
-        )}
-      </Droppable>
-
-      {/* Add exercise button */}
-      <div className="rounded-b-lg border-t border-[var(--border-strong)] bg-[var(--surface-secondary)] px-3 py-2">
-        <Button
-          type="button"
-          size="sm"
-          variant="outline"
-          onClick={openAddPicker}
-          className="w-full justify-center rounded-md border border-dashed border-[var(--border-subtle)] bg-transparent text-xs font-medium text-[var(--text-muted)] transition-colors hover:border-[#A64DFF] hover:bg-[var(--surface-accent)] hover:text-white"
-        >
-          + Add exercise
-        </Button>
-      </div>
-    </div>
-  );
-
   return (
     <>
       {draggable ? (
@@ -284,14 +313,40 @@ export function WorkoutColumn({
               {...provided.draggableProps}
               {...provided.dragHandleProps}
             >
-              <CardBody />
+              <CardBody
+                workout={workout}
+                exercises={exercises}
+                index={index}
+                exerciseTemplates={exerciseTemplates}
+                onAddSetToExercise={onAddSetToExercise}
+                onReplaceExercise={(exerciseId) => openReplacePicker(exerciseId)}
+                onDeleteExercise={(exerciseId) =>
+                  onDeleteExercise(workout.id, exerciseId)
+                }
+                onRemoveSetFromExercise={onRemoveSetFromExercise}
+                onOpenAddPicker={openAddPicker}
+                onOpenRenameWorkout={handleOpenRename}
+                onDeleteWorkout={() => onDeleteWorkout(workout.id)}
+              />
             </div>
           )}
         </Draggable>
       ) : (
-        
-        <CardBody />
-        
+        <CardBody
+          workout={workout}
+          exercises={exercises}
+          index={index}
+          exerciseTemplates={exerciseTemplates}
+          onAddSetToExercise={onAddSetToExercise}
+          onReplaceExercise={(exerciseId) => openReplacePicker(exerciseId)}
+          onDeleteExercise={(exerciseId) =>
+            onDeleteExercise(workout.id, exerciseId)
+          }
+          onRemoveSetFromExercise={onRemoveSetFromExercise}
+          onOpenAddPicker={openAddPicker}
+          onOpenRenameWorkout={handleOpenRename}
+          onDeleteWorkout={() => onDeleteWorkout(workout.id)}
+        />
       )}
 
       {/* Workout rename dialog */}

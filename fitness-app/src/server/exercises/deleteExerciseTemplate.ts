@@ -25,4 +25,6 @@ export async function deleteExerciseTemplate(id: string) {
   await prisma.exerciseTemplate.delete({
     where: { id },
   });
+
+  return { success: true }
 }

@@ -19,7 +19,6 @@ export async function getPrograms() {
         }
     })
 
-    console.log(programs);
 
     return programs;
 

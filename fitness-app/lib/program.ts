@@ -1,6 +1,6 @@
 import type { 
     Prisma
-} from "@/generated/prisma";
+} from "@prisma/client";
 
 export type ProgramWithRelations = Prisma.ProgramGetPayload<{
   include: {
@@ -12,11 +12,7 @@ export type ProgramWithRelations = Prisma.ProgramGetPayload<{
             exercises: {
               include: {
                 sets: true;
-                template: {
-                  include: {
-                    muscleGroup: true;
-                  };
-                };
+                template: true
                 muscleGroup: true;
               };
             };

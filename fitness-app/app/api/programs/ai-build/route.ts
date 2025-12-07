@@ -4,6 +4,41 @@ import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
+import type { ExerciseType, WorkoutMode, SetType } from "@prisma/client";
+
+type AiProgramSet = {
+  id: string;
+  setNumber: number;
+  type: SetType;                // "NORMAL" | "WARMUP" | "BACKOFF" | "INTERVAL"
+  targetDurationSec: number | null;
+  targetReps: number | null;
+};
+
+type AiProgramExercise = {
+  id: string;
+  exerciseTemplateId: string;
+  exerciseType: ExerciseType;   // "STRENGTH" | "CARDIO_STEADY" | "CARDIO_INTERVAL"
+  sets: AiProgramSet[];
+};
+
+type AiProgramWorkout = {
+  id: string;
+  name: string;
+  dayNumber: number;
+  mode: WorkoutMode;            // "STRENGTH" | "CARDIO" | "MIXED"
+  focusMuscleGroups: string[];
+  notes?: string | null;
+  exercises: AiProgramExercise[];
+};
+
+type AiProgramStructure = {
+  name: string;
+  days: number;
+  weeks: number;
+  workouts: AiProgramWorkout[];
+};
+
+
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
@@ -326,20 +361,17 @@ EXERCISE TEMPLATE LIBRARY:`,
       );
     }
 
-    const structure = JSON.parse(content) as {
-      name: string;
-      days: number;
-      weeks: number;
-      workouts: any[];
-    };
+    // You could do runtime validation here if you want, but for now:
+    const structure = JSON.parse(content) as AiProgramStructure;
 
-    // Validate exerciseTemplateIds against DB
     const validIds = new Set(templates.map((t) => t.id));
+      
     for (const workout of structure.workouts) {
-      workout.exercises = workout.exercises.filter((ex: any) =>
+      workout.exercises = workout.exercises.filter((ex) =>
         validIds.has(ex.exerciseTemplateId)
       );
     }
+
 
     const templateName = "AI – " + structure.name;
 

@@ -29,13 +29,14 @@ import {
 } from "@/shared/ui/dropdown-menu";
 
 type ProgramBuilderProps = {
-  initialTemplate?: ProgramTemplateWithStructure;
+  initialTemplate?: ProgramTemplateWithStructure | null;
   exerciseTemplates: ExerciseTemplate[];
   onSubmit: (
-    payload: ProgramTemplateWithStructure,
+    payload: ProgramTemplateWithStructure,   // ✅ no `| null`
     existingTemplate: boolean
   ) => Promise<void> | void;
 };
+
 
 export function ProgramBuilder({
   initialTemplate,

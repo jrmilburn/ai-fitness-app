@@ -1,19 +1,24 @@
 "use server"
 
 import { prisma } from "@/lib/prisma";
+import { getOrCreateCurrentUser } from "../users/getOrCreateCurrentUser";
 
 export async function deleteExercise(exerciseId : string) {
 
-    const deletedSets = await prisma.set.deleteMany({
+    await getOrCreateCurrentUser();
+
+    await prisma.set.deleteMany({
         where: {
             exerciseId: exerciseId
         }
     })
 
-    const deletedExercise = await prisma.exercise.delete({
+    await prisma.exercise.delete({
         where: {
             id: exerciseId
         }
     })
+
+    return { success: true }
 
 }

@@ -1,7 +1,7 @@
 // components/exercise/ExerciseTemplateButton.tsx
 "use client";
 
-import type { ExerciseTemplate } from "@/generated/prisma";
+import type { ExerciseTemplate } from "@prisma/client";
 import { ChevronRight } from "lucide-react";
 
 type ExerciseTemplateButtonProps = {

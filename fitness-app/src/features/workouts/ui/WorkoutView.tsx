@@ -1,8 +1,7 @@
 "use client";
 
-import type { Prisma } from "@/generated/prisma/client";
+import type { Prisma } from "@prisma/client";
 import Exercise from "@/features/exercises/ui/exercise";
-import { WeekWithAllRelations } from "@/lib/types";
 import { Button } from "@/shared/ui/button";
 import { finishWorkout } from "@/server/workouts/finishWorkout";
 import { useRouter } from "next/navigation";
@@ -16,14 +15,12 @@ export type WorkoutWithExercisesAndSets = Prisma.WorkoutGetPayload<{
 }>;
 
 type WorkoutViewProps = {
-  week: WeekWithAllRelations;
   workout: WorkoutWithExercisesAndSets;
   onNextWorkout: () => void;
   goToFirstUnfinished: () => void;
 };
 
 export function WorkoutView({
-  week,
   workout,
   onNextWorkout,
   goToFirstUnfinished,

@@ -26,7 +26,7 @@ export async function createExerciseTemplate(
 ) {
   const user = await getOrCreateCurrentUser();
 
-  return prisma.exerciseTemplate.create({
+  await prisma.exerciseTemplate.create({
     data: {
       name: input.name,
       description: input.description,
@@ -42,4 +42,6 @@ export async function createExerciseTemplate(
       sptemplate: false, // user-created templates are never SP
     },
   });
+
+  return { success: true }
 }

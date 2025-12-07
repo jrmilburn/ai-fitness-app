@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { Program, User } from "@prisma/client";
+import type { Prisma, User } from "@prisma/client";
 import { MoreVertical } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,11 +10,13 @@ import { Button } from "@/shared/ui/button";
 import { deleteProgram } from "@/server/programs/deleteProgram";
 import { setCurrentProgram } from "@/server/programs/setCurrent";
 
-type ProgramWithTemplate = Program & {
-  template: {
-    id: string;
+export type ProgramWithTemplate = Prisma.ProgramGetPayload<{
+  include: {
+    template: {
+      select: { id: true };
+    };
   };
-};
+}>;
 
 export default function ProgramList({
   programs,
@@ -81,8 +83,13 @@ function ProgramListItem({
 
   const handleCopy = () => {
     setMenuOpen(false);
-    router.push(`/templates/new?templateId=${program.template.id}`);
+
+    const templateId = program.template?.id;
+    if (!templateId) return;
+
+    router.push(`/templates/new?templateId=${templateId}`);
   };
+
 
   const handleSetCurrent = async () => {
     await setCurrentProgram(program.id);

@@ -1,15 +1,18 @@
 "use server"
 
 import { prisma } from "@/lib/prisma";
+import { getOrCreateCurrentUser } from "../users/getOrCreateCurrentUser";
 
 export async function deleteSet(setId : string) {
 
-    const deleteSet = await prisma.set.delete({
+    await getOrCreateCurrentUser();
+
+    await prisma.set.delete({
         where: {
             id: setId
         }
     })
 
-    console.log(deleteSet);
+    return { success: true }
 
 }

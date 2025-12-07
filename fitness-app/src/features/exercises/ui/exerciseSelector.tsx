@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { getExerciseTemplates } from "@/server/exercises/getExerciseTemplates";
 import { addExercise } from "@/server/exercises/addExercise";
 
-import type { ExerciseTemplate } from "@/generated/prisma";
+import type { ExerciseTemplate } from "@prisma/client";
 import { ExerciseTemplateButton } from "./exerciseTemplateButton";
 
 import { ArrowLeft } from "lucide-react";

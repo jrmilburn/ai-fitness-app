@@ -1,17 +1,18 @@
 "use server"
 
 import { prisma } from "@/lib/prisma";
-import type { ExerciseTemplate } from "@/generated/prisma";
+import type { ExerciseTemplate } from "@prisma/client";
+import { getOrCreateCurrentUser } from "../users/getOrCreateCurrentUser";
 
 export async function addExercise(workoutId : string, exerciseTemplate : ExerciseTemplate) {
 
-    console.log("ADD EXERCISE", workoutId, exerciseTemplate);
+    await getOrCreateCurrentUser();
 
     const existingCount = await prisma.exercise.count({
       where: { workoutId },
     });
 
-    const newExercise = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
     // 1. Create the exercise
     const newExercise = await tx.exercise.create({
       data: {
@@ -38,4 +39,6 @@ export async function addExercise(workoutId : string, exerciseTemplate : Exercis
       ],
     });
     })
+
+    return { success: true }
 }

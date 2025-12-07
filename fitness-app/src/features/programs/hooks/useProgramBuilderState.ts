@@ -294,8 +294,8 @@ export function useProgramBuilderState(
       setState((prev) => {
         const workout = prev.workouts[workoutId];
         if (!workout) return prev;
-
-        const { [exerciseId]: _removed, ...restExercises } = prev.exercises;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [exerciseId]: _, ...restExercises } = prev.exercises;
 
         return {
           ...prev,
@@ -327,8 +327,8 @@ export function useProgramBuilderState(
         workout.exerciseIds.forEach((exId) => {
           delete newExercises[exId];
         });
-
-        const { [workoutId]: _removedWorkout, ...restWorkouts } = prev.workouts;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [workoutId]: _, ...restWorkouts } = prev.workouts;
 
         const updatedWorkouts: typeof restWorkouts = { ...restWorkouts };
         newOrder.forEach((id, idx) => {
@@ -471,45 +471,69 @@ export function useProgramBuilderState(
     try {
       const structureJson = builderStateToStructureJson(state);
 
-      const payload: ProgramTemplateWithStructure = {
-        ...(initialTemplate ?? {
-          id: "",
+      let payload: ProgramTemplateWithStructure;
+
+      if (initialTemplate && existingTemplate) {
+        // Updating an existing template
+        payload = {
+          ...initialTemplate,
+          name: programName,
+          weeks: state.weeks,
+          days: state.days,
+          structureJson,           // if your type expects JsonValue, cast here
+          updatedAt: new Date(),
+        };
+      } else {
+        // Creating a new template
+        payload = {
+          id: createId("template"),
+          name: programName,
           userId: null,
-          user: null,
-          name: "",
           goal: null,
           weeks: state.weeks,
           days: state.days,
-          aiPlanJson: null,
+          structureJson,           // or: structureJson: structureJson as JsonValue
+          sptemplate: false,       // 🔥 this was missing in your fallback
           createdAt: new Date(),
           updatedAt: new Date(),
-          structureJson: null,
-        }),
-        name: programName,
-        structureJson,
-      };
+          // Optional fields (only if your type has them):
+          // aiPlanJson: null,
+          // user: null,
+        };
+      }
 
       const maybePromise = onSubmit(payload, existingTemplate);
-      if (maybePromise && typeof (maybePromise as any).then === "function") {
+      if (maybePromise && typeof maybePromise.then === "function") {
         await maybePromise;
       }
 
       router.push("/workout");
-    } catch (err: any) {
-      setError(err.message ?? "Failed to create program.");
+    } catch (err: unknown) {
+      console.error(err);
+
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === "string"
+          ? err
+          : "Something went wrong creating this program.";
+
+      setError(message);
     } finally {
       setSubmitting(false);
     }
   }, [existingTemplate, initialTemplate, onSubmit, programName, router, state]);
 
+
   const activeWorkoutIndex = activeWorkoutId
     ? state.workoutOrder.indexOf(activeWorkoutId)
     : -1;
   const activeWorkout =
-    activeWorkoutIndex >= 0 ? state.workouts[activeWorkoutId] : null;
+    activeWorkoutId != null ? state.workouts[activeWorkoutId] : null;
+
   const activeWorkoutExercises =
     (activeWorkout?.exerciseIds
-      .map((id) => state.exercises[id])
+      .map((id : string) => state.exercises[id])
       .filter(Boolean) as ProgramBuilderState["exercises"][string][]) ?? [];
 
   return {

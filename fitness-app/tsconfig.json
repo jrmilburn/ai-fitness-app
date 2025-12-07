@@ -23,7 +23,8 @@
       "@/features/*": ["./src/features/*"],
       "@/shared/*": ["./src/shared/*"],
       "@/server/*": ["./src/server/*"]
-    }
+    },
+    "types": [] // 👈 add this line
   },
   "include": [
     "next-env.d.ts",

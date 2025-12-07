@@ -1,4 +1,4 @@
-import { Prisma } from "@/generated/prisma/client";
+import { Prisma } from "@prisma/client";
 
 // Program -> Weeks -> Workouts -> Exercises -> Sets (+ some relations)
 export type ProgramWithAllRelations = Prisma.ProgramGetPayload<{

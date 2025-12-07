@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getOrCreateCurrentUser } from "../users/getOrCreateCurrentUser";
 
 type UpdatePayload = {
   weight: number | null;
@@ -13,7 +14,10 @@ export async function updateSet(
   completed: boolean,
   { weight, reps, time }: UpdatePayload
 ) {
-  const updatedSet = await prisma.set.update({
+  
+  await getOrCreateCurrentUser();
+
+  await prisma.set.update({
     where: {
       id: setId,
     },
@@ -25,5 +29,5 @@ export async function updateSet(
     },
   });
 
-  return updatedSet;
+  return { success: true };
 }

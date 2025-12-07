@@ -20,6 +20,7 @@ const DEFAULT_WORKOUT_IDS = ["workout-1", "workout-2"] as const;
 export const templateToBuilderState: TemplateToBuilderState = (template) => {
   const days = template?.days ?? template?.structureJson?.days ?? 7;
   const weeks = template?.weeks ?? template?.structureJson?.weeks ?? 6;
+  const sptemplate = template?.sptemplate ?? template?.structureJson?.sptemplate ?? false;
 
   if (!template?.structureJson) {
     const [w1Id, w2Id] = DEFAULT_WORKOUT_IDS;
@@ -27,6 +28,7 @@ export const templateToBuilderState: TemplateToBuilderState = (template) => {
     return {
       days,
       weeks,
+      sptemplate,
       workouts: {
         [w1Id]: createDefaultWorkout(w1Id, 1),
         [w2Id]: createDefaultWorkout(w2Id, 2),
@@ -85,6 +87,7 @@ export const templateToBuilderState: TemplateToBuilderState = (template) => {
     workoutOrder,
     days: struct.days ?? days,
     weeks: struct.weeks,
+    sptemplate: struct.sptemplate
   };
 };
 
@@ -124,6 +127,7 @@ export const builderStateToStructureJson: BuilderStateToStructureJson = (
   return {
     days: state.days,
     weeks: state.weeks,
+    sptemplate: state.sptemplate,
     workouts,
   };
 };

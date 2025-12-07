@@ -109,7 +109,6 @@ export default function WorkoutWrapper({
         />
 
         <WorkoutView
-          week={currentWeek}
           workout={currentWorkout}
           onNextWorkout={goToNextWorkout}
           goToFirstUnfinished={goToFirstUnfinishedWorkout}

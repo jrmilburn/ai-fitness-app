@@ -43,7 +43,7 @@ export async function updateExerciseTemplate(
     throw new Error("You do not have permission to edit this template.");
   }
 
-  return prisma.exerciseTemplate.update({
+  await prisma.exerciseTemplate.update({
     where: { id },
     data: {
       name: input.name,
@@ -58,4 +58,6 @@ export async function updateExerciseTemplate(
       timeSeconds: input.timeSeconds,
     },
   });
+
+  return { success: true }
 }

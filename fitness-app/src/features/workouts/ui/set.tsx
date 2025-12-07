@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MoreVertical, Trash2Icon } from "lucide-react";
 import { Input } from "@/shared/ui/input";
 import { Checkbox } from "@/shared/ui/checkbox";
@@ -57,19 +57,18 @@ export default function Set({
 
   const router = useRouter();
   const isWarmup = set?.type === "WARMUP";
+  
+  // derived value used in the input
+  const displayWeight =
+    type === "STRENGTH" &&
+    typeof cascadedWeight === "string" &&
+    cascadedWeight !== "" &&
+    set?.actualWeightKg == null &&
+    weight === ""
+      ? cascadedWeight
+      : weight;
 
-  // Autofill weight from cascadedWeight ONLY if this set doesn't already have a value
-  useEffect(() => {
-    if (
-      type === "STRENGTH" &&
-      typeof cascadedWeight === "string" &&
-      cascadedWeight !== "" &&
-      weight === "" &&
-      set?.actualWeightKg == null
-    ) {
-      setWeight(cascadedWeight);
-    }
-  }, [cascadedWeight, type, weight, set?.actualWeightKg]);
+
 
   // ---- basic input handlers ----
   const handleRepsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,7 +185,7 @@ export default function Set({
       <div className="grid w-full flex-1 grid-cols-2 items-center gap-2">
         <Input
           type="number"
-          value={weight}
+          value={displayWeight}
           onChange={handleWeightChange}
           onBlur={handleWeightBlur}
           placeholder={
