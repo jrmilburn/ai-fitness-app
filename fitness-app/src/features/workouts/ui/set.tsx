@@ -6,7 +6,7 @@ import { Input } from "@/shared/ui/input";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Button } from "@/shared/ui/button";
 import { updateSet } from "@/server/workouts/updateSet";
-import type { Set as SetModel } from "@/generated/prisma/client";
+import type { Set as SetModel } from "@prisma/client";
 import {
   Dialog,
   DialogContent,
