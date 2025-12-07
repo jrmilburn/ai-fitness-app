@@ -571,9 +571,11 @@ async function main() {
       exerciseType: t.exerciseType ?? ExerciseType.STRENGTH,
       equipment: t.equipment ?? null,
       muscleGroup: t.muscleGroup ?? null,
+      sptemplate: true, // 👈 mark all seeded templates as SP templates
     })),
     skipDuplicates: true,
   });
+
 
   console.log("✅ Done seeding exercise templates.");
 }

@@ -28,7 +28,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
 } from "../ui/dialog";
 
@@ -229,6 +228,7 @@ export function ProgramBuilder({
               type: "NORMAL",
               targetReps: 8,
               targetWeightKg: null,
+              targetDurationSec: null
             },
             {
               id: createId("set"),
@@ -236,6 +236,7 @@ export function ProgramBuilder({
               type: "NORMAL",
               targetReps: 8,
               targetWeightKg: null,
+              targetDurationSec: null
             },
           ],
         },
@@ -265,6 +266,7 @@ export function ProgramBuilder({
         type: "NORMAL" as const,
         targetReps: 8,
         targetWeightKg: null,
+        targetDurationSec: null
       };
 
       return {

@@ -32,15 +32,30 @@ export default function Set({
 }: Props) {
   const [reps, setReps] = useState(set?.actualReps?.toString() ?? "");
   const [weight, setWeight] = useState(set?.actualWeightKg?.toString() ?? "");
-  const [time, setTime] = useState(set?.actualDurationSec?.toString() ?? "");
+
+  // 👉 time is stored as seconds in DB, but for CARDIO_STEADY we *display/edit* minutes
+  const [time, setTime] = useState(() => {
+    if (set?.actualDurationSec == null) return "";
+
+    if (type === "CARDIO_STEADY") {
+      // convert seconds -> minutes for display
+      const minutes = set.actualDurationSec / 60;
+      // keep it simple: no crazy decimals
+      return Number.isInteger(minutes)
+        ? minutes.toString()
+        : minutes.toFixed(1);
+    }
+
+    // for intervals etc: keep as seconds
+    return set.actualDurationSec.toString();
+  });
+
   const [completed, setCompleted] = useState(set?.completed ?? false);
   const [setModalShown, setSetModalShown] = useState(false);
   const [validationModalOpen, setValidationModalOpen] = useState(false);
   const [warmupInfoOpen, setWarmupInfoOpen] = useState(false);
 
-
   const router = useRouter();
-
   const isWarmup = set?.type === "WARMUP";
 
   // Autofill weight from cascadedWeight ONLY if this set doesn't already have a value
@@ -87,7 +102,6 @@ export default function Set({
     // If strength set: require reps + weight before submitting
     if (type === "STRENGTH") {
       if (reps.trim() === "" || weight.trim() === "") {
-        // leave checkbox visually unchanged and show modal
         e.preventDefault();
         setValidationModalOpen(true);
         return;
@@ -100,11 +114,20 @@ export default function Set({
       type === "STRENGTH" && weight.trim() !== "" ? Number(weight) : null;
     const numericReps =
       type === "STRENGTH" && reps.trim() !== "" ? Number(reps) : null;
-    const numericTime =
+
+    let numericTime: number | null = null;
+    if (
       (type === "CARDIO_INTERVAL" || type === "CARDIO_STEADY") &&
       time.trim() !== ""
-        ? Number(time)
-        : null;
+    ) {
+      const raw = Number(time);
+      if (!Number.isNaN(raw)) {
+        numericTime =
+          type === "CARDIO_STEADY"
+            ? raw * 60 // minutes -> seconds
+            : raw; // already in seconds for intervals
+      }
+    }
 
     if (set?.id) {
       await updateSet(set.id, next, {
@@ -133,8 +156,8 @@ export default function Set({
     <div
       className={`relative flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]! ${
         isWarmup
-          ? "before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:bg-[#A64DFF] before:rounded-l"
-          : "before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:bg-[#1c1c1e] before:rounded-l"
+          ? "before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-l before:bg-[#A64DFF]"
+          : "before:absolute before:left-0 before:top-0 before:h-full before:w-[3px] before:rounded-l before:bg-[#1c1c1e]"
       }`}
     >
       {/* Left: menu button + warm-up label */}
@@ -152,16 +175,14 @@ export default function Set({
           <button
             type="button"
             onClick={() => setWarmupInfoOpen(true)}
-            className="absolute top-0 -translate-y-[60%] rounded-full bg-[#A64DFF1a] px-2 py-0.5 text-[9px] uppercase tracking-wide text-[#A64DFF] cursor-pointer hover:bg-[#A64DFF26] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#A64DFF]"
+            className="absolute top-0 -translate-y-[60%] cursor-pointer rounded-full bg-[#A64DFF1a] px-2 py-0.5 text-[9px] uppercase tracking-wide text-[#A64DFF] hover:bg-[#A64DFF26] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#A64DFF]"
           >
             warm-up
           </button>
         )}
-
-
       </div>
 
-      {/* Middle: reps + weight */}
+      {/* Middle: weight + reps */}
       <div className="grid w-full flex-1 grid-cols-2 items-center gap-2">
         <Input
           type="number"
@@ -198,7 +219,6 @@ export default function Set({
     </div>
   );
 
-
   const renderIntervalRow = () => (
     <div className="flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]!">
       <div className="flex min-w-[16px] flex-col items-start">
@@ -219,7 +239,7 @@ export default function Set({
           onChange={handleTimeChange}
           placeholder={
             set?.targetDurationSec != null
-              ? set.targetDurationSec.toString()
+              ? `${set.targetDurationSec.toString()} sec`
               : "Time (s)"
           }
           className="h-9 border-[var(--border-subtle)]! bg-[var(--surface-secondary)]! text-xs"
@@ -237,43 +257,47 @@ export default function Set({
     </div>
   );
 
-  const renderCardioRow = () => (
-    <div className="flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]!">
-      <div className="flex min-w-[16px] flex-col items-start">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={() => setSetModalShown(true)}
-          className="h-8 w-8 rounded-full p-0 text-[var(--text-muted)]! hover:bg-[var(--surface-secondary)]! hover:text-[var(--text-strong)]!"
-        >
-          <MoreVertical className="h-4 w-4" />
-        </Button>
-      </div>
+  const renderCardioRow = () => {
+    // CARDIO_STEADY: show minutes in UI
+    const placeholderMinutes =
+      set?.targetDurationSec != null
+        ? (set.targetDurationSec / 60).toString()
+        : "Time (min)";
 
-      <div className="grid w-full flex-1 grid-cols-1 items-center gap-2">
-        <Input
-          type="number"
-          value={time}
-          onChange={handleTimeChange}
-          placeholder={
-            set?.targetDurationSec != null
-              ? set.targetDurationSec.toString()
-              : "Time (s)"
-          }
-          className="h-9 border-[var(--border-subtle)]! bg-[var(--surface-secondary)]! text-xs"
-        />
-      </div>
+    return (
+      <div className="flex w-full items-center gap-2 border-t border-[var(--border-strong)] bg-[var(--surface-tertiary)]! px-1 py-2 text-xs text-[var(--text-strong)]!">
+        <div className="flex min-w-[16px] flex-col items-start">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setSetModalShown(true)}
+            className="h-8 w-8 rounded-full p-0 text-[var(--text-muted)]! hover:bg-[var(--surface-secondary)]! hover:text-[var(--text-strong)]!"
+          >
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </div>
 
-      <div className="flex items-center gap-2">
-        <Checkbox
-          checked={completed}
-          onChange={handleToggleCompleted}
-          aria-label="Mark set completed"
-          className="bg-[var(--surface-secondary)]!"
-        />
+        <div className="grid w-full flex-1 grid-cols-1 items-center gap-2">
+          <Input
+            type="number"
+            value={time}
+            onChange={handleTimeChange}
+            placeholder={`${placeholderMinutes} min`}
+            className="h-9 border-[var(--border-subtle)]! bg-[var(--surface-secondary)]! text-xs"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Checkbox
+            checked={completed}
+            onChange={handleToggleCompleted}
+            aria-label="Mark set completed"
+            className="bg-[var(--surface-secondary)]!"
+          />
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>
@@ -359,12 +383,12 @@ export default function Set({
               Warm-up sets let you gradually work up to your top working weight
               without creating extra volume to track.
             </p>
-            <ul className="list-disc pl-4 space-y-1">
+            <ul className="space-y-1 list-disc pl-4">
               <li>Start light and increase the weight each warm-up set.</li>
-              <li>Keep 4–6 reps and stay well away from failure (easy RPE).</li>
+              <li>Keep 4–6 reps and stay well away from failure.</li>
               <li>
-                Use them to groove the movement and joints, then log your harder
-                working sets as normal.
+                Use them to groove the movement, then log your working sets as
+                normal.
               </li>
             </ul>
           </div>
@@ -380,7 +404,6 @@ export default function Set({
           </div>
         </DialogContent>
       </Dialog>
-
     </>
   );
 }

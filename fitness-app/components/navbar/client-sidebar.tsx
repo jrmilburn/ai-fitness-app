@@ -22,6 +22,7 @@ const navItems = [
   { key: "workout", label: "Current workout", short: "Workout" },
   { key: "programs", label: "Programs", short: "Programs" },
   { key: "templates", label: "Templates", short: "Templates" },
+  { key : "exercises", label: "Exercises", short: "Exercises"}
 ];
 
 export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
@@ -45,6 +46,8 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
         return "/programs";
       case "templates":
         return "/templates";
+      case "exercises":
+        return "/exercises";
       default:
         return "/";
     }

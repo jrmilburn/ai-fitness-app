@@ -28,6 +28,7 @@ export type ProgramTemplateStructure = {
         type: SetType;
         targetReps?: number | null;
         targetWeightKg?: number | null;
+        targetDurationSec?: number | null;
       }>;
     }>;
   }>;
@@ -46,6 +47,7 @@ export type BuilderSet = {
   type: SetType;
   targetReps?: number | null;
   targetWeightKg?: number | null;
+  targetDurationSec: number | null;
 };
 
 export type BuilderExercise = {
@@ -88,6 +90,7 @@ export function templateToBuilderState(
   template: ProgramTemplateWithStructure | null
 ): ProgramBuilderState {
   const days = template?.days ?? template?.structureJson?.days ?? 7;
+  const weeks = template?.weeks ?? template?.structureJson?.weeks ?? 6;
 
   // ⚡ NO TEMPLATE PROVIDED OR NO STRUCTURE JSON:
   // -> return 2 default empty workouts with STABLE IDs
@@ -97,6 +100,7 @@ export function templateToBuilderState(
 
     return {
       days,
+      weeks,
       workouts: {
         [w1Id]: {
           id: w1Id,
@@ -150,6 +154,7 @@ export function templateToBuilderState(
             type: s.type,
             targetReps: s.targetReps ?? null,
             targetWeightKg: s.targetWeightKg ?? null,
+            targetDurationSec: s.targetDurationSec ?? null
           })) ?? [],
       };
     }
@@ -170,6 +175,7 @@ export function templateToBuilderState(
     exercises,
     workoutOrder,
     days: struct.days ?? days,
+    weeks: struct.weeks
   };
 }
 
@@ -201,6 +207,7 @@ export function builderStateToStructureJson(
             type: s.type,
             targetReps: s.targetReps ?? null,
             targetWeightKg: s.targetWeightKg ?? null,
+            targetDurationSec: s.targetDurationSec ?? null
           })),
         };
       }),
@@ -209,6 +216,7 @@ export function builderStateToStructureJson(
 
   return {
     days: state.days,
+    weeks: state.weeks,
     workouts,
   };
 }

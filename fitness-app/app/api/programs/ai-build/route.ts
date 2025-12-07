@@ -285,6 +285,15 @@ OUTPUT
 ------
 Return **ONLY** JSON valid according to the ProgramTemplateStructure schema.
 
+PROGRAM STRUCTURE CONVENTION
+----------------------------
+- The "days" field represents the number of training days per week.
+- The "weeks" field represents the total program duration in weeks.
+- You are designing a single, representative training week:
+  - Include exactly one workout for each training day (dayNumber 1..days).
+  - Do NOT enumerate separate workouts for every week of the program.
+- The client application will repeat this 1-week structure over the given number of weeks.
+
 EXERCISE TEMPLATE LIBRARY:`,
 
       templateLibraryText,

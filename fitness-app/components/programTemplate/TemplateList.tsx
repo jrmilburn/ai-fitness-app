@@ -26,7 +26,7 @@ export default function TemplateList({ programs }: TemplateListProps) {
     <div className="flex w-full max-w-2xl flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between px-4">
-        <h3 className="text-lg text-[var(--text-strong)]">Templates</h3>
+        <h3 className="text-lg text-[var(--text-strong)]">Program Templates</h3>
         <Link href="/templates/plan">
           <Button className="rounded-md bg-[#A64DFF] px-3 py-1.5 text-xs font-medium text-white shadow-sm transition-colors hover:bg-[#B56BFF]">
             New +

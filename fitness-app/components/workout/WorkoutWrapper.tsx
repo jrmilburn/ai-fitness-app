@@ -7,9 +7,13 @@ import { WorkoutView } from "./WorkoutView";
 
 type WorkoutWrapperProps = {
   program: ProgramWithRelations;
+  workoutId?: string;
 };
 
-export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
+export default function WorkoutWrapper({
+  program,
+  workoutId,
+}: WorkoutWrapperProps) {
   const [weekIndex, setWeekIndex] = React.useState(0);
   const [workoutIndex, setWorkoutIndex] = React.useState(0);
 
@@ -17,6 +21,7 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
   const currentWeek = weeks[weekIndex];
   const currentWorkout = currentWeek?.workouts[workoutIndex];
 
+  // 🔍 helper: go to first unfinished workout in the program
   const goToFirstUnfinishedWorkout = React.useCallback(() => {
     for (let w = 0; w < program.weeks.length; w++) {
       const week = program.weeks[w];
@@ -31,6 +36,7 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
       }
     }
 
+    // If everything is complete, default to last workout in last week
     const lastWeekIndex = program.weeks.length - 1;
     if (lastWeekIndex >= 0) {
       const lastWeek = program.weeks[lastWeekIndex];
@@ -43,9 +49,26 @@ export default function WorkoutWrapper({ program }: WorkoutWrapperProps) {
     }
   }, [program.weeks]);
 
+  // ✅ Initial positioning: prefer `workoutId` if provided, otherwise first unfinished
   React.useEffect(() => {
+    if (!program.weeks.length) return;
+
+    if (workoutId) {
+      for (let w = 0; w < program.weeks.length; w++) {
+        const week = program.weeks[w];
+
+        const wi = week.workouts.findIndex((wk) => wk.id === workoutId);
+        if (wi !== -1) {
+          setWeekIndex(w);
+          setWorkoutIndex(wi);
+          return;
+        }
+      }
+    }
+
+    // Fallback if no workoutId or not found
     goToFirstUnfinishedWorkout();
-  }, [goToFirstUnfinishedWorkout]);
+  }, [program.weeks, workoutId, goToFirstUnfinishedWorkout]);
 
   if (!currentWeek || !currentWorkout) {
     return (

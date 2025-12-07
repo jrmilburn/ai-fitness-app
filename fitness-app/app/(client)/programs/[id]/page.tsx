@@ -3,24 +3,30 @@ import { getProgram } from "@/server/program/getProgram";
 import { getOrCreateCurrentUser } from "@/server/user/getOrCreateCurrentUser";
 import { redirect } from "next/navigation";
 
-export default async function WorkoutPage({
-  params,
-}: {
+type WorkoutPageProps = {
   params: { id: string };
-}) {
-  const user = await getOrCreateCurrentUser();
+  searchParams: {
+    workoutId?: string;
+  };
+};
 
-    const { id } = await params;
+export default async function WorkoutPage({ params, searchParams }: WorkoutPageProps) {
+  const user = await getOrCreateCurrentUser();
+  const { id } = await params; // no need to await
 
   const program = await getProgram(id);
+  const { workoutId } = await searchParams;
 
   if (!program) {
-    return redirect("/programs"); // Not found or unauthorized
+    redirect("/programs");
   }
 
   return (
     <div className="mx-auto h-full w-full max-w-5xl md:px-4 md:py-6">
-      <WorkoutWrapper program={program} />
+      <WorkoutWrapper
+        program={program}
+        workoutId={workoutId}
+      />
     </div>
   );
 }

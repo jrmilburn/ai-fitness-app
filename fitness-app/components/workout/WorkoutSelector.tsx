@@ -10,6 +10,7 @@ import {
 } from "../ui/dialog";
 import { useState } from "react";
 import { CalendarDaysIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type WorkoutSelectorProps = {
   program: ProgramWithRelations;
@@ -27,9 +28,20 @@ export function WorkoutSelector({
   onSelectWorkout,
 }: WorkoutSelectorProps) {
   const [pickerOpen, setPickerOpen] = useState(false);
+  const router = useRouter();
 
   const currentWeek = program.weeks[weekIndex];
   const currentWorkout = currentWeek?.workouts[workoutIndex];
+
+  const handleJumpToWorkout = (weekInd: number, workInd: number, workoutId: string) => {
+    // local state update for instant feedback
+    onSelectWeek(weekInd);
+    onSelectWorkout(workInd);
+    setPickerOpen(false);
+
+    // update URL so this workout is "pinned"
+    router.push(`/programs/${program.id}?workoutId=${workoutId}`);
+  };
 
   return (
     <>
@@ -85,10 +97,10 @@ export function WorkoutSelector({
                       <Button
                         key={workout.id}
                         onClick={() => {
-                          onSelectWeek(weekInd);
-                          onSelectWorkout(workInd);
-                          setPickerOpen(false);
-                        }}
+                          console.log(workout.id)
+                          handleJumpToWorkout(weekInd, workInd, workout.id)
+                        }
+                        }
                         variant={isActive ? "secondary" : "outline"}
                         className={`h-8 min-w-[2.25rem] rounded-full px-2 text-xs text-white hover:text-black ${
                           workout.completed

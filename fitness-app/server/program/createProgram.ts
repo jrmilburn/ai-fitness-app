@@ -92,6 +92,7 @@ export async function createProgram(
                       type: s.type,
                       targetReps: s.targetReps ?? null,
                       targetWeightKg: s.targetWeightKg ?? null,
+                      targetDurationSec: s.targetDurationSec ?? null
                     })),
                   },
                 })),
