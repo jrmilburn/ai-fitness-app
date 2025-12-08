@@ -1,8 +1,11 @@
+import { getOrCreateCurrentUser } from "@/src/server/users/getOrCreateCurrentUser";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
 
-  redirect("/programs")
+  const user = await getOrCreateCurrentUser()
+
+  redirect(`/programs${user.currentProgramId}`)
 
   return (
     <main>
