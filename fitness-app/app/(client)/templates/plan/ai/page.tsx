@@ -48,7 +48,7 @@ export default function AiBuildPage() {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [showDelayMessage, setShowDelayMessage] = useState(false);
