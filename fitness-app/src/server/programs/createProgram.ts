@@ -93,6 +93,8 @@ export async function createProgram(
                   exerciseTemplateId: ex.exerciseTemplateId,
                   exerciseType: ex.exerciseType,
 
+                  muscleGroup: ex.muscleGroup,
+
                   sets: {
                     create: ex.sets.map((s, sIndex) => ({
                       setNumber: s.setNumber ?? sIndex + 1,
