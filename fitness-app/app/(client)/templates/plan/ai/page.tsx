@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -48,8 +48,22 @@ export default function AiBuildPage() {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [showDelayMessage, setShowDelayMessage] = useState(false);
+
+  useEffect(() => {
+    if (loading) {
+      const timer = setTimeout(() => {
+        setShowDelayMessage(true);
+      }, 5000); // 5 seconds
+
+      return () => clearTimeout(timer);
+    } else {
+      setShowDelayMessage(false);
+    }
+  }, [loading]);
 
   const router = useRouter();
 
@@ -443,8 +457,8 @@ export default function AiBuildPage() {
             <div className="flex flex-col items-center gap-4 rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-primary)]/90 px-6 py-5 shadow-2xl">
               {/* Spinner */}
               <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#A64DFF] border-t-transparent" />
-            
-              {/* Text */}
+      
+              {/* Main Text */}
               <div className="space-y-1 text-center">
                 <p className="text-sm font-semibold text-[var(--text-strong)]">
                   Generating program…
@@ -453,10 +467,26 @@ export default function AiBuildPage() {
                   Please don&apos;t refresh or close this page.
                 </p>
               </div>
+      
+              {/* Delayed Secondary Message */}
+              <AnimatePresence>
+                {showDelayMessage && (
+                  <motion.p
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.3 }}
+                    className="text-[0.7rem] text-[var(--text-muted)] mt-2"
+                  >
+                    This may take a minute…
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         </AnimatePresence>
       )}
+
 
     </div>
   );
