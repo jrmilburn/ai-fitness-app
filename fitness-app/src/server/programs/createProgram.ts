@@ -6,12 +6,19 @@ import {
 } from "@/features/programs/model/builderTypes";
 import { prisma } from "@/lib/prisma";
 import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
+import { redirect } from "next/navigation";
+import { getUserSubscription } from "../subscription/getUserSubscription";
 
 export async function createProgram(
   programTemplate: ProgramTemplateWithStructure,
   existingTemplate: boolean
 ) {
   const { clerkId } = await getOrCreateCurrentUser();
+  const subscription = await getUserSubscription();
+
+  if (!subscription.subscriptionActive) {
+    redirect("/pricing");
+  }
 
   const user = await prisma.user.findUnique({ where: { clerkId } });
 

@@ -7,6 +7,8 @@ import type {
   MuscleGroup,
 } from "@prisma/client";
 import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
+import { getUserSubscription } from "../subscription/getUserSubscription";
+import { redirect } from "next/navigation";
 
 type CreateExerciseTemplateInput = {
   name: string;
@@ -25,6 +27,10 @@ export async function createExerciseTemplate(
   input: CreateExerciseTemplateInput
 ) {
   const user = await getOrCreateCurrentUser();
+  const subscription = await getUserSubscription();
+  if (!subscription.subscriptionActive) {
+    redirect("/pricing");
+  }
 
   await prisma.exerciseTemplate.create({
     data: {

@@ -2,6 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { getOrCreateCurrentUser } from "../users/getOrCreateCurrentUser";
+import { getUserSubscription } from "../subscription/getUserSubscription";
+import { redirect } from "next/navigation";
 
 type UpdatePayload = {
   weight: number | null;
@@ -16,6 +18,11 @@ export async function updateSet(
 ) {
   
   await getOrCreateCurrentUser();
+  const subscription = await getUserSubscription();
+
+  if (!subscription.subscriptionActive) {
+    redirect("/pricing");
+  }
 
   await prisma.set.update({
     where: {

@@ -3,10 +3,17 @@
 import { prisma } from "@/lib/prisma";
 import type { ExerciseTemplate } from "@prisma/client";
 import { getOrCreateCurrentUser } from "../users/getOrCreateCurrentUser";
+import { getUserSubscription } from "../subscription/getUserSubscription";
+import { redirect } from "next/navigation";
 
 export async function addExercise(workoutId : string, exerciseTemplate : ExerciseTemplate) {
 
     await getOrCreateCurrentUser();
+    const subscription = await getUserSubscription();
+
+    if (!subscription.subscriptionActive) {
+      redirect("/pricing");
+    }
 
     const existingCount = await prisma.exercise.count({
       where: { workoutId },

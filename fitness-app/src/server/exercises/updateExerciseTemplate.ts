@@ -7,6 +7,8 @@ import type {
   MuscleGroup,
 } from "@prisma/client";
 import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
+import { getUserSubscription } from "../subscription/getUserSubscription";
+import { redirect } from "next/navigation";
 
 type UpdateExerciseTemplateInput = {
   name: string;
@@ -26,6 +28,10 @@ export async function updateExerciseTemplate(
   input: UpdateExerciseTemplateInput
 ) {
   const user = await getOrCreateCurrentUser();
+  const subscription = await getUserSubscription();
+  if (!subscription.subscriptionActive) {
+    redirect("/pricing");
+  }
 
   const existing = await prisma.exerciseTemplate.findUnique({
     where: { id },
