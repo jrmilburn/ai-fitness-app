@@ -23,9 +23,8 @@ export async function getUserSubscription(
 
   const itemStatuses = billing.subscriptionItems.map((item) => item.status) ?? [];
 
-  const hasActiveItem = itemStatuses.some(
-    (status) => status === "active" || status === "upcoming"
-  );
+  const subscribed = billing.subscriptionItems[0].plan?.slug === "jfit_ai"
+
   const isPastDue =
     itemStatuses.includes("past_due");
   const isEnded =
@@ -39,10 +38,11 @@ export async function getUserSubscription(
       mappedStatus = "canceled";
     } else if (isPastDue) {
       mappedStatus = "past_due";
-    } else if (hasActiveItem || billing.status === "active") {
+    } else if (subscribed) {
       mappedStatus = "active";
     }
   }
+
 
   const subscriptionActive = mappedStatus === "active";
 

@@ -29,7 +29,7 @@ const navItems = [
 export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = React.useState(false);
-  const { data: subscription } = useSubscription({ preload: true });
+  const { data: subscription } = useSubscription();
 
   const currentProgramHref = currentProgramId
     ? `/programs/${currentProgramId}`
@@ -143,7 +143,7 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
       </aside>
 
       {/* MOBILE BOTTOM NAV */}
-      <nav className="fixed bottom-0 left-0 right-0 z-0 flex items-center justify-around border-t border-[var(--border-strong)] bg-[var(--surface-secondary)] px-4 py-2 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-[1] flex items-center justify-around border-t border-[var(--border-strong)] bg-[var(--surface-secondary)] px-4 py-2 md:hidden">
         <Link href={currentProgramHref} prefetch>
           <button
             className={cn(

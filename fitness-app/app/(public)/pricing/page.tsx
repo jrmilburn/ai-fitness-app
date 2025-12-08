@@ -64,7 +64,7 @@ export default async function PricingPage() {
               </div>
               <div className="flex items-center gap-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
                 <Shield className="h-4 w-4 text-slate-500" />
-                Secured with Clerk billing. Cancel anytime.
+                Secured billing. Cancel anytime.
               </div>
             </div>
 
@@ -95,10 +95,6 @@ export default async function PricingPage() {
                   </button>
                 </SignInButton>
               </SignedOut>
-              <p className="text-center text-xs text-slate-500">
-                You’ll be redirected to Clerk checkout. Success returns you to{" "}
-                {SUCCESS_REDIRECT}.
-              </p>
             </div>
           </div>
         </div>

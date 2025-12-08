@@ -10,7 +10,7 @@ export async function requireActiveSubscription(
 ) {
   const subscription = await getUserSubscription();
 
-  console.log(subscription)
+  console.log("SUBSCRIPTION", subscription)
 
   if (!subscription.subscriptionActive) {
     redirect(redirectPath);
