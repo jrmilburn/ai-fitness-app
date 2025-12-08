@@ -20,7 +20,7 @@ export default async function ClientLayout({
       />
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto overflow-x-auto pb-10 md:px-8 md:pb-6 z-[0]">
+      <main className="flex-1 overflow-y-auto overflow-x-auto pb-10 md:px-8 md:pb-6 z-[0] mb-[58px] sm:mb-0">
         {children}
       </main>
     </div>
