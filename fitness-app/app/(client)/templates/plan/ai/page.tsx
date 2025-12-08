@@ -423,31 +423,41 @@ export default function AiBuildPage() {
         </form>
 
         {/* Feedback */}
-        {(loading || error) && (
-          <section className="space-y-3">
-            {loading && (
-              <div className="flex items-center gap-3 rounded-2xl border border-[var(--border-strong)]! bg-[var(--surface-tertiary)]! px-4 py-3">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#A64DFF]! border-t-transparent!" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-[var(--text-strong)]">
-                    Generating your program…
-                  </p>
-                  <p className="text-[0.7rem] text-[var(--text-muted)]">
-                    We’re building a training week based on your inputs and exercise
-                    library.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {error && (
-              <div className="rounded-lg border border-red-500/70! bg-red-500/10! px-4 py-3 text-sm text-red-200">
-                {error}
-              </div>
-            )}
-          </section>
-        )}
+      {error && (
+        <section className="space-y-3">
+          <div className="rounded-lg border border-red-500/70! bg-red-500/10! px-4 py-3 text-sm text-red-200">
+            {error}
+          </div>
+        </section>
+      )}
       </div>
+      {loading && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-[var(--border-strong)] bg-[var(--surface-primary)]/90 px-6 py-5 shadow-2xl">
+              {/* Spinner */}
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#A64DFF] border-t-transparent" />
+            
+              {/* Text */}
+              <div className="space-y-1 text-center">
+                <p className="text-sm font-semibold text-[var(--text-strong)]">
+                  Generating program…
+                </p>
+                <p className="text-xs text-[var(--text-muted)]">
+                  Please don&apos;t refresh or close this page.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      )}
+
     </div>
   );
 }
