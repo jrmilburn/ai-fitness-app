@@ -3,7 +3,6 @@ import type {
     WorkoutMode,
     ExerciseType,
     SetType,
-    MuscleGroup
 } from "@prisma/client";
 
 // ---------- structureJson shape stored in ProgramTemplate.structureJson ----------
@@ -23,7 +22,6 @@ export type ProgramTemplateStructure = {
       id: string;
       exerciseTemplateId: string;
       exerciseType: ExerciseType;
-      muscleGroup: MuscleGroup;
       sets: Array<{
         id: string;
         setNumber: number;
