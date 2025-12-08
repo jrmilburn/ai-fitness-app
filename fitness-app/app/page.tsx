@@ -5,7 +5,11 @@ export default async function Home() {
 
   const user = await getOrCreateCurrentUser()
 
-  redirect(`/programs${user.currentProgramId}`)
+  if(user.currentProgramId){
+    redirect(`/programs${user.currentProgramId}`)
+  } else {
+    redirect(`/programs`)
+  }
 
   return (
     <main>
