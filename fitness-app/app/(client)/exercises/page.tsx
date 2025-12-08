@@ -8,11 +8,7 @@ import { redirect } from "next/navigation";
 
 export default async function Exercises() {
 
-    const user = await getOrCreateCurrentUser();
-
-    if(!user.currentProgramId){
-      redirect("/templates/plan");
-    }
+    await getOrCreateCurrentUser();
 
     const exerciseTemplates = await getExerciseTemplates();
 
