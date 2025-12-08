@@ -89,9 +89,9 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
                 {exercise.template.name}
               </h3>
             )}
-            {exercise?.template?.muscleGroup && (
+            {exercise?.muscleGroup && (
               <h4 className="text-[0.7rem] uppercase tracking-wide text-[var(--text-muted)]">
-                {exercise.template?.muscleGroup}
+                {exercise.muscleGroup}
               </h4>
             )}
           </div>
