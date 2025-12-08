@@ -195,7 +195,7 @@ export default function AiBuildPage() {
                 opacity: 0,
               }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="space-y-6"
+              className="space-y-6 flex flex-col items-center"
             >
               {/* STEP 0 – Goals (multi-select) */}
               {step === 0 && (
