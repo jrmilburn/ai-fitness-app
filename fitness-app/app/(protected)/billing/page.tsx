@@ -124,7 +124,7 @@ export default async function BillingPage() {
             href="/programs"
             className="text-lg font-semibold text-slate-900"
           >
-            Studio Parallel
+            SP
           </Link>
           <Link href="/programs">
             <button className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">

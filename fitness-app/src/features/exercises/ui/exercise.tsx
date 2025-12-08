@@ -1,3 +1,4 @@
+// Exercise.tsx
 "use client";
 
 import type { Prisma } from "@prisma/client";
@@ -20,14 +21,26 @@ export type ExerciseWithSets = Prisma.ExerciseGetPayload<{
   include: { sets: true; template: true; muscleGroup: true };
 }>;
 
-export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
+type GroupPosition = "single" | "start" | "middle" | "end";
+
+type ExerciseProps = {
+  exercise: ExerciseWithSets;
+  groupPosition?: GroupPosition;
+  /** for spacing between stacked cards (mt-3, -mt-px, etc.) */
+  stackClassName?: string;
+};
+
+export default function Exercise({
+  exercise,
+  groupPosition = "single",
+  stackClassName = "",
+}: ExerciseProps) {
   const setsCompleted = exercise.sets.every((set) => set.completed === true);
 
   const router = useRouter();
   const [actionModalOpen, setActionModalOpen] = useState(false);
   const [newExerciseSelector, setNewExerciseSelector] = useState(false);
 
-  // 🔁 map of setId -> cascaded weight (as string)
   const [cascadedWeights, setCascadedWeights] = useState<Record<string, string>>(
     {}
   );
@@ -37,21 +50,11 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
     router.refresh();
   };
 
-  /*const handleAddExercise = async () => {
-    setNewExerciseSelector(true);
-  };*/
-
   const handleDeleteExercise = async () => {
     await deleteExercise(exercise.id);
     router.refresh();
   };
 
-  /**
-   * Called by a Set when user types a weight.
-   * We:
-   *  - find that set in the exercise.sets order
-   *  - cascade the weight to all *following* sets that don't have a saved weight yet
-   */
   const handleCascadeWeightChange = (setId: string, weight: string) => {
     const idx = exercise.sets.findIndex((s) => s.id === setId);
     if (idx === -1) return;
@@ -61,8 +64,6 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
 
       for (let i = idx + 1; i < exercise.sets.length; i++) {
         const s = exercise.sets[i];
-
-        // Only apply to sets that don't already have a saved weight
         if (s.actualWeightKg == null) {
           next[s.id] = weight;
         }
@@ -72,9 +73,17 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
     });
   };
 
+  // Choose border radius based on position in group
+  let radiusClass = "rounded-lg";
+  if (groupPosition === "start") radiusClass = "rounded-t-lg";
+  if (groupPosition === "middle") radiusClass = "rounded-none";
+  if (groupPosition === "end") radiusClass = "rounded-b-lg";
+
   return (
     <>
-      <div className="relative w-full rounded-lg border border-[var(--border-strong)] bg-[var(--surface-secondary)] shadow-sm">
+      <div
+        className={`relative w-full border border-[var(--border-strong)] bg-[var(--surface-secondary)] shadow-sm ${radiusClass} ${stackClassName}`}
+      >
         {setsCompleted && (
           <p className="absolute right-3 top-2 text-[0.7rem] font-medium text-emerald-300">
             Exercise complete
@@ -89,9 +98,9 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
                 {exercise.template.name}
               </h3>
             )}
-            {exercise?.muscleGroup && (
+            {exercise?.template?.muscleGroup && (
               <h4 className="text-[0.7rem] uppercase tracking-wide text-[var(--text-muted)]">
-                {exercise.muscleGroup}
+                {exercise.template.muscleGroup}
               </h4>
             )}
           </div>
@@ -114,7 +123,6 @@ export default function Exercise({ exercise }: { exercise: ExerciseWithSets }) {
                 key={set.id}
                 set={set}
                 type={exercise.exerciseType}
-                // 🔁 new props for cascading weight
                 onCascadeWeightChange={handleCascadeWeightChange}
                 cascadedWeight={cascadedWeights[set.id]}
               />

@@ -1,3 +1,4 @@
+// WorkoutView.tsx
 "use client";
 
 import type { Prisma } from "@prisma/client";
@@ -44,12 +45,52 @@ export function WorkoutView({
   return (
     <div className="flex flex-col gap-4">
       <div className="w-full">
-
         {/* Exercises */}
-        <div className="space-y-3">
-          {workout.exercises.map((exercise) => (
-            <Exercise key={exercise.id} exercise={exercise} />
-          ))}
+        <div>
+          {workout.exercises.map((exercise, index) => {
+            const prev = workout.exercises[index - 1];
+            const next = workout.exercises[index + 1];
+
+            // Use template.muscleGroup as the grouping key
+            const thisGroup =
+              exercise.template?.muscleGroup ??
+              null;
+            const prevGroup =
+              prev?.template?.muscleGroup ??
+              null;
+            const nextGroup =
+              next?.template?.muscleGroup ??
+              null;
+
+            const sameAsPrev =
+              prevGroup !== null && prevGroup === thisGroup;
+            const sameAsNext =
+              nextGroup !== null && nextGroup === thisGroup;
+
+            let groupPosition: "single" | "start" | "middle" | "end" = "single";
+            if (!sameAsPrev && sameAsNext) groupPosition = "start";
+            else if (sameAsPrev && sameAsNext) groupPosition = "middle";
+            else if (sameAsPrev && !sameAsNext) groupPosition = "end";
+
+            // Spacing:
+            // - between *different* groups: mt-3
+            // - between same group neighbours: -mt-px to overlap borders
+            let stackClassName = "";
+            if (sameAsPrev) {
+              stackClassName = "-mt-px";
+            } else if (index > 0) {
+              stackClassName = "mt-3";
+            }
+
+            return (
+              <Exercise
+                key={exercise.id}
+                exercise={exercise}
+                groupPosition={groupPosition}
+                stackClassName={stackClassName}
+              />
+            );
+          })}
         </div>
       </div>
 
