@@ -5,7 +5,7 @@ const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/pricing"]);
 export default clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect({
-      unauthenticatedUrl: "https://integral-terrapin-58.accounts.dev/sign-in",
+      unauthenticatedUrl: process.env.CLERK_SIGN_IN_URL,
     });
   }
 });
