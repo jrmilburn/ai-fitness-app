@@ -4,15 +4,12 @@ import { prisma } from "@/lib/prisma";
 export async function getOrCreateCurrentUser() {
   const { userId: clerkId } = await auth();
 
-  console.log("CLERK ID", clerkId);
-
   if (!clerkId) throw new Error("Not authenticated");
 
   // Fetch details like email/phone from Clerk
   const clerkUser = await currentUser();
   if (!clerkUser) throw new Error("Clerk user not found");
 
-  console.log("CLERK USER", clerkUser)
 
   // Upsert pattern ensures the User row always exists
   const user = await prisma.user.upsert({
