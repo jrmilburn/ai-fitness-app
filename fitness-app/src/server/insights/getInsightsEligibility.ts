@@ -3,7 +3,7 @@ import {
   type InsightsSourceData,
 } from "@/server/insights/getInsightsSourceData";
 
-const MIN_LOGGED_DAYS = 14;
+const MIN_LOGGED_WEEKS = 2;
 const MIN_LOGGED_WORKOUTS = 6;
 const MIN_LOGGED_SETS = 30;
 
@@ -13,7 +13,7 @@ export type InsightsEligibility = {
   missing: string[];
   totalWorkouts: number;
   totalSets: number;
-  daysCovered: number;
+  weeksLogged: number;
   programCount: number;
 };
 
@@ -27,30 +27,25 @@ export function evaluateInsightsEligibility(
       missing: ["No logged workouts found"],
       totalWorkouts: data.totalWorkouts,
       totalSets: data.totalSets,
-      daysCovered: 0,
+      weeksLogged: data.weeksLogged,
       programCount: data.programIds.length,
     };
   }
 
-  const daysCovered = Math.floor(
-    (data.latestDate.getTime() - data.earliestDate.getTime()) /
-      (1000 * 60 * 60 * 24)
-  );
-
-  const hasEnoughDays = daysCovered >= MIN_LOGGED_DAYS;
+  const hasEnoughWeeks = data.weeksLogged >= MIN_LOGGED_WEEKS;
   const hasEnoughVolume =
     data.totalWorkouts >= MIN_LOGGED_WORKOUTS ||
     data.totalSets >= MIN_LOGGED_SETS;
 
   const missing: string[] = [];
-  if (!hasEnoughDays) {
-    missing.push("At least 14 days between your first and most recent logs");
+  if (!hasEnoughWeeks) {
+    missing.push("At least 2 weeks with logged workouts");
   }
   if (!hasEnoughVolume) {
     missing.push("At least 6 logged workouts or 30 completed sets");
   }
 
-  const eligible = hasEnoughDays && hasEnoughVolume;
+  const eligible = hasEnoughWeeks && hasEnoughVolume;
 
   return {
     eligible,
@@ -60,7 +55,7 @@ export function evaluateInsightsEligibility(
     missing,
     totalWorkouts: data.totalWorkouts,
     totalSets: data.totalSets,
-    daysCovered,
+    weeksLogged: data.weeksLogged,
     programCount: data.programIds.length,
   };
 }

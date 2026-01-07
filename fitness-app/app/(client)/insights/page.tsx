@@ -28,7 +28,7 @@ type InsightsResponse =
       stats: {
         totalWorkouts: number;
         totalSets: number;
-        daysCovered: number;
+        weeksLogged: number;
         programCount: number;
       };
     };
@@ -118,7 +118,7 @@ export default function InsightsPage() {
             ))}
           </ul>
           <div className="rounded-md bg-[var(--surface-primary)] px-4 py-3 text-xs text-[var(--text-muted)]">
-            Logged workouts: {data.stats.totalWorkouts} • Completed sets: {data.stats.totalSets} • Days covered: {data.stats.daysCovered}
+            Logged workouts: {data.stats.totalWorkouts} • Completed sets: {data.stats.totalSets} • Weeks logged: {data.stats.weeksLogged}
           </div>
         </div>
       )}
