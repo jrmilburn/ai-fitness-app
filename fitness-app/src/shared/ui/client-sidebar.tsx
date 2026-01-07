@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   SignedIn,
@@ -84,7 +85,12 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden h-screen w-64 flex-col border-r border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-[var(--text-strong)] md:flex">
         <div className="flex h-16 items-center border-b border-[var(--border-strong)] px-4">
-          <span className="text-xl font-semibold tracking-tight">SP</span>
+          <div className="w-8 h-8"><Image 
+            src="/logo.png"
+            height={64}
+            width={64}
+            alt="logo"
+          /></div>
         </div>
 
         <nav className="flex-1 space-y-1 px-2 py-4">
