@@ -14,12 +14,25 @@ import {
 } from "@clerk/nextjs";
 import { useSubscription } from "@clerk/clerk-react/experimental";
 import { cn } from "@/lib/utils";
-import { CalendarDays, Dumbbell, MoreHorizontal, X } from "lucide-react";
+import {
+  CalendarDays,
+  Dumbbell,
+  MoreHorizontal,
+  X,
+  Sparkles,
+} from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 
 type ClientSidebarProps = {
   currentProgramId?: string | null;
   showInsights?: boolean;
+};
+
+type NavItem = {
+  key: "workout" | "programs" | "templates" | "exercises" | "insights";
+  label: string;
+  short: string;
+  icon?: React.ElementType;
 };
 
 export function ClientSidebar({
@@ -32,11 +45,11 @@ export function ClientSidebar({
   const { user } = useUser();
 
   const accountLabel =
-  user?.fullName ??
-  [user?.firstName, user?.lastName].filter(Boolean).join(" ") ??
-  user?.username ??
-  user?.primaryEmailAddress?.emailAddress ??
-  "Account";
+    user?.fullName ??
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ??
+    user?.username ??
+    user?.primaryEmailAddress?.emailAddress ??
+    "Account";
 
   const currentProgramHref = currentProgramId
     ? `/programs/${currentProgramId}`
@@ -46,7 +59,7 @@ export function ClientSidebar({
   const isProgramsActive =
     pathname.startsWith("/programs") && !isWorkoutActive;
 
-  const getHrefForItem = (key: string) => {
+  const getHrefForItem = (key: NavItem["key"]) => {
     switch (key) {
       case "workout":
         return currentProgramHref;
@@ -63,9 +76,10 @@ export function ClientSidebar({
     }
   };
 
-  const isItemActive = (key: string, href: string) => {
+  const isItemActive = (key: NavItem["key"], href: string) => {
     if (key === "workout") return isWorkoutActive;
     if (key === "programs") return isProgramsActive;
+    if (key === "insights") return pathname === "/insights" || pathname.startsWith("/insights/");
     return pathname.startsWith(href);
   };
 
@@ -79,13 +93,13 @@ export function ClientSidebar({
     ? { label: "Billing", href: "/billing" }
     : { label: "Upgrade", href: "/pricing" };
 
-  const navItems = [
-    { key: "workout", label: "Current workout", short: "Workout" },
-    { key: "programs", label: "Programs", short: "Programs" },
+  const navItems: NavItem[] = [
+    { key: "workout", label: "Current workout", short: "Workout", icon: CalendarDays },
+    { key: "programs", label: "Programs", short: "Programs", icon: Dumbbell },
     { key: "templates", label: "Templates", short: "Templates" },
     { key: "exercises", label: "Exercises", short: "Exercises" },
     ...(showInsights
-      ? [{ key: "insights", label: "AI Insights", short: "Insights" }]
+      ? [{ key: "insights", label: "AI Insights", short: "Insights", icon: Sparkles }]
       : []),
   ];
 
@@ -94,31 +108,43 @@ export function ClientSidebar({
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden h-screen w-64 flex-col border-r border-[var(--border-strong)] bg-[var(--surface-tertiary)] text-[var(--text-strong)] md:flex">
         <div className="flex h-16 items-center border-b border-[var(--border-strong)] px-4">
-          <div className="w-8 h-8"><Image 
-            src="/logo.png"
-            height={256}
-            width={256}
-            alt="logo"
-          /></div>
+          <div className="h-8 w-8">
+            <Image src="/logo.png" height={256} width={256} alt="logo" />
+          </div>
         </div>
 
         <nav className="flex-1 space-y-1 px-2 py-4">
           {navItems.map((item) => {
             const href = getHrefForItem(item.key);
             const active = isItemActive(item.key, href);
+            const Icon = item.icon;
 
             return (
               <Link key={item.key} href={href} prefetch>
                 <button
                   className={cn(
-                    "flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors border",
+                    "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors border",
                     "hover:bg-[var(--surface-secondary)] hover:text-[var(--text-strong)] cursor-pointer",
                     active
                       ? "bg-[var(--surface-secondary)] text-[var(--text-strong)] border-[#A64DFF]"
                       : "text-[var(--text-muted)] border-transparent"
                   )}
                 >
-                  {item.label}
+                  {Icon ? (
+                    <Icon
+                      className={cn(
+                        "h-4 w-4 shrink-0",
+                        item.key === "insights"
+                          ? active
+                            ? "text-[#A64DFF]"
+                            : "text-[var(--text-muted)]"
+                          : undefined
+                      )}
+                    />
+                  ) : (
+                    <span className="h-4 w-4 shrink-0" />
+                  )}
+                  <span>{item.label}</span>
                 </button>
               </Link>
             );
@@ -243,6 +269,7 @@ export function ClientSidebar({
               {navItems.map((item) => {
                 const href = getHrefForItem(item.key);
                 const active = isItemActive(item.key, href);
+                const Icon = item.icon;
 
                 return (
                   <Link
@@ -259,7 +286,23 @@ export function ClientSidebar({
                           : "bg-transparent text-[var(--text-muted)] border-transparent hover:bg-[var(--surface-accent)]"
                       )}
                     >
-                      <span>{item.label}</span>
+                      <div className="flex items-center gap-3">
+                        {Icon ? (
+                          <Icon
+                            className={cn(
+                              "h-4 w-4 shrink-0",
+                              item.key === "insights"
+                                ? active
+                                  ? "text-[#A64DFF]"
+                                  : "text-[var(--text-muted)]"
+                                : undefined
+                            )}
+                          />
+                        ) : (
+                          <span className="h-4 w-4 shrink-0" />
+                        )}
+                        <span>{item.label}</span>
+                      </div>
                     </div>
                   </Link>
                 );
