@@ -2,6 +2,7 @@ import * as React from "react";
 import { ClientSidebar } from "@/shared/ui/client-sidebar";
 import { getOrCreateCurrentUser } from "@/server/users/getOrCreateCurrentUser";
 import { requireActiveSubscription } from "@/server/subscription/requireActiveSubscription";
+import { getInsightsEligibility } from "@/server/insights/getInsightsEligibility";
 
 export default async function ClientLayout({
   children,
@@ -11,12 +12,14 @@ export default async function ClientLayout({
 
   const user = await getOrCreateCurrentUser();
   await requireActiveSubscription();
+  const insightsEligibility = await getInsightsEligibility(user.id);
 
   return (
     <div className="relative flex h-screen text-[var(--text-strong)]">
       {/* Sidebar (desktop) + mobile nav logic inside */}
       <ClientSidebar
         currentProgramId={user.currentProgramId}
+        showInsights={insightsEligibility.eligible}
       />
 
       {/* Main content */}
