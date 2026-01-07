@@ -87,8 +87,8 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
         <div className="flex h-16 items-center border-b border-[var(--border-strong)] px-4">
           <div className="w-8 h-8"><Image 
             src="/logo.png"
-            height={64}
-            width={64}
+            height={256}
+            width={256}
             alt="logo"
           /></div>
         </div>
