@@ -14,6 +14,7 @@ import {
 import { useSubscription } from "@clerk/clerk-react/experimental";
 import { cn } from "@/lib/utils";
 import { CalendarDays, Dumbbell, MoreHorizontal, X } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 type ClientSidebarProps = {
   currentProgramId?: string | null;
@@ -30,6 +31,14 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = React.useState(false);
   const { data: subscription } = useSubscription();
+  const { user } = useUser();
+
+  const accountLabel =
+  user?.fullName ??
+  [user?.firstName, user?.lastName].filter(Boolean).join(" ") ??
+  user?.username ??
+  user?.primaryEmailAddress?.emailAddress ??
+  "Account";
 
   const currentProgramHref = currentProgramId
     ? `/programs/${currentProgramId}`
@@ -134,7 +143,12 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
               </div>
 
               <div className="flex items-center justify-between gap-2">
-                <span className="text-xs text-[var(--text-muted)]">Account</span>
+                <span
+                  className="min-w-0 max-w-[160px] truncate text-xs text-[var(--text-muted)]"
+                  title={accountLabel}
+                >
+                  {accountLabel}
+                </span>
                 <UserButton />
               </div>
             </div>
