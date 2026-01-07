@@ -98,7 +98,7 @@ export default function WorkoutWrapper({
   };
 
   return (
-    <div className="rounded-xl border border-[var(--border-strong)] bg-[var(--surface-tertiary)] p-4 shadow-sm md:p-6">
+    <div className="rounded-xl border border-[var(--border-strong)] bg-[var(--surface-tertiary)] sm:p-4 shadow-sm md:p-6">
       <div className="grid gap-6 md:grid-cols-[260px,1fr]">
         <WorkoutSelector
           program={program}
