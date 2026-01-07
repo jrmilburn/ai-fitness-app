@@ -37,7 +37,6 @@ type NavItem = {
 
 export function ClientSidebar({
   currentProgramId,
-  showInsights = false,
 }: ClientSidebarProps) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = React.useState(false);
@@ -98,9 +97,7 @@ export function ClientSidebar({
     { key: "programs", label: "Programs", short: "Programs", icon: Dumbbell },
     { key: "templates", label: "Templates", short: "Templates" },
     { key: "exercises", label: "Exercises", short: "Exercises" },
-    ...(showInsights
-      ? [{ key: "insights", label: "AI Insights", short: "Insights", icon: Sparkles }]
-      : []),
+    { key: "insights", label: "AI Insights", short: "Insights", icon: Sparkles }
   ];
 
   return (
