@@ -19,16 +19,13 @@ import { useUser } from "@clerk/nextjs";
 
 type ClientSidebarProps = {
   currentProgramId?: string | null;
+  showInsights?: boolean;
 };
 
-const navItems = [
-  { key: "workout", label: "Current workout", short: "Workout" },
-  { key: "programs", label: "Programs", short: "Programs" },
-  { key: "templates", label: "Templates", short: "Templates" },
-  { key: "exercises", label: "Exercises", short: "Exercises" },
-];
-
-export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
+export function ClientSidebar({
+  currentProgramId,
+  showInsights = false,
+}: ClientSidebarProps) {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = React.useState(false);
   const { data: subscription } = useSubscription();
@@ -59,6 +56,8 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
         return "/templates";
       case "exercises":
         return "/exercises";
+      case "insights":
+        return "/insights";
       default:
         return "/";
     }
@@ -79,6 +78,16 @@ export function ClientSidebar({ currentProgramId }: ClientSidebarProps) {
   const billingCta = hasActiveSubscription
     ? { label: "Billing", href: "/billing" }
     : { label: "Upgrade", href: "/pricing" };
+
+  const navItems = [
+    { key: "workout", label: "Current workout", short: "Workout" },
+    { key: "programs", label: "Programs", short: "Programs" },
+    { key: "templates", label: "Templates", short: "Templates" },
+    { key: "exercises", label: "Exercises", short: "Exercises" },
+    ...(showInsights
+      ? [{ key: "insights", label: "AI Insights", short: "Insights" }]
+      : []),
+  ];
 
   return (
     <>
