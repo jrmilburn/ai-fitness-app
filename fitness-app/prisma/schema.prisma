@@ -63,11 +63,26 @@ model User {
   programs          Program[]
   exerciseTemplates ExerciseTemplate[]
   programTemplates  ProgramTemplate[]
+  aiInsightsCaches  AiInsightsCache[]
 
   admin Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AiInsightsCache {
+  id           String   @id @default(cuid())
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  snapshotHash String
+  snapshotJson Json
+  insightsJson Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, snapshotHash])
 }
 
 // =========================================================
