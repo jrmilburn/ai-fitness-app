@@ -93,8 +93,8 @@ export function ClientSidebar({
     : { label: "Upgrade", href: "/pricing" };
 
   const navItems: NavItem[] = [
-    { key: "workout", label: "Current workout", short: "Workout", icon: CalendarDays },
-    { key: "programs", label: "Programs", short: "Programs", icon: Dumbbell },
+    { key: "workout", label: "Current workout", short: "Workout" },
+    { key: "programs", label: "Programs", short: "Programs" },
     { key: "templates", label: "Templates", short: "Templates" },
     { key: "exercises", label: "Exercises", short: "Exercises" },
     { key: "insights", label: "AI Insights", short: "Insights", icon: Sparkles }
@@ -127,7 +127,7 @@ export function ClientSidebar({
                       : "text-[var(--text-muted)] border-transparent"
                   )}
                 >
-                  {Icon ? (
+                  {Icon && (
                     <Icon
                       className={cn(
                         "h-4 w-4 shrink-0",
@@ -138,8 +138,6 @@ export function ClientSidebar({
                           : undefined
                       )}
                     />
-                  ) : (
-                    <span className="h-4 w-4 shrink-0" />
                   )}
                   <span>{item.label}</span>
                 </button>
