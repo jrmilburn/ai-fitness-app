@@ -87,10 +87,7 @@ export default function InsightsPage() {
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 py-6 text-[var(--text-strong)]">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">AI Insights</h1>
-        <p className="text-sm text-[var(--text-muted)]">
-          Based on your two most recent programs.
-        </p>
+        <h1 className="text-2xl font-semibold">SP Insights</h1>
       </header>
 
       {loading && (
