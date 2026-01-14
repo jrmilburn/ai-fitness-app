@@ -249,7 +249,6 @@ export default async function HomePage() {
   const signedIn = Boolean(userId);
 
   return (
-    <LenisProvider>
     <div className="relative flex min-h-screen flex-col bg-white text-slate-900">
       <GradientBackdrop />
 
@@ -304,6 +303,7 @@ export default async function HomePage() {
       </header>
 
       {/* Hero */}
+    <LenisProvider>
       <main className="relative z-10">
         <section className="mx-auto max-w-6xl px-6 pb-10 pt-10 sm:pt-16">
           <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
@@ -739,6 +739,8 @@ export default async function HomePage() {
           </div>
         </section>
       </main>
+    </LenisProvider>
+
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-slate-200 bg-white/70 backdrop-blur">
@@ -775,6 +777,5 @@ export default async function HomePage() {
         </div>
       </footer>
     </div>
-    </LenisProvider>
   );
 }
