@@ -266,24 +266,6 @@ export default async function HomePage() {
         </Link>
 
         <nav className="flex items-center gap-3">
-          <a
-            href="#features"
-            className="hidden text-sm font-semibold text-slate-600 transition hover:text-slate-900 sm:inline-flex"
-          >
-            Features
-          </a>
-          <a
-            href="#how"
-            className="hidden text-sm font-semibold text-slate-600 transition hover:text-slate-900 sm:inline-flex"
-          >
-            How it works
-          </a>
-          <a
-            href="#pricing"
-            className="hidden text-sm font-semibold text-slate-600 transition hover:text-slate-900 sm:inline-flex"
-          >
-            Pricing
-          </a>
 
           {/* Signed-out: show sign in + start */}
           <SignedOut>
