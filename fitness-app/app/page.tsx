@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { auth } from "@clerk/nextjs/server";
-import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
-import { getUserSubscription } from "@/server/subscription/getUserSubscription";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -237,18 +241,11 @@ function MockUI() {
 }
 
 export default async function HomePage() {
+  // Keep the landing page accessible to everyone.
+  // We only use auth() to conditionally render the header actions (user button / sign in).
   const { userId } = await auth();
 
-  if (userId) {
-    const subscription = await getUserSubscription(userId);
-    if (subscription.subscriptionActive) {
-      return void (await import("next/navigation")).redirect("/programs");
-    }
-    return void (await import("next/navigation")).redirect("/pricing");
-  }
-
-  const subscription = { subscriptionActive: false, subscriptionStatus: "inactive" };
-  const alreadySubscribed = subscription.subscriptionActive;
+  const signedIn = Boolean(userId);
 
   return (
     <div className="relative flex min-h-screen flex-col bg-white text-slate-900">
@@ -288,20 +285,37 @@ export default async function HomePage() {
             Pricing
           </a>
 
-          <Link
-            href="/sign-in"
-            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:bg-white"
-          >
-            Sign In
-          </Link>
+          {/* Signed-out: show sign in + start */}
+          <SignedOut>
+            <Link
+              href="/sign-in"
+              className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:bg-white"
+            >
+              Sign In
+            </Link>
 
-          <Link
-            href="/pricing"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:bg-purple-700 hover:shadow-purple-200/80"
-          >
-            Start
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+            <Link
+              href="/pricing"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:bg-purple-700 hover:shadow-purple-200/80"
+            >
+              Start
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </SignedOut>
+
+          {/* Signed-in: show go-to-app + Clerk user button */}
+          <SignedIn>
+            <Link
+              href="/programs"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-slate-800"
+            >
+              Go to app
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <div className="ml-1 grid place-items-center">
+              <UserButton afterSignOutUrl="/" />
+            </div>
+          </SignedIn>
         </nav>
       </header>
 
@@ -329,28 +343,29 @@ export default async function HomePage() {
               </p>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Link href="/pricing" className="w-full sm:w-auto">
-                  <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 hover:shadow-purple-200/80 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                    Get started
-                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                  </button>
-                </Link>
-
-                <SignedOut>
-                  <SignInButton forceRedirectUrl="/pricing">
-                    <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 sm:w-auto">
-                      Sign in to subscribe
-                    </button>
-                  </SignInButton>
-                </SignedOut>
-
-                <SignedIn>
+                {signedIn ? (
                   <Link href="/programs" className="w-full sm:w-auto">
-                    <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 sm:w-auto">
-                      Open app
+                    <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.01] hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 sm:w-auto">
+                      Go to app
+                      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
                     </button>
                   </Link>
-                </SignedIn>
+                ) : (
+                  <Link href="/pricing" className="w-full sm:w-auto">
+                    <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 hover:shadow-purple-200/80 focus:outline-none focus:ring-2 focus:ring-purple-300 sm:w-auto">
+                      Get started
+                      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                    </button>
+                  </Link>
+                )}
+
+                {!signedIn ? (
+                  <SignInButton forceRedirectUrl="/pricing">
+                    <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 sm:w-auto">
+                      Sign in
+                    </button>
+                  </SignInButton>
+                ) : null}
               </div>
 
               <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-slate-600">
@@ -368,7 +383,6 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Social proof row */}
               <div className="pt-6">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                   Built for consistency
@@ -527,11 +541,7 @@ export default async function HomePage() {
                 </p>
 
                 <div className="mt-6 space-y-3 text-sm text-white/90">
-                  {[
-                    "Workout logging",
-                    "Simple, clean app flow",
-                    "Keep training data in one place",
-                  ].map((t) => (
+                  {["Workout logging", "Simple, clean app flow", "Keep training data in one place"].map((t) => (
                     <div key={t} className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-green-300" />
                       <span>{t}</span>
@@ -584,25 +594,23 @@ export default async function HomePage() {
 
                 <div className="mt-8 space-y-3">
                   <SignedIn>
-                    {alreadySubscribed ? (
-                      <Link href="/programs">
-                        <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                          Go to app
-                          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                        </button>
+                    <CheckoutButtonClient
+                      planId={AI_PLAN_ID}
+                      planPeriod="month"
+                      newSubscriptionRedirectUrl={SUCCESS_REDIRECT}
+                    >
+                      <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                        Start AI Plan
+                        <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                      </button>
+                    </CheckoutButtonClient>
+
+                    <p className="text-center text-xs text-slate-500">
+                      Already subscribed?{" "}
+                      <Link href="/programs" className="font-semibold text-slate-900 hover:underline">
+                        Go to app
                       </Link>
-                    ) : (
-                      <CheckoutButtonClient
-                        planId={AI_PLAN_ID}
-                        planPeriod="month"
-                        newSubscriptionRedirectUrl={SUCCESS_REDIRECT}
-                      >
-                        <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
-                          Start AI Plan
-                          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                        </button>
-                      </CheckoutButtonClient>
-                    )}
+                    </p>
                   </SignedIn>
 
                   <SignedOut>
@@ -704,17 +712,29 @@ export default async function HomePage() {
               </p>
 
               <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                <Link href="/pricing" className="w-full sm:w-auto">
-                  <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300 sm:w-auto">
-                    Get started
-                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                  </button>
-                </Link>
-                <Link href="/sign-in" className="w-full sm:w-auto">
-                  <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 sm:w-auto">
-                    Sign in
-                  </button>
-                </Link>
+                {signedIn ? (
+                  <Link href="/programs" className="w-full sm:w-auto">
+                    <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.01] hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 sm:w-auto">
+                      Go to app
+                      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                    </button>
+                  </Link>
+                ) : (
+                  <Link href="/pricing" className="w-full sm:w-auto">
+                    <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300 sm:w-auto">
+                      Get started
+                      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                    </button>
+                  </Link>
+                )}
+
+                {!signedIn ? (
+                  <Link href="/sign-in" className="w-full sm:w-auto">
+                    <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 sm:w-auto">
+                      Sign in
+                    </button>
+                  </Link>
+                ) : null}
               </div>
 
               <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
@@ -740,7 +760,13 @@ export default async function HomePage() {
       <footer className="relative z-10 border-t border-slate-200 bg-white/70 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="SP Fitness logo" width={256} height={256} className="h-8 w-8 rounded-xl" />
+            <Image
+              src="/logo.png"
+              alt="SP Fitness logo"
+              width={256}
+              height={256}
+              className="h-8 w-8 rounded-xl"
+            />
             <div>
               <p className="text-sm font-bold tracking-tight text-slate-900">SP Fitness</p>
               <p className="text-xs text-slate-500">AI programs + free tracking</p>
@@ -757,12 +783,20 @@ export default async function HomePage() {
             <a href="#pricing" className="transition hover:text-slate-900">
               Pricing
             </a>
-            <Link href="/sign-in" className="transition hover:text-slate-900">
-              Sign in
-            </Link>
+            {signedIn ? (
+              <Link href="/programs" className="transition hover:text-slate-900">
+                Go to app
+              </Link>
+            ) : (
+              <Link href="/sign-in" className="transition hover:text-slate-900">
+                Sign in
+              </Link>
+            )}
           </div>
 
-          <p className="text-xs text-slate-500">© {new Date().getFullYear()} SP Fitness. All rights reserved.</p>
+          <p className="text-xs text-slate-500">
+            © {new Date().getFullYear()} SP Fitness. All rights reserved.
+          </p>
         </div>
       </footer>
     </div>
