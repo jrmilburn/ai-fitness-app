@@ -20,6 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import { CheckoutButtonClient } from "./(public)/pricing/CheckoutButtonClient";
+import LenisProvider from "./LenisProvider";
 
 export const metadata: Metadata = {
   title: "SP Fitness – AI-Powered Fitness App",
@@ -248,6 +249,7 @@ export default async function HomePage() {
   const signedIn = Boolean(userId);
 
   return (
+    <LenisProvider>
     <div className="relative flex min-h-screen flex-col bg-white text-slate-900">
       <GradientBackdrop />
 
@@ -773,5 +775,6 @@ export default async function HomePage() {
         </div>
       </footer>
     </div>
+    </LenisProvider>
   );
 }
