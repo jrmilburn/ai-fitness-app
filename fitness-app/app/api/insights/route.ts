@@ -64,7 +64,7 @@ export async function GET() {
         stats: {
           totalWorkouts: eligibility.totalWorkouts,
           totalSets: eligibility.totalSets,
-          daysCovered: eligibility.daysCovered,
+          weeksLogged: eligibility.weeksLogged,
           programCount: eligibility.programCount,
         },
       });

@@ -18,6 +18,7 @@ export type LoggedWorkoutExercise = {
 export type LoggedWorkout = {
   id: string;
   updatedAt: Date;
+  weekNumber: number;
   exercises: LoggedWorkoutExercise[];
 };
 
@@ -28,6 +29,7 @@ export type InsightsSourceData = {
   latestDate: Date | null;
   totalWorkouts: number;
   totalSets: number;
+  weeksLogged: number;
 };
 
 export async function getInsightsSourceData(
@@ -60,6 +62,7 @@ export async function getInsightsSourceData(
       latestDate: null,
       totalWorkouts: 0,
       totalSets: 0,
+      weeksLogged: 0,
     };
   }
 
@@ -88,6 +91,7 @@ export async function getInsightsSourceData(
       latestDate: null,
       totalWorkouts: 0,
       totalSets: 0,
+      weeksLogged: 0,
     };
   }
 
@@ -103,6 +107,11 @@ export async function getInsightsSourceData(
     select: {
       id: true,
       updatedAt: true,
+      week: {
+        select: {
+          weekNumber: true,
+        },
+      },
       exercises: {
         select: {
           muscleGroup: true,
@@ -134,8 +143,12 @@ export async function getInsightsSourceData(
   let earliestDate: Date | null = null;
   let latestDate: Date | null = null;
   let totalSets = 0;
+  const weekNumbers = new Set<number>();
 
   const normalizedWorkouts: LoggedWorkout[] = workouts.map((workout) => {
+    if (workout.week?.weekNumber !== undefined) {
+      weekNumbers.add(workout.week.weekNumber);
+    }
     const exercises = workout.exercises.map((exercise) => {
       const sets = exercise.sets.map((set) => ({
         actualReps: set.actualReps ?? null,
@@ -164,6 +177,7 @@ export async function getInsightsSourceData(
     return {
       id: workout.id,
       updatedAt: workout.updatedAt,
+      weekNumber: workout.week?.weekNumber ?? 0,
       exercises,
     };
   });
@@ -175,5 +189,6 @@ export async function getInsightsSourceData(
     latestDate,
     totalWorkouts: normalizedWorkouts.length,
     totalSets,
+    weeksLogged: weekNumbers.size,
   };
 }
