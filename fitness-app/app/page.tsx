@@ -756,15 +756,6 @@ export default async function HomePage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-600">
-            <a href="#features" className="transition hover:text-slate-900">
-              Features
-            </a>
-            <a href="#how" className="transition hover:text-slate-900">
-              How it works
-            </a>
-            <a href="#pricing" className="transition hover:text-slate-900">
-              Pricing
-            </a>
             {signedIn ? (
               <Link href="/programs" className="transition hover:text-slate-900">
                 Go to app
