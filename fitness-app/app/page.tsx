@@ -20,7 +20,6 @@ import {
   Zap,
 } from "lucide-react";
 import { CheckoutButtonClient } from "./(public)/pricing/CheckoutButtonClient";
-import LenisProvider from "./LenisProvider";
 
 export const metadata: Metadata = {
   title: "SP Fitness – AI-Powered Fitness App",
@@ -303,7 +302,6 @@ export default async function HomePage() {
       </header>
 
       {/* Hero */}
-    <LenisProvider>
       <main className="relative z-10">
         <section className="mx-auto max-w-6xl px-6 pb-10 pt-10 sm:pt-16">
           <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
@@ -739,7 +737,6 @@ export default async function HomePage() {
           </div>
         </section>
       </main>
-    </LenisProvider>
 
 
       {/* Footer */}
