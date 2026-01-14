@@ -4,351 +4,766 @@ import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import { getUserSubscription } from "@/server/subscription/getUserSubscription";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle2, Shield, Sparkles, Zap, Dumbbell, Search } from "lucide-react";
+import {
+  ArrowRight,
+  BarChart3,
+  Check,
+  CheckCircle2,
+  Dumbbell,
+  Flame,
+  Shield,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import { CheckoutButtonClient } from "./(public)/pricing/CheckoutButtonClient";
 
 export const metadata: Metadata = {
   title: "SP Fitness – AI-Powered Fitness App",
-  description: "Smarter training with AI. Achieve your fitness goals with personalized workout programs, workout tracking, and AI insights.",
+  description:
+    "Smarter training with AI. Generate personalized programs, track workouts, and unlock AI insights with the SP Fitness AI Plan.",
 };
 
-const AI_PLAN_ID =
-  process.env.NEXT_PUBLIC_CLERK_AI_PLAN_ID?.trim() || "jfit_ai";
+const AI_PLAN_ID = process.env.NEXT_PUBLIC_CLERK_AI_PLAN_ID?.trim() || "jfit_ai";
 const SUCCESS_REDIRECT = "/programs";
 
-const featureList = [
+const aiPlanBullets = [
   "5 AI-generated programs each month",
   "Keep all logging + workouts free",
   "Cancel anytime from billing",
 ];
 
+const featureCards = [
+  {
+    title: "AI-Generated Programs",
+    desc: "Generate personalized programs tuned to your goals and schedule in seconds.",
+    icon: Zap,
+  },
+  {
+    title: "Workout Tracking",
+    desc: "Log sets, reps, and workouts fast — stay consistent and see progress over time.",
+    icon: Dumbbell,
+  },
+  {
+    title: "AI Training Insights",
+    desc: "Get lightweight insights based on your training history to keep improving.",
+    icon: Sparkles,
+  },
+  {
+    title: "Progress Trends",
+    desc: "Keep an eye on momentum with simple progress signals that reward consistency.",
+    icon: BarChart3,
+  },
+];
+
+const testimonials = [
+  {
+    quote:
+      "The AI programs actually feel like they understand my week. I’m training harder, with way less planning stress.",
+    name: "Alex M.",
+    title: "Gym Enthusiast",
+  },
+  {
+    quote:
+      "Logging is so quick that I actually do it. The insights are a nice nudge when I’m drifting off track.",
+    name: "Jordan P.",
+    title: "Busy Professional",
+  },
+  {
+    quote:
+      "Clean UI, zero fluff. The AI plan is worth it just for the programs — it keeps me consistent.",
+    name: "Taylor R.",
+    title: "Aspiring Athlete",
+  },
+];
+
+const faqs = [
+  {
+    q: "What do I get with the AI Plan?",
+    a: "The AI Plan unlocks AI-powered program generation and AI insights. Core app features like workout logging remain available without a subscription.",
+  },
+  {
+    q: "Do I need a subscription to use SP Fitness?",
+    a: "No. You can use SP Fitness for free. Upgrade only if you want AI-generated programs and AI insights.",
+  },
+  {
+    q: "Can I cancel anytime?",
+    a: "Yes. You can cancel from your billing settings at any time. You’ll keep access until the end of the billing period.",
+  },
+  {
+    q: "Is my billing secure?",
+    a: "Billing is handled securely via Clerk. You can manage your subscription in your account.",
+  },
+];
+
+function GradientBackdrop() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="absolute -top-24 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-gradient-to-tr from-purple-500/25 via-fuchsia-500/20 to-indigo-500/20 blur-3xl" />
+      <div className="absolute -bottom-40 left-0 h-[420px] w-[420px] rounded-full bg-gradient-to-tr from-slate-900/10 via-purple-500/15 to-pink-500/10 blur-3xl" />
+      <div className="absolute -bottom-52 right-0 h-[520px] w-[520px] rounded-full bg-gradient-to-tr from-indigo-500/15 via-purple-500/15 to-sky-500/10 blur-3xl" />
+    </div>
+  );
+}
+
+function SectionHeading({
+  eyebrow,
+  title,
+  subtitle,
+}: {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <header className="mx-auto max-w-2xl text-center">
+      {eyebrow ? (
+        <p className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">
+          <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+          {eyebrow}
+        </p>
+      ) : null}
+      <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+        {title}
+      </h2>
+      {subtitle ? (
+        <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+          {subtitle}
+        </p>
+      ) : null}
+    </header>
+  );
+}
+
+function MockUI() {
+  return (
+    <div className="relative">
+      <div
+        aria-hidden
+        className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-purple-500/25 to-pink-500/20 blur-2xl"
+      />
+      <div className="relative rounded-3xl border border-slate-200 bg-white/70 p-4 shadow-2xl shadow-purple-100/60 backdrop-blur">
+        <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500" />
+            <div className="space-y-1">
+              <div className="h-3.5 w-32 rounded bg-slate-200" />
+              <div className="h-2.5 w-24 rounded bg-slate-100" />
+            </div>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+            <Flame className="h-4 w-4 text-purple-600" />
+            Week 4 • Day 2
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-900">Today’s Focus</p>
+              <span className="text-xs font-semibold text-purple-700">Upper</span>
+            </div>
+            <div className="mt-3 space-y-2">
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-purple-100" />
+                  <div>
+                    <p className="text-xs font-semibold text-slate-900">Bench Press</p>
+                    <p className="text-xs text-slate-500">4 × 6–8</p>
+                  </div>
+                </div>
+                <div className="text-xs font-semibold text-slate-700">+1 rep</div>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-pink-100" />
+                  <div>
+                    <p className="text-xs font-semibold text-slate-900">Rows</p>
+                    <p className="text-xs text-slate-500">4 × 8–10</p>
+                  </div>
+                </div>
+                <div className="text-xs font-semibold text-slate-700">steady</div>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-lg bg-indigo-100" />
+                  <div>
+                    <p className="text-xs font-semibold text-slate-900">Accessory</p>
+                    <p className="text-xs text-slate-500">3 × 12–15</p>
+                  </div>
+                </div>
+                <div className="text-xs font-semibold text-slate-700">tempo</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-slate-900">AI Insight</p>
+              <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-1 text-xs font-semibold text-purple-700">
+                <Sparkles className="h-3.5 w-3.5" />
+                AI
+              </span>
+            </div>
+            <div className="mt-3 rounded-2xl bg-gradient-to-br from-slate-50 to-white p-4">
+              <p className="text-sm font-semibold text-slate-900">
+                You’re most consistent on Mon–Wed.
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                Keep your hardest lifts early in the week. Save accessories for later sessions to stay fresh.
+              </p>
+              <div className="mt-4 flex items-center justify-between rounded-xl bg-white px-3 py-2">
+                <p className="text-xs font-semibold text-slate-700">Next small win</p>
+                <span className="text-xs font-semibold text-purple-700">+2.5kg</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-5 w-5 text-green-600" />
+            <p className="text-sm font-semibold text-slate-900">Track workouts free</p>
+            <span className="text-sm text-slate-500">•</span>
+            <p className="text-sm text-slate-600">Upgrade for AI programs</p>
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
+            <Shield className="h-4 w-4 text-slate-500" />
+            Secure billing
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default async function HomePage() {
   const { userId } = await auth();
+
   if (userId) {
     const subscription = await getUserSubscription(userId);
     if (subscription.subscriptionActive) {
-      return (
-        // Redirect authenticated subscribers directly to the app
-        void (await import("next/navigation")).redirect("/programs")
-      );
-    } else {
-      return (
-        // Redirect authenticated non-subscribers to pricing page to upgrade
-        void (await import("next/navigation")).redirect("/pricing")
-      );
+      return void (await import("next/navigation")).redirect("/programs");
     }
+    return void (await import("next/navigation")).redirect("/pricing");
   }
 
   const subscription = { subscriptionActive: false, subscriptionStatus: "inactive" };
   const alreadySubscribed = subscription.subscriptionActive;
 
   return (
-    <div className="flex min-h-screen flex-col">
-      {/* Top Navigation */}
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="SP Fitness logo" width={256} height={256} className="h-8 w-8" />
-          <span className="text-xl font-bold text-slate-900">SP Fitness</span>
-        </div>
-        <Link href="/sign-in" className="text-sm font-semibold text-slate-600 transition hover:text-slate-900">
-          Sign In
+    <div className="relative flex min-h-screen flex-col bg-white text-slate-900">
+      <GradientBackdrop />
+
+      {/* Top Nav */}
+      <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+        <Link href="/" className="flex items-center gap-2" aria-label="SP Fitness home">
+          <Image
+            src="/logo.png"
+            alt="SP Fitness logo"
+            width={256}
+            height={256}
+            className="h-9 w-9 rounded-xl"
+            priority
+          />
+          <span className="text-base font-bold tracking-tight">SP Fitness</span>
         </Link>
+
+        <nav className="flex items-center gap-3">
+          <a
+            href="#features"
+            className="hidden text-sm font-semibold text-slate-600 transition hover:text-slate-900 sm:inline-flex"
+          >
+            Features
+          </a>
+          <a
+            href="#how"
+            className="hidden text-sm font-semibold text-slate-600 transition hover:text-slate-900 sm:inline-flex"
+          >
+            How it works
+          </a>
+          <a
+            href="#pricing"
+            className="hidden text-sm font-semibold text-slate-600 transition hover:text-slate-900 sm:inline-flex"
+          >
+            Pricing
+          </a>
+
+          <Link
+            href="/sign-in"
+            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:bg-white"
+          >
+            Sign In
+          </Link>
+
+          <Link
+            href="/pricing"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:bg-purple-700 hover:shadow-purple-200/80"
+          >
+            Start
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </nav>
       </header>
 
-      {/* Hero Section */}
-      <section className="flex flex-1 flex-col items-center justify-center px-6 text-center">
-        <div className="space-y-6">
-          <h1 className="text-4xl font-bold text-slate-900 md:text-5xl">
-            Smarter training with AI.
-          </h1>
-          <p className="text-lg text-slate-600 md:text-xl">
-            Generate personalized programs and keep all other features free.
-          </p>
-          <Link href="/pricing">
-            <button className="rounded-xl bg-purple-600 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-purple-200 transition hover:bg-purple-700">
-              Get Started for Free
-            </button>
-          </Link>
-        </div>
-      </section>
+      {/* Hero */}
+      <main className="relative z-10">
+        <section className="mx-auto max-w-6xl px-6 pb-10 pt-10 sm:pt-16">
+          <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-2">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur">
+                <Zap className="h-3.5 w-3.5 text-purple-600" />
+                AI programs + free tracking
+              </div>
 
-      {/* Features Section */}
-      <section className="bg-slate-50 py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <header className="mx-auto mb-12 max-w-xl text-center">
-            <h2 className="text-3xl font-bold text-slate-900">Features</h2>
-            <p className="mt-4 text-lg text-slate-600">
-              SP Fitness combines powerful AI with a comprehensive workout platform to help you train smarter.
-            </p>
-          </header>
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Feature 1 */}
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 text-purple-700">
-                <Zap className="h-6 w-6" />
+              <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
+                Smarter training{" "}
+                <span className="bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+                  with AI
+                </span>
+                .
+              </h1>
+
+              <p className="max-w-xl text-base leading-relaxed text-slate-600 sm:text-lg">
+                Generate personalized programs, track your workouts, and unlock AI insights that keep you moving forward —
+                without overcomplicating your training.
+              </p>
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link href="/pricing" className="w-full sm:w-auto">
+                  <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 hover:shadow-purple-200/80 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                    Get started
+                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                  </button>
+                </Link>
+
+                <SignedOut>
+                  <SignInButton forceRedirectUrl="/pricing">
+                    <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 sm:w-auto">
+                      Sign in to subscribe
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+
+                <SignedIn>
+                  <Link href="/programs" className="w-full sm:w-auto">
+                    <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white/70 px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm backdrop-blur transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 sm:w-auto">
+                      Open app
+                    </button>
+                  </Link>
+                </SignedIn>
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">AI-Generated Programs</h3>
-                <p className="mt-2 text-slate-600">
-                  Generate personalized workout programs tailored to your goals in seconds.
+
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2 pt-2 text-sm text-slate-600">
+                <div className="inline-flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Free workout logging
+                </div>
+                <div className="inline-flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  AI programs on-demand
+                </div>
+                <div className="inline-flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Cancel anytime
+                </div>
+              </div>
+
+              {/* Social proof row */}
+              <div className="pt-6">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Built for consistency
                 </p>
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  {["Strength", "Hypertrophy", "Cardio", "Hybrid"].map((t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center rounded-full border border-slate-200 bg-white/70 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
-            {/* Feature 2 */}
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 text-purple-700">
-                <Dumbbell className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">Workout Tracking</h3>
-                <p className="mt-2 text-slate-600">
-                  Log your workouts, sets, and reps effortlessly to keep track of your progress over time.
-                </p>
-              </div>
-            </div>
-            {/* Feature 3 */}
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 text-purple-700">
-                <Sparkles className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">AI Training Insights</h3>
-                <p className="mt-2 text-slate-600">
-                  Get automatic insights and recommendations from your training data to improve faster.
-                </p>
-              </div>
-            </div>
-            {/* Feature 4 */}
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-purple-100 text-purple-700">
-                <Search className="h-6 w-6" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900">Exercise Library</h3>
-                <p className="mt-2 text-slate-600">
-                  Explore a comprehensive library of exercises to build and diversify your workouts.
-                </p>
-              </div>
+
+            <div className="md:pl-4">
+              <MockUI />
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* How It Works Section */}
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <header className="mx-auto mb-12 max-w-xl text-center">
-            <h2 className="text-3xl font-bold text-slate-900">How It Works</h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Achieve your goals in three simple steps.
-            </p>
-          </header>
-          <ol className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3 list-none">
-            <li>
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 text-white font-bold">
-                1
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Tell us your goals</h3>
-              <p className="mt-2 text-slate-600">
-                Enter your fitness goals, schedule, and equipment. Our AI will create a custom workout program just for you.
-              </p>
-            </li>
-            <li>
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 text-white font-bold">
-                2
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Start training</h3>
-              <p className="mt-2 text-slate-600">
-                Follow your personalized training plan in the app and log each workout. Every set and rep is tracked with ease.
-              </p>
-            </li>
-            <li>
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-purple-600 text-white font-bold">
-                3
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900">Get insights</h3>
-              <p className="mt-2 text-slate-600">
-                As you log workouts, our AI analyzes your performance. Receive actionable insights and recommendations to keep improving.
-              </p>
-            </li>
-          </ol>
-        </div>
-      </section>
+        {/* Features */}
+        <section id="features" className="mx-auto max-w-6xl px-6 py-16">
+          <SectionHeading
+            eyebrow="Everything you need to train"
+            title="Simple, powerful, and designed to keep you consistent."
+            subtitle="Use SP Fitness free for tracking and logging. Upgrade to the AI Plan when you want programs and insights."
+          />
 
-      {/* Pricing Section */}
-      <section id="pricing" className="bg-purple-50 py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <header className="mx-auto mb-12 max-w-xl text-center">
-            <h2 className="text-3xl font-bold text-slate-900">Pricing</h2>
-            <p className="mt-4 text-lg text-slate-600">
-              SP Fitness is free to use for core features. Upgrade to the AI Plan – just $12/month – to unlock AI-powered programs and insights.
-            </p>
-          </header>
-          <div className="flex justify-center">
-            <div className="flex h-full w-full max-w-2xl flex-col justify-between rounded-2xl border border-slate-200 bg-white p-8 shadow-lg shadow-purple-100/40">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 px-3 py-1 text-sm font-semibold text-purple-800">
-                  <Zap className="h-4 w-4" />
-                  AI Access
+          <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {featureCards.map((f) => {
+              const Icon = f.icon;
+              return (
+                <div
+                  key={f.title}
+                  className="group rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-lg hover:shadow-purple-100/50"
+                >
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 text-purple-700 transition group-hover:rotate-2">
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-base font-semibold text-slate-900">{f.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{f.desc}</p>
                 </div>
-                <div className="flex items-end gap-2">
-                  <span className="text-5xl font-bold text-slate-900">$</span>
-                  <span className="text-5xl font-bold text-slate-900">12</span>
-                  <span className="pb-2 text-slate-500">/ month</span>
-                </div>
-                <p className="text-slate-600">
-                  One simple plan. Get AI-generated programs (5 per month) with smart defaults for strength, cardio, and hybrid training.
+              );
+            })}
+          </div>
+
+          <div className="mt-10 rounded-3xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur sm:p-8">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-slate-900">
+                  Keep the basics free. Upgrade only when you want AI.
                 </p>
-                <div className="space-y-3">
-                  {featureList.map((feature) => (
+                <p className="text-sm text-slate-600">
+                  Track workouts and stay consistent — then subscribe to unlock program generation.
+                </p>
+              </div>
+              <Link href="/pricing" className="w-full sm:w-auto">
+                <button className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.01] hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300 sm:w-auto">
+                  View pricing
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section id="how" className="bg-slate-50/60 py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <SectionHeading
+              eyebrow="How it works"
+              title="Three steps. Zero friction."
+              subtitle="Get a plan, train consistently, and let the app do the thinking."
+            />
+
+            <ol className="mt-12 grid list-none grid-cols-1 gap-6 md:grid-cols-3">
+              {[
+                {
+                  n: "01",
+                  title: "Set your goal",
+                  desc: "Tell SP Fitness what you’re training for and how often you can train.",
+                  icon: Flame,
+                },
+                {
+                  n: "02",
+                  title: "Follow the plan",
+                  desc: "Run your sessions and log fast. Stay focused on progress, not planning.",
+                  icon: Dumbbell,
+                },
+                {
+                  n: "03",
+                  title: "Use AI insights",
+                  desc: "Unlock AI feedback and small nudges that keep you moving forward.",
+                  icon: Sparkles,
+                },
+              ].map((s) => {
+                const Icon = s.icon;
+                return (
+                  <li
+                    key={s.n}
+                    className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                        Step {s.n}
+                      </div>
+                      <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                    </div>
+                    <h3 className="mt-4 text-base font-semibold text-slate-900">{s.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-600">{s.desc}</p>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section
+          id="pricing"
+          className="relative overflow-hidden bg-gradient-to-br from-purple-700 via-purple-600 to-indigo-700 py-20 text-white"
+        >
+          <div aria-hidden className="absolute inset-0 opacity-40">
+            <div className="absolute -top-24 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-white/15 blur-3xl" />
+            <div className="absolute -bottom-40 right-0 h-[520px] w-[520px] rounded-full bg-white/10 blur-3xl" />
+          </div>
+
+          <div className="relative mx-auto max-w-6xl px-6">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/90">
+                <Shield className="h-4 w-4" />
+                Secure billing via Clerk
+              </p>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">
+                Upgrade when you want AI.
+              </h2>
+              <p className="mt-4 text-base leading-relaxed text-white/80 sm:text-lg">
+                Use SP Fitness free for tracking. Subscribe to the AI Plan to unlock program generation and insights.
+              </p>
+            </div>
+
+            <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
+              {/* Free */}
+              <div className="rounded-3xl border border-white/15 bg-white/10 p-8 backdrop-blur">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white/90">
+                  Free
+                </div>
+                <h3 className="mt-4 text-2xl font-bold">Track & log</h3>
+                <p className="mt-2 text-white/80">
+                  Keep your training organized with fast logging and a clean workflow.
+                </p>
+
+                <div className="mt-6 space-y-3 text-sm text-white/90">
+                  {[
+                    "Workout logging",
+                    "Simple, clean app flow",
+                    "Keep training data in one place",
+                  ].map((t) => (
+                    <div key={t} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-300" />
+                      <span>{t}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8">
+                  <Link href="/pricing" className="w-full">
+                    <button className="inline-flex w-full items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-purple-700 shadow-lg transition hover:scale-[1.01] hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-white/40">
+                      Get started free
+                    </button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* AI Plan */}
+              <div className="relative rounded-3xl border border-white/20 bg-white p-8 text-slate-900 shadow-2xl shadow-purple-900/30">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-slate-900 px-4 py-1 text-xs font-semibold text-white shadow-lg">
+                  Most popular
+                </div>
+
+                <div className="inline-flex items-center gap-2 rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
+                  <Zap className="h-4 w-4" />
+                  AI Plan
+                </div>
+
+                <div className="mt-4 flex items-end gap-2">
+                  <span className="text-5xl font-extrabold tracking-tight">$12</span>
+                  <span className="pb-2 text-sm font-semibold text-slate-500">/ month</span>
+                </div>
+
+                <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                  Unlock AI-generated programs and insights. Keep everything else free.
+                </p>
+
+                <div className="mt-6 space-y-3">
+                  {aiPlanBullets.map((feature) => (
                     <div key={feature} className="flex items-center gap-2 text-sm">
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
                       <span className="text-slate-700">{feature}</span>
                     </div>
                   ))}
                 </div>
-                <div className="flex items-center gap-2 rounded-xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+
+                <div className="mt-6 flex items-center gap-2 rounded-2xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-700">
                   <Shield className="h-4 w-4 text-slate-500" />
-                  Secured billing. Cancel anytime.
+                  Cancel anytime • Manage from billing
+                </div>
+
+                <div className="mt-8 space-y-3">
+                  <SignedIn>
+                    {alreadySubscribed ? (
+                      <Link href="/programs">
+                        <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                          Go to app
+                          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                        </button>
+                      </Link>
+                    ) : (
+                      <CheckoutButtonClient
+                        planId={AI_PLAN_ID}
+                        planPeriod="month"
+                        newSubscriptionRedirectUrl={SUCCESS_REDIRECT}
+                      >
+                        <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300">
+                          Start AI Plan
+                          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                        </button>
+                      </CheckoutButtonClient>
+                    )}
+                  </SignedIn>
+
+                  <SignedOut>
+                    <SignInButton forceRedirectUrl="/pricing">
+                      <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200">
+                        Sign in to subscribe
+                      </button>
+                    </SignInButton>
+                  </SignedOut>
                 </div>
               </div>
-              <div className="mt-8 space-y-3">
-                <SignedIn>
-                  {alreadySubscribed ? (
-                    <Link href="/programs">
-                      <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200 transition hover:bg-purple-700">
-                        Go to app
-                      </button>
-                    </Link>
-                  ) : (
-                    <CheckoutButtonClient
-                      planId={AI_PLAN_ID}
-                      planPeriod="month"
-                      newSubscriptionRedirectUrl={SUCCESS_REDIRECT}
-                    >
-                      <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200 transition hover:bg-purple-700">
-                        Start AI Plan
-                      </button>
-                    </CheckoutButtonClient>
-                  )}
-                </SignedIn>
-                <SignedOut>
-                  <SignInButton forceRedirectUrl="/pricing">
-                    <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
-                      Sign in to subscribe
-                    </button>
-                  </SignInButton>
-                </SignedOut>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section className="mx-auto max-w-6xl px-6 py-16">
+          <SectionHeading
+            eyebrow="Social proof"
+            title="Built for lifters who want momentum."
+            subtitle="Real people, real consistency. (Placeholders for now — swap in later.)"
+          />
+
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3">
+            {testimonials.map((t) => (
+              <figure
+                key={t.name}
+                className="rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-700">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <div aria-hidden className="flex gap-1 text-slate-200">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <span key={i} className="h-2 w-2 rounded-full bg-purple-200" />
+                    ))}
+                  </div>
+                </div>
+
+                <blockquote className="mt-4 text-sm leading-relaxed text-slate-700">
+                  “{t.quote}”
+                </blockquote>
+                <figcaption className="mt-5">
+                  <p className="text-sm font-semibold text-slate-900">{t.name}</p>
+                  <p className="text-xs text-slate-500">{t.title}</p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className="bg-slate-50/60 py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <SectionHeading
+              eyebrow="FAQ"
+              title="Questions, answered."
+              subtitle="Everything you need to know before you start."
+            />
+
+            <div className="mx-auto mt-10 max-w-2xl divide-y divide-slate-200 rounded-3xl border border-slate-200 bg-white/70 shadow-sm backdrop-blur">
+              {faqs.map((f) => (
+                <details key={f.q} className="group p-6">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-slate-900">
+                    <span>{f.q}</span>
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-700 transition group-open:rotate-45">
+                      +
+                    </span>
+                  </summary>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600">{f.a}</p>
+                </details>
+              ))}
+            </div>
+
+            <div className="mt-10 text-center">
+              <Link href="/pricing">
+                <button className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:scale-[1.01] hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                  Start now
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="mx-auto max-w-6xl px-6 py-16">
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-8 shadow-sm sm:p-12">
+            <div aria-hidden className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-purple-500/10 blur-3xl" />
+            <div aria-hidden className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-pink-500/10 blur-3xl" />
+
+            <div className="relative mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+                Ready to train with momentum?
+              </h2>
+              <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+                Start free for tracking. Upgrade anytime to unlock AI programs and insights.
+              </p>
+
+              <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                <Link href="/pricing" className="w-full sm:w-auto">
+                  <button className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-purple-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-200/60 transition hover:scale-[1.01] hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-300 sm:w-auto">
+                    Get started
+                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                  </button>
+                </Link>
+                <Link href="/sign-in" className="w-full sm:w-auto">
+                  <button className="inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-900 shadow-sm transition hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-200 sm:w-auto">
+                    Sign in
+                  </button>
+                </Link>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-600">
+                <span className="inline-flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-slate-500" />
+                  Secure billing
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Cancel anytime
+                </span>
+                <span className="inline-flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-600" />
+                  Free logging
+                </span>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <header className="mx-auto mb-12 max-w-xl text-center">
-            <h2 className="text-3xl font-bold text-slate-900">Testimonials</h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Hear from some of our happy users who are achieving their goals.
-            </p>
-          </header>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {/* Testimonial 1 */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow">
-              <p className="text-slate-900">
-                &ldquo;This app has completely changed how I plan my workouts. The AI is like having a personal trainer in my pocket!&rdquo;
-              </p>
-              <p className="mt-4 text-sm font-semibold text-slate-900">Alex M.</p>
-              <p className="text-sm text-slate-500">Gym Enthusiast</p>
-            </div>
-            {/* Testimonial 2 */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow">
-              <p className="text-slate-900">
-                &ldquo;I&apos;ve seen amazing results in just a few weeks. The AI programs keep me motivated and the workouts are actually fun!&rdquo;
-              </p>
-              <p className="mt-4 text-sm font-semibold text-slate-900">Jordan P.</p>
-              <p className="text-sm text-slate-500">Busy Professional</p>
-            </div>
-            {/* Testimonial 3 */}
-            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow">
-              <p className="text-slate-900">
-                &ldquo;The workout logging and insights are game-changers. Everything is so easy to use and keeps me accountable.&rdquo;
-              </p>
-              <p className="mt-4 text-sm font-semibold text-slate-900">Taylor R.</p>
-              <p className="text-sm text-slate-500">Aspiring Athlete</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="bg-slate-50 py-16">
-        <div className="mx-auto max-w-6xl px-6">
-          <header className="mx-auto mb-12 max-w-xl text-center">
-            <h2 className="text-3xl font-bold text-slate-900">FAQ</h2>
-            <p className="mt-4 text-lg text-slate-600">
-              Your questions, answered.
-            </p>
-          </header>
-          <div className="mx-auto max-w-2xl">
-            <details className="group border-b border-slate-200 py-4">
-              <summary className="cursor-pointer text-base font-semibold text-slate-900">
-                What is the AI Plan?
-              </summary>
-              <div className="mt-2 text-slate-600">
-                The AI Plan is a monthly subscription (US$12 per month) that unlocks AI-powered features like workout program generation and training insights.
-              </div>
-            </details>
-            <details className="group border-b border-slate-200 py-4">
-              <summary className="cursor-pointer text-base font-semibold text-slate-900">
-                Do I need a subscription to use SP Fitness?
-              </summary>
-              <div className="mt-2 text-slate-600">
-                No. You can use SP Fitness for free. Creating programs manually, logging workouts, and exploring the exercise library are all available without a subscription. The AI Plan is only needed if you want AI-generated programs and AI insights.
-              </div>
-            </details>
-            <details className="group border-b border-slate-200 py-4">
-              <summary className="cursor-pointer text-base font-semibold text-slate-900">
-                Can I cancel my subscription?
-              </summary>
-              <div className="mt-2 text-slate-600">
-                Yes, you can cancel your AI Plan at any time. There are no long-term commitments – simply cancel from your account’s billing page, and you’ll continue to have access until the end of your billing period.
-              </div>
-            </details>
-            <details className="group border-b border-slate-200 py-4">
-              <summary className="cursor-pointer text-base font-semibold text-slate-900">
-                How do AI insights work?
-              </summary>
-              <div className="mt-2 text-slate-600">
-                Our AI analyzes the workouts you log to find patterns and give feedback. It provides a brief summary of your recent training and personalized recommendations on how to improve based on your performance.
-              </div>
-            </details>
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA Section */}
-      <section className="bg-purple-600 py-16 text-center text-white">
-        <div className="mx-auto max-w-xl px-6">
-          <h2 className="text-3xl font-bold">
-            Ready to start your AI-powered fitness journey?
-          </h2>
-          <p className="mt-4 text-lg">
-            Join SP Fitness today and reach your goals faster.
-          </p>
-          <Link href="/pricing">
-            <button className="mt-8 rounded-xl bg-white px-6 py-4 text-base font-semibold text-purple-600 shadow-lg shadow-purple-200 transition hover:bg-purple-100">
-              Get Started Now
-            </button>
-          </Link>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-slate-50 py-8 text-center text-sm text-slate-500">
-        © 2026 SP Fitness. All rights reserved.
+      <footer className="relative z-10 border-t border-slate-200 bg-white/70 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2">
+            <Image src="/logo.png" alt="SP Fitness logo" width={256} height={256} className="h-8 w-8 rounded-xl" />
+            <div>
+              <p className="text-sm font-bold tracking-tight text-slate-900">SP Fitness</p>
+              <p className="text-xs text-slate-500">AI programs + free tracking</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-600">
+            <a href="#features" className="transition hover:text-slate-900">
+              Features
+            </a>
+            <a href="#how" className="transition hover:text-slate-900">
+              How it works
+            </a>
+            <a href="#pricing" className="transition hover:text-slate-900">
+              Pricing
+            </a>
+            <Link href="/sign-in" className="transition hover:text-slate-900">
+              Sign in
+            </Link>
+          </div>
+
+          <p className="text-xs text-slate-500">© {new Date().getFullYear()} SP Fitness. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   );
